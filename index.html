@@ -7,6 +7,7 @@
 		<script src="libs/d3.v3.js"></script>
 		<script src="libs/d3.chart.js"></script>
 
+		<script src="src/common/container.js"></script>
 		<script src="src/common/canvas.js"></script>
 		<style>
 		svg {
@@ -218,10 +219,12 @@
 		});
 
 		var canvas = d3.ma.canvas('#vis')
-						.chart("LabeledCirclesChart");
+						//.chart("LabeledCirclesChart");
+						//
+		console.log('canvas: ', canvas);
 
 		//render it with some data
-		canvas.draw([10,24,50,60,85]);
+		//canvas.draw([10,24,50,60,85]);
 
 	</script>
 </body>
