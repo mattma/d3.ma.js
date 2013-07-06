@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+		<meta charset="UTF-8">
+		<title>D3 Test</title>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+		<script src="libs/d3.v3.js"></script>
+		<script src="libs/d3.chart.js"></script>
+
+		<script src="src/common/canvas.js"></script>
+		<style>
+		svg {
+			font: 10px sans-serif;
+		}
+		.line {
+			fill: none; stroke: #000; stroke-width: 1.5px;
+		}
+		.axis path, .axis line {
+			fill: none; stroke: #000; shape-rendering: crispEdges;
+		}
+		#vis {
+			width: 500px;
+			height: 600px;
+		}
+		</style>
+</head>
+<body>
+	 <div id="vis"></div>
+
+	<script>
+
+		d3.chart("LabelChart", {
+			initialize: function() {
+				// setup some size defaults
+				this._width = this._width   || this.base.attr("width") || 200;
+				this._height = this._height || this.base.attr("height") || 200;
+
+				// initialize a scale along which we will render
+				// the labels
+				this.xScale = d3.scale.linear()
+					 .range([0, this._width]);
+
+				// create a labels layer
+				this.layer("labels", this.base.append("g"), {
+					dataBind: function(data) {
+						var chart = this.chart();
+
+						// set the domain of the xScale so we know
+						// how to map it. Give it a range of 10 on both
+						// ends.
+						chart.xScale.domain([
+							Math.min.apply(null, data) - 10,
+							Math.max.apply(null, data) + 10
+						]);
+						return this.selectAll("text")
+							.data(data);
+					},
+					insert: function() {
+						 return this.append("text")
+							 .classed("label", true);
+					},
+					events: {
+						enter: function() {
+							var chart = this.chart();
+							 // position the labels at the mid height point
+							 return this.attr("y", chart.height()/2)
+								 .attr("x", function(d) {
+									 return chart.xScale(d);
+								 })
+								 .attr("text-anchor", "middle")
+								 .text(function(d) { return d; });
+						}
+					}
+				});
+			},
+			width: function(newWidth) {
+				if (arguments.length === 0) {
+						return this._width;
+				}
+				this._width = newWidth;
+				this.base.attr("width", this._width);
+				this.xScale.range([0, this._width]);
+				return this;
+			},
+
+			height: function(newHeight) {
+				if (arguments.length === 0) {
+						return this._height;
+				}
+				this._height = newHeight;
+				this.base.attr("height", this._height);
+				return this;
+			}
+		});
+
+		// define a new chart type: a circle chart
+		d3.chart("CircleChart", {
+
+			initialize: function() {
+
+				// setup some size defaults
+				this._width = this._width   || this.base.attr("width") || 200;
+				this._height = this._height || this.base.attr("height") || 200;
+
+				// initialize a scale along which we will render
+				// the circles
+				this.xScale = d3.scale.linear()
+					 .range([0, this._width]);
+
+				// create a layer of circles that will go into
+				// a new group element on the base of the chart
+				this.layer("circles", this.base.append("g"), {
+
+					// select the elements we wish to bind to and
+					// bind the data to them.
+					dataBind: function(data) {
+						var chart = this.chart();
+
+						// set the domain of the xScale so we know
+						// how to map it. Give it a range of 10 on both
+						// ends.
+						chart.xScale.domain([
+							Math.min.apply(null, data) - 10,
+							Math.max.apply(null, data) + 10
+						]);
+						return this.selectAll("circle")
+							.data(data);
+					},
+
+					// insert actual circles
+					insert: function() {
+						return this.append("circle");
+					},
+
+					// define lifecycle events
+					events: {
+
+						// paint new elements, but set their radius to 0
+						// and make them red
+						"enter": function() {
+							var chart = this.chart();
+							return this.attr("cx", function(d) {
+								return chart.xScale(d);
+							})
+							.attr("cy", 10)
+							.attr("r", 0)
+							.style("fill", "red");
+						},
+						// then transition them to a radius of 5 and change
+						// their fill to blue
+						"enter:transition": function() {
+							var chart = this.chart();
+							return this
+								.delay(500)
+								.attr("r", chart.radius())
+								.style("fill", "yellow");
+						}
+					}
+				});
+			},
+			radius: function(newradius) {
+				if (arguments.length === 0) {
+						return this._radius;
+				}
+				this._radius = newradius;
+				return this;
+			},
+
+			width: function(newWidth) {
+				if (arguments.length === 0) {
+						return this._width;
+				}
+				this._width = newWidth;
+				this.base.attr("width", this._width);
+				this.xScale.range([0, this._width]);
+				return this;
+			},
+
+			height: function(newHeight) {
+				if (arguments.length === 0) {
+						return this._height;
+				}
+				this._height = newHeight;
+				this.base.attr("height", this._height);
+				return this;
+			}
+		});
+
+		d3.chart("LabeledCirclesChart", {
+			initialize: function() {
+
+				// setup some size defaults
+				// this._width = this._width   || this.base.attr("width") || 200;
+				// this._height = this._height || this.base.attr("height") || 100;
+				console.log('this.base: ', this.base);
+
+				this.circles = this.mixin("CircleChart", this.base.append("g"));
+				this.labels =  this.mixin("LabelChart",  this.base.append("g"));
+
+				// make the radius larger than the default
+				this.circles.radius(10);
+
+				// overlay the labels on top of the circles
+				this.labels.layer("labels")
+					.attr("transform", "translate(0,-" + (
+						//(this.height() / 2) - this.circles.radius()*1.3)
+						100 - this.circles.radius()*1.3)
+						+ ")");
+
+				// move the circles to the mid point of the height
+				this.circles.layer("circles").on("enter", function() {
+					var chart = this.chart();
+					//return this.attr("y", chart.height()/2);
+					return this.attr("y", '30px');
+				});
+
+			}
+		});
+
+		var canvas = d3.ma.canvas('#vis')
+						.chart("LabeledCirclesChart");
+
+		//render it with some data
+		canvas.draw([10,24,50,60,85]);
+
+	</script>
+</body>
+</html>
