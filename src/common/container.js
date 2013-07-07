@@ -33,14 +33,14 @@ d3.ma.container = function(selector) {
 		// Set the canvas layout with a good amount of offset, has canvas class for easy targeting
 		g = container.append('g').classed('canvas', true);
 
-	container.canvasW = function(_width, boxCalled) {
+	var canvasW = container.canvasW = function(_width, boxCalled) {
 		if (!arguments.length) return g.attr("width");
 		if(boxCalled) _width = parseInt(_width) - margin.left - margin.right;
 		g.attr('width', _width);
 		return container;
 	};
 
-	container.canvasH = function(_height, boxCalled) {
+	var canvasH = container.canvasH = function(_height, boxCalled) {
 		if(!arguments.length) return g.attr("height");
 		if(boxCalled) _height = parseInt(_height) - margin.top - margin.bottom;
 		g.attr('height', _height);
@@ -51,16 +51,16 @@ d3.ma.container = function(selector) {
 		if(!arguments.length) {
 			var m = container.margin();
 			return {
-				'containerWidth': container.canvasW() + m.left + m.right,
-				'containerHeight': container.canvasH() + m.top + m.bottom
+				'containerWidth': canvasW() + m.left + m.right,
+				'containerHeight': canvasH() + m.top + m.bottom
 			};
 		}
 
 		// When arguments are more than one, set svg and container width & height
 		var h = (_height) ? _height : _width;
 
-		container.canvasW(_width, true);
-		container.canvasH(h, true);
+		canvasW(_width, true);
+		canvasH(h, true);
 
 		container.attr({
 			'width': _width,
