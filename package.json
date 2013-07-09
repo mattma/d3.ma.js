@@ -1,0 +1,33 @@
+{
+	"name": "d3.ma.js",
+	"description": "d3 magic library",
+	"author": {
+		"name": "Matt Ma",
+		"email": "matt@mattmadesign.com"
+	},
+
+	"version": "0.0.1",
+	"private": true,
+	"repository": "",
+
+	"main": "Gruntfile.js",
+
+	"dependencies": {
+
+	},
+
+	"devDependencies": {
+		"grunt": "~0.4.1",
+		"grunt-contrib-clean": "*",
+		"grunt-contrib-copy": "*",
+		"grunt-contrib-concat": "*",
+		"grunt-contrib-jshint": "*",
+		"grunt-contrib-uglify": "*"
+	},
+
+	"engines": {
+		"node": ">= 0.8.0"
+	},
+
+	"license": ""
+}
