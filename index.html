@@ -39,35 +39,46 @@
 		d3.chart("GuideLine", {
 			initialize: function() {
 			      var color = d3.scale.category10();
-			      var height = 600;
+
+			      var width = this.base.attr('width'),
+					height = this.base.attr('height');
 
 			      this.yScale = d3.scale.linear()
-			                                .domain([0, 197])
-			                                .range([600, 0]);
+			      				.domain([0,197])
+			                             .range([height, 0]);
 
 			      this.xScale = d3.scale.ordinal()
-			                                .rangeRoundBands([0, 1400], 0.1);
+			                                .rangeRoundBands([0, width], 0.1);
+
 
 			      var yAxis = d3.svg.axis().scale(this.yScale)
-			                                .orient("left")
-			                                .tickFormat(d3.format(',.1f'));
+					                                .orient("left")
+					                                .tickFormat(d3.format(',.1f'));
 
-			      this.base.append('g').attr({
+			      this.y_Axis = this.base.append('g').attr({
 			            'class': 'y axis'
 			      }).call(yAxis);
 
-
         		        this.x_Axis =  this.base.append('g').attr({
 			            'class': 'x axis',
-			            'transform': 'translate(0, 540)'
+			            'transform': 'translate(0,' + height + ')'
 			        });
 
 				// create a labels layer
 				this.layer("guidline", this.base, {
 					dataBind: function(data) {
 						var chart = this.chart();
+
 						chart.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
 					      chart.xAxis = d3.svg.axis().scale(chart.xScale).orient("bottom");
+
+					      var maxY = d3.max( data.map(function(val, ind){ return val.value;  }) );
+					      // chart.yScale([ 0, maxY ]);
+			     			// chart.yAxis = d3.svg.axis().scale(chart.yScale)
+					      //                           .orient("left")
+					      //                           .tickFormat(d3.format(',.1f'));
+
+					      //chart.yScale.domain()
 						return this.selectAll('g').data(data);
 					},
 
@@ -79,6 +90,7 @@
 						"enter": function() {
 							var chart = this.chart();
 							chart.x_Axis.call( chart.xAxis);
+							//chart.y_Axis.call( chart.yAxis);
 						}
 					}
 				});
@@ -91,14 +103,16 @@
 			initialize: function() {
 
 			      var color = d3.scale.category10();
-			      var height = 580;
+
+     			      var width = this.base.attr('width'),
+					height = this.base.attr('height');
 
 			      this.yScale = d3.scale.linear()
 			                                .domain([0, 197])
 			                                .range([height, 0]);
 
 			      this.xScale = d3.scale.ordinal()
-			                                .rangeRoundBands([0, 1300], 0.1);
+			                                .rangeRoundBands([0, width], 0.1);
 
 			      var xAxis = d3.svg.axis().scale(this.xScale).orient("bottom");
 
@@ -168,8 +182,18 @@
 		d3.chart("LabeledCirclesChart", {
 			initialize: function() {
 
-				this.labels =  this.mixin("GuideLine",  this.base.append("g").classed('guideline', true));
-				this.bars = this.mixin("BarChart", this.base.append("g").classed('bars', true));
+				var baseEl = this.base.append("g").classed('guideline', true).attr({
+					'width': this.base.attr('width'),
+					'height': this.base.attr('height')
+				});
+
+				var baseBarEl = this.base.append("g").classed('bars', true).attr({
+					'width': this.base.attr('width'),
+					'height': this.base.attr('height')
+				});
+
+				this.labels =  this.mixin("GuideLine",  baseEl);
+				this.bars = this.mixin("BarChart", baseBarEl);
 
 				// overlay the labels on top of the circles
 				// this.labels.layer("guideline")
@@ -188,7 +212,7 @@
 			}
 		});
 
-		var container = d3.ma.container('#vis');
+		var container = d3.ma.container('#vis').box(1400,500);
 
 		var canvas = container.canvas().chart("LabeledCirclesChart");
 
