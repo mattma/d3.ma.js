@@ -23,7 +23,11 @@
 		"grunt-contrib-concat": "*",
 		"grunt-contrib-jshint": "*",
 		"grunt-contrib-uglify": "*",
-		"matchdep": "*"
+		"matchdep": "*",
+
+		"grunt-contrib-livereload": "~0.1.2",
+		"grunt-regarde": "*",
+		"grunt-open": "*"
 	},
 
 	"engines": {

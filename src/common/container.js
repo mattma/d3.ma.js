@@ -36,15 +36,15 @@ d3.ma.container = function(selector) {
 		g = container.append('g').classed('canvas', true);
 
 	var canvasW = container.canvasW = function(_width, boxCalled) {
-		if (!arguments.length) return g.attr("width");
-		if(boxCalled) _width = parseInt(_width) - margin.left - margin.right;
+		if (!arguments.length) { return g.attr('width'); }
+		if(boxCalled) { _width = parseInt(_width) - margin.left - margin.right; }
 		g.attr('width', _width);
 		return container;
 	};
 
 	var canvasH = container.canvasH = function(_height, boxCalled) {
-		if(!arguments.length) return g.attr("height");
-		if(boxCalled) _height = parseInt(_height) - margin.top - margin.bottom;
+		if(!arguments.length) { return g.attr('height'); }
+		if(boxCalled) { _height = parseInt(_height) - margin.top - margin.bottom; }
 		g.attr('height', _height);
 		return container;
 	};
@@ -75,11 +75,11 @@ d3.ma.container = function(selector) {
 	};
 
 	container.margin = function(_) {
-		if (!arguments.length) return margin;
-		margin.top  = typeof _.top  != 'undefined' ? _.top  : margin.top;
-		margin.right  = typeof _.right  != 'undefined' ? _.right  : margin.right;
-		margin.bottom = typeof _.bottom != 'undefined' ? _.bottom : margin.bottom;
-		margin.left   = typeof _.left   != 'undefined' ? _.left   : margin.left;
+		if (!arguments.length) { return margin; }
+		margin.top  = typeof _.top  !== 'undefined' ? _.top  : margin.top;
+		margin.right  = typeof _.right  !== 'undefined' ? _.right  : margin.right;
+		margin.bottom = typeof _.bottom !== 'undefined' ? _.bottom : margin.bottom;
+		margin.left   = typeof _.left   !== 'undefined' ? _.left   : margin.left;
 
 		// After set the new margin, and maintain svg container width and height, container width and height ratio
 		container.box(containerW, containerH);

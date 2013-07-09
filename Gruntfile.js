@@ -13,7 +13,9 @@ module.exports = function( grunt ) {
 	grunt.initConfig({
 
 		CONFIGS: {
-			BUILD: 'build'
+			BUILD: 'build',
+			HOSTNAME: 'file:///Users/mma',
+			PATH: '<%= CONFIGS.HOSTNAME %>/Desktop/d3.ma/index.html'
 		},
 
 		pkg: grunt.file.readJSON('package.json'),
@@ -35,7 +37,7 @@ module.exports = function( grunt ) {
 			},
 			all: [
 				'Gruntfile.js',
-				'src/{,**/}*.js'
+				'src/**/*.js'
 			]
 		},
 
@@ -85,7 +87,36 @@ module.exports = function( grunt ) {
 					dest: '<%= CONFIGS.BUILD %>/d3.ma.min.js'
 				}]
 			}
-		}
+		},
+
+		// https://github.com/onehealth/grunt-open
+		open: {
+			dev: {
+				path: '<%= CONFIGS.PATH %>'
+			}
+		},
+
+		watch: {
+			livereload: {
+				files: [
+					'index.html',
+					'src/{,**/}*.js'
+				],
+				tasks: ['livereload']
+			}
+		},
+	});
+
+	grunt.renameTask('regarde', 'watch');
+
+	// Running Development Environment
+	grunt.registerTask('server', function () {
+
+		grunt.task.run([
+			'livereload-start',
+			'open:dev',
+			'watch'
+		]);
 	});
 
 	grunt.registerTask('lint', ['jshint']);
