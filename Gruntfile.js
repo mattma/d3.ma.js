@@ -18,7 +18,7 @@ module.exports = function( grunt ) {
 
 		pkg: grunt.file.readJSON('package.json'),
 
-		BANNER: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
+		BANNER: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> \n Author: <%= pkg.author.name %> (<%= pkg.author.email %>)\n\n*/',
 
 		// https://github.com/gruntjs/grunt-contrib-jshint
 		// Validate files with JSHint. it is a multi task
@@ -34,9 +34,8 @@ module.exports = function( grunt ) {
 				// }
 			},
 			all: [
-				'Gruntfile.js'
-				// 'client/app/modules/{,**/}*.js',
-				// 'spec/**/*.js'
+				'Gruntfile.js',
+				'src/{,**/}*.js'
 			]
 		},
 
@@ -58,7 +57,7 @@ module.exports = function( grunt ) {
 		concat: {
 			options: {
 				//separator: ';' //Concatenated files will be joined on this string.
-				//banner:  '<%= BANNER %>'
+				banner:  '<%= BANNER %>'
 				//footer: STRING  //Appended to the end of the concatenated output.
 				//stripBanners: true  //Strip JavaScript banner comments from source files. /* ... */ block comments are stripped, but NOT /*! ... */ comments.
 			},
@@ -80,7 +79,7 @@ module.exports = function( grunt ) {
 				banner: '<%= BANNER %>'
 				// sourceMap: 'path/to/source-map.js'
 			},
-			requirejs: {
+			minify: {
 				files: [{
 					src: ['<%= CONFIGS.BUILD %>/d3.ma.js'],
 					dest: '<%= CONFIGS.BUILD %>/d3.ma.min.js'
@@ -93,7 +92,8 @@ module.exports = function( grunt ) {
 	grunt.registerTask('build', function () {
 
 		grunt.task.run([
-			'concat'			// concat reset.css & base.css into app.min.css | concat js
+			'concat'	,
+			'uglify'
 		]);
 	});
 

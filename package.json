@@ -22,7 +22,8 @@
 		"grunt-contrib-copy": "*",
 		"grunt-contrib-concat": "*",
 		"grunt-contrib-jshint": "*",
-		"grunt-contrib-uglify": "*"
+		"grunt-contrib-uglify": "*",
+		"matchdep": "*"
 	},
 
 	"engines": {
