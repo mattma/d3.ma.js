@@ -25,7 +25,7 @@ d3.ma.container = function(selector) {
 
 	var selection = d3.select(selector);
 
-	var margin = {top: 30, right: 10, bottom: 20, left: 30},
+	var margin = { top: 30, right: 10, bottom: 20, left: 40 },
 		containerW = selection[0][0].clientWidth || document.body.clientWidth || 960,
 		containerH = selection[0][0].clientHeight || document.body.clientHeight || 540,
 		canvasW,
