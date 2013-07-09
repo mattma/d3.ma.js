@@ -56,7 +56,7 @@ module.exports = function( grunt ) {
 		// https://github.com/gruntjs/grunt-contrib-concat
 		concat: {
 			options: {
-				//separator: ';' //Concatenated files will be joined on this string.
+				separator: '', //Concatenated files will be joined on this string.
 				banner:  '<%= BANNER %>'
 				//footer: STRING  //Appended to the end of the concatenated output.
 				//stripBanners: true  //Strip JavaScript banner comments from source files. /* ... */ block comments are stripped, but NOT /*! ... */ comments.
@@ -87,6 +87,8 @@ module.exports = function( grunt ) {
 			}
 		}
 	});
+
+	grunt.registerTask('lint', ['jshint']);
 
 	// Running Production Environment
 	grunt.registerTask('build', function () {
