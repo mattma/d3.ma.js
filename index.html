@@ -22,11 +22,12 @@
 			width: 1400px;
 			height: 600px;
 		}
-		.grid .tick {
+
+		.guides .tick {
 			stroke: lightgrey;
-			opacity: 0.7;
+			opacity: 0.5;
 		}
-		.grid path {
+		.guides path {
 			stroke-width: 0;
 		}
 		</style>
@@ -36,16 +37,25 @@
 
 	<script>
 		// http://jsbin.com/isawar/4/edit
+
+		/*
+			internal, _xScale, _yScale are set dynamicially, after calling x() and y(), save the String representation of the current scale.
+		 */
 		d3.chart("GuideLine", {
 			initialize: function() {
 			      var width = this.base.attr('width'),
 					height = this.base.attr('height');
 
-			      this.yScale = d3.scale.linear()
-			                             .range([height, 0]);
+			     	this.xScale = this.x('ordinal');
 
-			      this.xScale = d3.scale.ordinal()
-			                                .rangeRoundBands([0, width], 0.1);
+			     	// After this.xScale is being called, it will auto set the this._xScale variable
+			     	// console.log(this._xScale);
+
+			      this.xScale.rangeRoundBands([0, width], 0.1);
+
+			      this.yScale = this.y('linear');
+
+			      this.yScale.range([height, 0]);
 
 				this.xAxis = d3.svg.axis().scale(this.xScale).orient("bottom");
 
@@ -63,12 +73,12 @@
 			      });
 
 				this.xGuide = this.base.append("g")
-					.attr("class", "grid")
+					.attr("class", "guides")
 					.attr("transform", "translate(0," + height + ")");
 
 				//The last thing that is included in the code to draw the grid lines is the instruction to suppress printing any label for the ticks;
 				this.yGuide = this.base.append("g")
-					.attr("class", "grid");
+					.attr("class", "guides");
 
 				// create a labels layer
 				this.layer("guidline", this.base, {
@@ -97,6 +107,22 @@
 				});
 			},
 
+			x: function(scale) {
+				if (arguments.length === 0) { return this._xScale; }
+				this._xScale = scale;
+				this.xScale = this._scale(scale);
+				return this.xScale;
+				//return this;
+			},
+
+			y: function(scale) {
+				if (arguments.length === 0) { return this._yScale; }
+				this._yScale = scale;
+				this.yScale = this._scale(scale);
+				//return this;
+				return this.yScale;
+			},
+
 			drawGuides: function() {
 			      var width = this.base.attr('width'),
 					height = this.base.attr('height');
@@ -115,6 +141,22 @@
 				);
 
 				return this;
+			},
+
+			_scale: function(scale) {
+				switch(scale) {
+					case 'linear':
+						return d3.scale.linear();
+					break;
+
+					case 'ordinal':
+						return d3.scale.ordinal();
+					break;
+
+					default:
+						return d3.scale.linear();
+					break;
+				}
 			}
 		});
 
@@ -215,12 +257,13 @@
 					'height': this.base.attr('height')
 				});
 
-				this.labels =  this.mixin("GuideLine",  guideLineG);
+				var axis =  this.mixin("GuideLine",  guideLineG);
 
-				// Draw Guides here
-				var self = this.labels;
-				this.labels.layer("guidline").on("enter", function(t) {
-					self.drawGuides();
+				//axis.x('ordinal').y('linear');
+
+				//Draw Guides here
+				axis.layer("guidline").on("enter", function(t) {
+					axis.drawGuides();
 				});
 
 				this.bars = this.mixin("BarChart", barsG);
@@ -269,5 +312,8 @@
 		canvas.draw(data);
 
 	</script>
+
+	<!-- livereload snippet  -->
+	<script src="http://localhost:35729/livereload.js?snipver=1"></script>
 </body>
 </html>
