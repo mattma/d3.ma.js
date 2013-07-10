@@ -43,20 +43,31 @@
 		 */
 		d3.chart("GuideLine", {
 			initialize: function() {
-			      var width = this.base.attr('width'),
-					height = this.base.attr('height');
+			      this.width = this.base.attr('width');
+				this.height = this.base.attr('height');
 
-			     	//this.xScale = this.x('ordinal');
-			     	this.x('ordinal');
+				var self = this;
 
+				this.xScale = this.xScale || this.x('ordinal')._xScale;
+				this.yScale = this.yScale || this.y('linear')._yScale;
+				console.log('this.xScale: ', this.xScale);
+			     	// //this.xScale = this.x('ordinal');
+
+			     	this.on('scale', function(m){
+			     		console.log('m: ', m);
+			     		self.xScale = self.x('ordinal')._xScale;
+			     		self.render();
+			     	});
+			     	// console.log('this.xScale: ', this.xScale);
+			     	this.render();
+			},
+
+			render: function() {
 			     	// After this.xScale is being called, it will auto set the this._xScale variable
 			     	// console.log(this._xScale);
+			      this.xScale.rangeRoundBands([0, this.width], 0.1);
 
-			      this.xScale.rangeRoundBands([0, width], 0.1);
-
-			      this.y('linear');
-
-			      this.yScale.range([height, 0]);
+			      this.yScale.range([this.height, 0]);
 
 				this.xAxis = d3.svg.axis().scale(this.xScale).orient("bottom");
 
@@ -66,7 +77,7 @@
 
         		      this.xAxisG =  this.base.append('g').attr({
 			            'class': 'x axis',
-			            'transform': 'translate(0,' + height + ')'
+			            'transform': 'translate(0,' + this.height + ')'
 			      });
 
 			      this.yAxisG = this.base.append('g').attr({
@@ -75,7 +86,7 @@
 
 				this.xGuide = this.base.append("g")
 					.attr("class", "guides")
-					.attr("transform", "translate(0," + height + ")");
+					.attr("transform", "translate(0," + this.height + ")");
 
 				//The last thing that is included in the code to draw the grid lines is the instruction to suppress printing any label for the ticks;
 				this.yGuide = this.base.append("g")
@@ -110,32 +121,28 @@
 
 			x: function(scale) {
 				if (arguments.length === 0) { return this._xScale; }
-				this._xScale = scale;
-				this.xScale = this._scale(scale);
+				this._xScale = this._scale(scale);
 				return this;
 			},
 
 			y: function(scale) {
 				if (arguments.length === 0) { return this._yScale; }
-				this._yScale = scale;
-				this.yScale = this._scale(scale);
+				this._yScale = this._scale(scale);
 				return this;
 			},
 
 			drawGuides: function() {
-			      var width = this.base.attr('width'),
-					height = this.base.attr('height');
 
 				this.xGuide.call(
 					this.xAxis
-						.tickSize(-height, 0, 0)
+						.tickSize(-this.height, 0, 0)
 						.tickFormat('')
 				);
 				//axis.tickSize([major[​[, minor], end]])
 
 				this.yGuide.call(
 					this.yAxis
-						.tickSize(-width, 0, 0)
+						.tickSize(-this.width, 0, 0)
 						.tickFormat('')
 				);
 
@@ -257,7 +264,7 @@
 				});
 
 				var axis =  this.mixin("GuideLine",  guideLineG);
-
+				axis.trigger('scale', 'ordinalmma');
 				//axis.x('ordinal').y('linear');
 
 				//Draw Guides here
