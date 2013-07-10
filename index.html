@@ -38,8 +38,6 @@
 		// http://jsbin.com/isawar/4/edit
 		d3.chart("GuideLine", {
 			initialize: function() {
-			      var color = d3.scale.category10();
-
 			      var width = this.base.attr('width'),
 					height = this.base.attr('height');
 
@@ -99,12 +97,12 @@
 							chart.xGuide.call(
 								chart.xAxis
 									.tickSize(-height, 0, 0)
-									.tickFormat("")
+									.tickFormat('')
 							);
 							chart.yGuide.call(
 								chart.yAxis
 									.tickSize(-width, 0, 0)
-									.tickFormat("")
+									.tickFormat('')
 							);
 						}
 					}
