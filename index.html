@@ -46,14 +46,15 @@
 			      var width = this.base.attr('width'),
 					height = this.base.attr('height');
 
-			     	this.xScale = this.x('ordinal');
+			     	//this.xScale = this.x('ordinal');
+			     	this.x('ordinal');
 
 			     	// After this.xScale is being called, it will auto set the this._xScale variable
 			     	// console.log(this._xScale);
 
 			      this.xScale.rangeRoundBands([0, width], 0.1);
 
-			      this.yScale = this.y('linear');
+			      this.y('linear');
 
 			      this.yScale.range([height, 0]);
 
@@ -111,16 +112,14 @@
 				if (arguments.length === 0) { return this._xScale; }
 				this._xScale = scale;
 				this.xScale = this._scale(scale);
-				return this.xScale;
-				//return this;
+				return this;
 			},
 
 			y: function(scale) {
 				if (arguments.length === 0) { return this._yScale; }
 				this._yScale = scale;
 				this.yScale = this._scale(scale);
-				//return this;
-				return this.yScale;
+				return this;
 			},
 
 			drawGuides: function() {
