@@ -48,18 +48,19 @@
 
 				var self = this;
 
-				this.xScale = this.xScale || this.x('ordinal')._xScale;
-				this.yScale = this.yScale || this.y('linear')._yScale;
-				console.log('this.xScale: ', this.xScale);
-			     	// //this.xScale = this.x('ordinal');
+				this._x = (this._x) ? this._x : 'linear';
+				this._y = (this._y) ? this._y : 'linear';
 
-			     	this.on('scale', function(m){
-			     		console.log('m: ', m);
-			     		self.xScale = self.x('ordinal')._xScale;
-			     		self.render();
+				this.xScale = this.x(this._x, true)._xScale;
+				this.yScale = this.y(this._y, true)._yScale;
+
+			     	this.on('xscale', function(scale){
+			     		self.xScale = self._scale(scale);
 			     	});
-			     	// console.log('this.xScale: ', this.xScale);
-			     	this.render();
+
+			     	this.on('yscale', function(scale){
+			     		self.yScale = self._scale(scale);
+			     	});
 			},
 
 			render: function() {
@@ -119,15 +120,23 @@
 				});
 			},
 
-			x: function(scale) {
+			x: function(scale, internal) {
 				if (arguments.length === 0) { return this._xScale; }
-				this._xScale = this._scale(scale);
+				this._x = scale;
+
+				// Concept of 2nd arg, internal.
+				// By default, it is false, called trigger when called from outside of module, it will auto
+				// call the trigger scale for you. But when use in the internal module, it won't call any
+				// trigger scale function since it will set it by default for you
+				(internal) ? this._xScale = this._scale(scale) : this.trigger('xscale', scale);
 				return this;
 			},
 
-			y: function(scale) {
+			y: function(scale, internal) {
 				if (arguments.length === 0) { return this._yScale; }
-				this._yScale = this._scale(scale);
+
+				this._y = scale;
+				(internal) ? this._yScale = this._scale(scale) : this.trigger('yscale', scale);
 				return this;
 			},
 
@@ -264,8 +273,12 @@
 				});
 
 				var axis =  this.mixin("GuideLine",  guideLineG);
-				axis.trigger('scale', 'ordinalmma');
-				//axis.x('ordinal').y('linear');
+
+				// .x() could be chained, here is just for a demo,
+				// you have to call ordinal or any other to override the default behavior
+				// otherwise, it would assume to be 'linear', then have to manually call render() fn
+				// axis.render();
+				axis.x('ordinal').y('linear').render();
 
 				//Draw Guides here
 				axis.layer("guidline").on("enter", function(t) {
