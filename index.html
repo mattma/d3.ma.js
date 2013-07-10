@@ -92,21 +92,29 @@
 							var chart = this.chart();
 							chart.xAxisG.call( chart.xAxis);
 							chart.yAxisG.call( chart.yAxis);
-
-							//axis.tickSize([major[​[, minor], end]])
-							chart.xGuide.call(
-								chart.xAxis
-									.tickSize(-height, 0, 0)
-									.tickFormat('')
-							);
-							chart.yGuide.call(
-								chart.yAxis
-									.tickSize(-width, 0, 0)
-									.tickFormat('')
-							);
 						}
 					}
 				});
+			},
+
+			drawGuides: function() {
+			      var width = this.base.attr('width'),
+					height = this.base.attr('height');
+
+				this.xGuide.call(
+					this.xAxis
+						.tickSize(-height, 0, 0)
+						.tickFormat('')
+				);
+				//axis.tickSize([major[​[, minor], end]])
+
+				this.yGuide.call(
+					this.yAxis
+						.tickSize(-width, 0, 0)
+						.tickFormat('')
+				);
+
+				return this;
 			}
 		});
 
@@ -208,6 +216,13 @@
 				});
 
 				this.labels =  this.mixin("GuideLine",  guideLineG);
+
+				// Draw Guides here
+				var self = this.labels;
+				this.labels.layer("guidline").on("enter", function(t) {
+					self.drawGuides();
+				});
+
 				this.bars = this.mixin("BarChart", barsG);
 			}
 		});
