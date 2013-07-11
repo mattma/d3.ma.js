@@ -127,9 +127,20 @@
 			}
 		});
 
-		d3.chart("LabeledCirclesChart", {
+		d3.chart("FinalChart", {
 			initialize: function() {
-				var clip =  this.mixin("Clip",  this.base);
+
+                        var defsG = this.base.append("g").classed('defs', true).attr({
+                          'width':  '400px',
+                          'height': '500px'
+                        });
+				var clip =  this.mixin("Clip",  defsG);
+                        console.log('clip.box(): ', clip.box());
+                        console.log('clip.xy(): ', clip.xy());
+                        clip.box(600, 899);
+                        clip.xy(30, 50);
+                        console.log('clip.xy(): ', clip.xy());
+                        console.log('clip.box(): ', clip.box());
 
 				// TODO: Simplify the initialization part of the setting
 				var guideLineG = this.base.append("g").classed('guideline', true).attr({
@@ -169,7 +180,7 @@
 
 		var container = d3.ma.container('#vis').box(1400,500);
 
-		var canvas = container.canvas().chart("LabeledCirclesChart");
+		var canvas = container.canvas().chart("FinalChart");
 
    var data = [
       {
