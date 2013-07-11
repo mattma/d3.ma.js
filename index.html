@@ -139,10 +139,19 @@
 				// axis.render();
 				axis.x('ordinal').render();
 
+				axis.onData = function(){
+					axis.yAxis.tickFormat(d3.format(',.1f'));
+					axis.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
+
+					var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
+					axis.yScale.domain([ 0, maxY ]);
+				};
+
 				//Draw Guides here
-				axis.layer("guidline").on("enter", function(t) {
+				axis.onEnter = function(){
 					axis.drawGuides();
-				});
+				};
+
 
 				this.bars = this.mixin("BarChart", barsG);
 			}

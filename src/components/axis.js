@@ -46,17 +46,30 @@ d3.chart('Axis', {
 	// render() won't call by default, developer has to call it manually in each instance.
 	// The reason for that, it will avoid multiple rendering when switch the scale context
 	render: function() {
-		// After this.xScale is being called, it will auto set the this._xScale variable
-		// console.log(this._xScale);
-		this.xScale.rangeRoundBands([0, this.width], 0.1);
 
-		this.yScale.range([this.height, 0]);
+		switch(this._x) {
+			case 'linear' :
+				this.xScale.range([0, this.width]);
+			break;
+
+			case 'ordinal' :
+				this.xScale.rangeRoundBands([0, this.width], 0.1);
+			break;
+		}
+
+		switch(this._y) {
+			case 'linear' :
+				this.yScale.range([this.height, 0]);
+			break;
+
+			case 'ordinal' :
+				this.yScale.rangeRoundBands([this.height, 0], 0.1);
+			break;
+		}
 
 		this.xAxis = d3.svg.axis().scale(this.xScale).orient('bottom');
 
-		this.yAxis = d3.svg.axis().scale(this.yScale)
-						.orient("left")
-						.tickFormat(d3.format(',.1f'));
+		this.yAxis = d3.svg.axis().scale(this.yScale).orient("left")
 
 		this.xAxisG =  this.base.append('g').attr({
 			'class': 'x axis',
@@ -80,23 +93,31 @@ d3.chart('Axis', {
 			dataBind: function(data) {
 				var chart = this.chart();
 
-				chart.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
-
-				var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
-				chart.yScale.domain([ 0, maxY ]);
+				// Used onData to override any default behavior for
+				// xScale, yScale, xAxis, yAxis etc.
+				if(chart.onData) { chart.onData(); }
 
 				return this.selectAll('g').data(data);
 			},
 
 			insert: function(){
+				var chart = this.chart();
+				if(chart.onInsert) { chart.onInsert(); }
 				return this.append('g');
 			},
 
 			events: {
-				"enter": function() {
+				'enter': function() {
 					var chart = this.chart();
+
+					//Acutally draw the xAxis, yAxis on the screen
 					chart.xAxisG.call( chart.xAxis);
 					chart.yAxisG.call( chart.yAxis);
+
+					// Any additional onEnter behavior
+					// would add here,
+					// E.G, draw guides fn could be called here
+					if(chart.onEnter) { chart.onEnter(); }
 				}
 			}
 		});
