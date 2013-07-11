@@ -133,12 +133,6 @@
 
 				var axis =  this.mixin("Axis",  guideLineG);
 
-				// .x(), .y() could be chained, here is just for a demo,
-				// you have to call ordinal or any other to override the default behavior
-				// otherwise, it would assume to be 'linear', then have to manually call render() fn
-				// axis.render();
-				axis.x('ordinal').render();
-
 				axis.onData = function(){
 					axis.yAxis.tickFormat(d3.format(',.1f'));
 					axis.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
@@ -151,6 +145,9 @@
 				axis.onEnter = function(){
 					axis.drawGuides();
 				};
+
+				axis.x('ordinal').render();
+
 
 
 				this.bars = this.mixin("BarChart", barsG);

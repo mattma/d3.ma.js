@@ -2,13 +2,6 @@
 	E.G:
 		var axis =  this.mixin("GuideLine",  guideLineG);
 
-		// .x(), .y() could be chained, here is just for a demo,
-		// you have to call ordinal or any other (current only support linear and ordinal) to override the default scale
-		// otherwise, it would assume to be 'linear'
-		// dev have to always manually call render() fn to draw the axis after you set up the good defaults
-
-		axis.x('ordinal').render();
-
 		// As long as you define, onData, onInsert, onEnter, it would be called in the
 		// appropriate section, and auto render the fn for you. You just need to define the fn
 		// Need to include the custom behavior to those fn block
@@ -24,6 +17,17 @@
 		axis.layer("guidline").on("enter", function(t) {
 			axis.drawGuides();
 		});
+
+		// .x(), .y() could be chained, here is just for a demo,
+		// you have to call ordinal or any other (current only support linear and ordinal) to override the default scale
+		// otherwise, it would assume to be 'linear'
+		// dev have to always manually call render() fn to draw the axis after you set up the good defaults
+
+		axis.x('ordinal').render();
+
+		Note: render() is always the last fn to call. Always the last one.
+			The goal here, is to define all the chart specified behavior, Once you
+			have all the logic in place, call render and simply draw the chart
  */
 d3.chart('Axis', {
 	initialize: function() {
