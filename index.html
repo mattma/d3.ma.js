@@ -12,27 +12,27 @@
 
 		<script src="src/components/axis.js"></script>
 		<style>
-		svg {
-			font: 10px sans-serif;
-		}
-		.line {
-			fill: none; stroke: #000; stroke-width: 1.5px;
-		}
-		.axis path, .axis line {
-			fill: none; stroke: #000; shape-rendering: crispEdges;
-		}
-		#vis {
-			width: 1400px;
-			height: 600px;
-		}
+			svg {
+				font: 10px sans-serif;
+			}
+			.line {
+				fill: none; stroke: #000; stroke-width: 1.5px;
+			}
+			.axis path, .axis line {
+				fill: none; stroke: #000; shape-rendering: crispEdges;
+			}
+			#vis {
+				width: 1400px;
+				height: 600px;
+			}
 
-		.guides .tick {
-			stroke: lightgrey;
-			opacity: 0.5;
-		}
-		.guides path {
-			stroke-width: 0;
-		}
+			.guides .tick {
+				stroke: lightgrey;
+				opacity: 0.5;
+			}
+			.guides path {
+				stroke-width: 0;
+			}
 		</style>
 </head>
 <body>
@@ -131,6 +131,7 @@
 			initialize: function() {
 				var clip =  this.mixin("Clip",  this.base);
 
+				// TODO: Simplify the initialization part of the setting
 				var guideLineG = this.base.append("g").classed('guideline', true).attr({
 					'width': this.base.attr('width'),
 					'height': this.base.attr('height')
