@@ -56,12 +56,6 @@
 			      this.xScale = d3.scale.ordinal()
 			                                .rangeRoundBands([0, width], 0.1);
 
-			      var xAxis = d3.svg.axis().scale(this.xScale).orient("bottom");
-
-			      var yAxis = d3.svg.axis().scale(this.yScale)
-			                                .orient("left")
-			                                .tickFormat(d3.format(',.1f'));
-
 				// create a layer of circles that will go into
 				// a new group element on the base of the chart
 				this.layer("bars", this.base, {
