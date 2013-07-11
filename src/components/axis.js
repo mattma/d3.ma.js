@@ -8,6 +8,11 @@
 		// dev have to always manually call render() fn to draw the axis after you set up the good defaults
 
 		axis.x('ordinal').render();
+
+		//Draw Guides here
+		axis.layer("guidline").on("enter", function(t) {
+			axis.drawGuides();
+		});
  */
 d3.chart("Axis", {
 	initialize: function() {
