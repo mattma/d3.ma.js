@@ -14,9 +14,10 @@
 			axis.drawGuides();
 		});
  */
-d3.chart("Axis", {
+d3.chart('Axis', {
 	initialize: function() {
-				this.width = this.base.attr('width');
+
+		this.width = this.base.attr('width');
 		this.height = this.base.attr('height');
 
 		var self = this;
@@ -33,49 +34,49 @@ d3.chart("Axis", {
 		// called from this.x() and this.y()
 		// when an instance called x() and y(), it will rebuild the context of scale
 		// and return the new xScale and yScale
-				this.on('xscale', function(scale){
-					self.xScale = self._scale(scale);
-				});
+		this.on('xscale', function(scale){
+			self.xScale = self._scale(scale);
+		});
 
-				this.on('yscale', function(scale){
-					self.yScale = self._scale(scale);
-				});
+		this.on('yscale', function(scale){
+			self.yScale = self._scale(scale);
+		});
 	},
 
 	// render() won't call by default, developer has to call it manually in each instance.
 	// The reason for that, it will avoid multiple rendering when switch the scale context
 	render: function() {
-				// After this.xScale is being called, it will auto set the this._xScale variable
-				// console.log(this._xScale);
-				this.xScale.rangeRoundBands([0, this.width], 0.1);
+		// After this.xScale is being called, it will auto set the this._xScale variable
+		// console.log(this._xScale);
+		this.xScale.rangeRoundBands([0, this.width], 0.1);
 
-				this.yScale.range([this.height, 0]);
+		this.yScale.range([this.height, 0]);
 
-		this.xAxis = d3.svg.axis().scale(this.xScale).orient("bottom");
+		this.xAxis = d3.svg.axis().scale(this.xScale).orient('bottom');
 
 		this.yAxis = d3.svg.axis().scale(this.yScale)
 						.orient("left")
 						.tickFormat(d3.format(',.1f'));
 
-							this.xAxisG =  this.base.append('g').attr({
-							'class': 'x axis',
-							'transform': 'translate(0,' + this.height + ')'
-				});
+		this.xAxisG =  this.base.append('g').attr({
+			'class': 'x axis',
+			'transform': 'translate(0,' + this.height + ')'
+		});
 
-				this.yAxisG = this.base.append('g').attr({
-							'class': 'y axis'
-				});
+		this.yAxisG = this.base.append('g').attr({
+			'class': 'y axis'
+		});
 
-		this.xGuide = this.base.append("g")
-			.attr("class", "guides")
-			.attr("transform", "translate(0," + this.height + ")");
+		this.xGuide = this.base.append('g')
+			.attr('class', 'guides')
+			.attr('transform', 'translate(0,' + this.height + ')');
 
 		//The last thing that is included in the code to draw the grid lines is the instruction to suppress printing any label for the ticks;
-		this.yGuide = this.base.append("g")
-			.attr("class", "guides");
+		this.yGuide = this.base.append('g')
+			.attr('class', 'guides');
 
 		// create a labels layer
-		this.layer("guidline", this.base, {
+		this.layer('guidline', this.base, {
 			dataBind: function(data) {
 				var chart = this.chart();
 
