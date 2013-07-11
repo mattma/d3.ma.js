@@ -39,21 +39,35 @@
 		// http://jsbin.com/isawar/4/edit
 
 		/*
-			internal, _xScale, _yScale are set dynamicially, after calling x() and y(), save the String representation of the current scale.
+			E.G:
+				var axis =  this.mixin("GuideLine",  guideLineG);
+
+				// .x(), .y() could be chained, here is just for a demo,
+				// you have to call ordinal or any other (current only support linear and ordinal) to override the default scale
+				// otherwise, it would assume to be 'linear'
+				// dev have to always manually call render() fn to draw the axis after you set up the good defaults
+
+				axis.x('ordinal').render();
 		 */
-		d3.chart("GuideLine", {
+		d3.chart("Axis", {
 			initialize: function() {
 			      this.width = this.base.attr('width');
 				this.height = this.base.attr('height');
 
 				var self = this;
 
+				// this._x, this._y is the internal state to maintain the current scale in String format
+				// by default, it is using linear
 				this._x = (this._x) ? this._x : 'linear';
 				this._y = (this._y) ? this._y : 'linear';
 
+				// trigger to retrieve the current xScale and yScale
 				this.xScale = this.x(this._x, true)._xScale;
 				this.yScale = this.y(this._y, true)._yScale;
 
+				// called from this.x() and this.y()
+				// when an instance called x() and y(), it will rebuild the context of scale
+				// and return the new xScale and yScale
 			     	this.on('xscale', function(scale){
 			     		self.xScale = self._scale(scale);
 			     	});
@@ -63,6 +77,8 @@
 			     	});
 			},
 
+			// render() won't call by default, developer has to call it manually in each instance.
+			// The reason for that, it will avoid multiple rendering when switch the scale context
 			render: function() {
 			     	// After this.xScale is being called, it will auto set the this._xScale variable
 			     	// console.log(this._xScale);
@@ -125,16 +141,15 @@
 				this._x = scale;
 
 				// Concept of 2nd arg, internal.
-				// By default, it is false, called trigger when called from outside of module, it will auto
-				// call the trigger scale for you. But when use in the internal module, it won't call any
-				// trigger scale function since it will set it by default for you
+				// default: false;  when an instance called x() and y(), basically outside of the constructor
+				// module, it will auto call trigger scale for you. But when use in the internal module, it won't call any
+				// trigger scale function since it will set it by default for you. Here is linear scale
 				(internal) ? this._xScale = this._scale(scale) : this.trigger('xscale', scale);
 				return this;
 			},
 
 			y: function(scale, internal) {
 				if (arguments.length === 0) { return this._yScale; }
-
 				this._y = scale;
 				(internal) ? this._yScale = this._scale(scale) : this.trigger('yscale', scale);
 				return this;
@@ -272,13 +287,13 @@
 					'height': this.base.attr('height')
 				});
 
-				var axis =  this.mixin("GuideLine",  guideLineG);
+				var axis =  this.mixin("Axis",  guideLineG);
 
-				// .x() could be chained, here is just for a demo,
+				// .x(), .y() could be chained, here is just for a demo,
 				// you have to call ordinal or any other to override the default behavior
 				// otherwise, it would assume to be 'linear', then have to manually call render() fn
 				// axis.render();
-				axis.x('ordinal').y('linear').render();
+				axis.x('ordinal').render();
 
 				//Draw Guides here
 				axis.layer("guidline").on("enter", function(t) {
