@@ -9,7 +9,18 @@
 
 		axis.x('ordinal').render();
 
-		//Draw Guides here
+		// As long as you define, onData, onInsert, onEnter, it would be called in the
+		// appropriate section, and auto render the fn for you. You just need to define the fn
+		// Need to include the custom behavior to those fn block
+		axis.onData = function() { }
+		axis.onInsert = function() { }
+		axis.onEnter = function() { }
+
+		//Draw Guides here, perfer the first method
+		axis.onEnter = function(){
+			axis.drawGuides();
+		};
+		or use :
 		axis.layer("guidline").on("enter", function(t) {
 			axis.drawGuides();
 		});
