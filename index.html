@@ -8,6 +8,7 @@
 		<script src="libs/d3.chart.js"></script>
 
 		<script src="src/common/container.js"></script>
+		<script src="src/common/clippath.js"></script>
 
 		<script src="src/components/axis.js"></script>
 		<style>
@@ -128,6 +129,7 @@
 
 		d3.chart("LabeledCirclesChart", {
 			initialize: function() {
+				var clip =  this.mixin("Clip",  this.base);
 
 				var guideLineG = this.base.append("g").classed('guideline', true).attr({
 					'width': this.base.attr('width'),
@@ -138,6 +140,7 @@
 					'width': this.base.attr('width'),
 					'height': this.base.attr('height')
 				});
+
 
 				var axis =  this.mixin("Axis",  guideLineG);
 
@@ -160,6 +163,7 @@
 
 				this.bars = this.mixin("BarChart", barsG);
 			}
+
 		});
 
 		var container = d3.ma.container('#vis').box(1400,500);
