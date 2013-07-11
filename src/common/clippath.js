@@ -1,3 +1,33 @@
+/*
+For reusable components:
+	<defs>
+		<clipPath id='clip-342'>
+			<rect width="0" height="0" x='0' y='0' />
+		</clipPath>
+	</defs>
+
+	usage:  <g clip-path="url(#clip-342)">
+
+E.G
+	var clip =  this.mixin("Clip",  this.base);
+	clip.box(600, 500).xy(400, 50);
+
+	var barsG = this.base.append("g").classed('bars', true).attr({
+		'width': this.base.attr('width'),
+		'height': this.base.attr('height'),
+            'clip-path': clip.url()
+	});
+
+APIs:
+
+	id() will set/get the custom clip id attribute
+	url() is ONLY a getting, quickly return a url(clip-342) clip-path attribute ready format e.g  clip.url()
+
+	box() will set/get rect width and height
+	xy() will set/get rect x and y coordinates
+
+ */
+
 d3.chart('Clip', {
 	initialize: function() {
 
@@ -8,18 +38,19 @@ d3.chart('Clip', {
 		this.height = this.base.attr('height') || 0;
 		this.x = 0;
 		this.y = 0;
-		this.clipPath = defs.append('clippath');
+
+		this.clipPath = defs.append('clipPath');
 		this.rect = this.clipPath.append('rect');
-		this.cid = 'clippath-' + random;
+		this.cid = 'clip-' + random;
 
 		// clipPath need to have a custom id
 		this.clipPath.attr('id', this.cid);
 		this.rect.attr({
 			'width': this.width,
-			'height': this.height
+			'height': this.height,
+			'x': this.x,
+			'y': this.y
 		});
-
-		// define rect width, height, x, y
 	},
 
 	// Setter/Getter for the custom id string
@@ -28,6 +59,13 @@ d3.chart('Clip', {
 		this.cid = _id;
 		this.clipPath.attr('id', _id);
 		return this;
+	},
+
+	// This is a getter fn ONLY, quick retrieve the id
+	// output it in the clip-path: 'url(#clip-342)' fashion
+	// url(#clip-342) is the return value
+	url: function() {
+		return 'url(#'+this.id()+')';
 	},
 
 	_width: function(_width) {
