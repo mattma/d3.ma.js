@@ -40,6 +40,14 @@
 	<script>
 		// http://jsbin.com/isawar/4/edit
 
+		// TODO: Move the onData, onInsert, onEnter, etc
+		// to the prototype level, so do not need to defined in each one
+		// d3.selection.prototype.layer = function(options) {
+		// 	//d3.selection.prototype.layer.call(this, options);
+
+		// 	return this;
+		// };
+
 		// define a new chart type: a circle chart
 		d3.chart("BarChart", {
 
