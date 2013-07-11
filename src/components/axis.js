@@ -82,8 +82,8 @@ d3.chart('Axis', {
 
 				chart.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
 
-						var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
-						chart.yScale.domain([ 0, maxY ]);
+				var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
+				chart.yScale.domain([ 0, maxY ]);
 
 				return this.selectAll('g').data(data);
 			},
