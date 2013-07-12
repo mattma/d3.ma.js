@@ -190,4 +190,32 @@ d3.chart('Axis', {
 			break;
 		}
 	}
+
+	// _width: function(_width) {
+	// 	if (arguments.length === 0) { return this.width; }
+	// 	this.width = _width;
+	// 	this.attr('width', _width);
+	// 	return this;
+	// },
+
+	// _height: function(_height) {
+	// 	if (arguments.length === 0) { return this.height; }
+	// 	this.height = _height;
+	// 	this.attr('height', _height);
+	// 	return this;
+	// },
+
+	// // Recommanded to use box() to get/set the rect size,
+	// // rarely use _width() and _height() fn to set individual sizes
+	// box: function(_width, _height) {
+	// 	if (arguments.length === 0) {
+	// 		return {
+	// 			'width': this.width,
+	// 			'height': this.height
+	// 		}
+	// 	}
+	// 	this._width(_width);
+	// 	(arguments.length === 1) ?  this._height(_width) :  this._height(_height);
+	// 	return this;
+	// }
 });

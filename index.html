@@ -43,6 +43,11 @@
 	<script>
 		// http://jsbin.com/isawar/4/edit
 
+
+            // TODO:
+            // Also update the box(), width(), height()
+            //update the scale width and height, bar width and height for resize service
+
 		// TODO: Move the onData, onInsert, onEnter, etc
 		// to the prototype level, so do not need to defined in each one
 		// d3.selection.prototype.layer = function(options) {
@@ -166,8 +171,6 @@
 
 				axis.x('ordinal').render();
 
-
-
 				this.bars = this.mixin("BarChart", barsG);
 			}
 
@@ -177,7 +180,24 @@
 
 		var canvas = container.canvas().chart("FinalChart");
 
-      console.log('d3.ma.windowSize(): ', d3.ma.windowSize());
+           // TODO: working on the window resize and resize the graph
+           console.log('d3.ma.windowSize().width: ', d3.ma.windowSize().width);
+          d3.ma.onResize( function() {
+              container.box(
+               d3.ma.windowSize().width,
+              d3.ma.windowSize().height
+              );
+
+              d3.select('.guideline').attr({
+                  "width":    d3.ma.windowSize().width,
+                   "height":  d3.ma.windowSize().height
+              });
+
+              d3.select('.bars').attr({
+                  "width":  d3.ma.windowSize().width,
+                   "height":  d3.ma.windowSize().height
+              });
+          });
 
    var data = [
       {

@@ -30,7 +30,7 @@ d3.ma.windowSize = function() {
 
 // Easy way to bind multiple functions to window.onresize
 // TODO: give a way to remove a function after its bound, other than removing all of them
-d3.ma.windowResize = function(fun){
+d3.ma.onResize = function(fun){
 	var oldresize = window.onresize;
 
 	window.onresize = function(e) {
