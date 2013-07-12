@@ -50,3 +50,110 @@ http://www.w3.org/TR/SVGTiny12/coords.html#ViewBoxAttribute
 
  typically when using the 'viewBox' attribute, it is desirable that the graphics stretch to fit non-uniformly to take up the entire viewport. In other cases, it is desirable that uniform scaling be used for the purposes of preserving the aspect ratio of the graphics.
  */
+
+
+d3.ma.tooltip = function() {
+	var tooltip = {};
+
+	var tooltipContainer = document.createElement('div');
+		tooltipContainer.className = 'nvtooltip';
+
+	console.log(tooltipContainer);
+
+	tooltip.show = function(pos, content, parentContainer, classes){
+
+		console.log('parentContainer: ', parentContainer);
+
+		var body = parentContainer;
+		if ( !parentContainer || parentContainer.tagName.match(/g|svg/i)) {
+			//If the parent element is an SVG element, place tooltip in the <body> element.
+			body = document.getElementsByTagName('body')[0];
+		}
+
+		tooltipContainer.innerHTML = content;
+		tooltipContainer.style.left = 0;
+		tooltipContainer.style.top = 0;
+		tooltipContainer.style.opacity = 0;
+
+		body.appendChild(tooltipContainer);
+
+		var height = parseInt(tooltipContainer.offsetHeight),
+			width = parseInt(tooltipContainer.offsetWidth),
+			windowWidth = d3.ma.windowSize().width,
+			windowHeight = d3.ma.windowSize().height,
+			scrollTop = window.scrollY,
+			scrollLeft = window.scrollX,
+			left, top;
+
+
+		var dist = 20;
+
+		windowHeight = window.innerWidth >= document.body.scrollWidth ? windowHeight : windowHeight - 16;
+		windowWidth = window.innerHeight >= document.body.scrollHeight ? windowWidth : windowWidth - 16;
+
+		var tooltipTop = function ( Elem ) {
+			var offsetTop = top;
+			console.log('offsetTop: ', offsetTop);
+			// do {
+			// 	if( !isNaN( Elem.offsetTop ) ) {
+			// 		offsetTop += (Elem.offsetTop);
+			// 	}
+			// }
+			// while(
+			// 	Elem = Elem.offsetParent;
+			// );
+			return offsetTop;
+		};
+
+		var tooltipLeft = function ( Elem ) {
+			var offsetLeft = left;
+			console.log('Elem: ', Elem);
+			console.log('Elem.offsetLeft: ', Elem.offsetLeft);
+			console.log('Elem.offsetParent: ', Elem.offsetParent);
+			// do {
+			// 	if( !isNaN( Elem.offsetLeft ) ) {
+			// 		offsetLeft += (Elem.offsetLeft);
+			// 	}
+			// } while(
+			// 	Elem = Elem.offsetParent;
+			// );
+			return offsetLeft;
+		};
+
+		left = pos[0] - ( width / 2);
+		top = pos[1] - height - dist;
+
+		// var m = d3.mouse(tooltipContainer);
+
+		// 	console.log('m: ', m);
+
+		// var tLeft = tooltipLeft(tooltipContainer);
+
+		// console.log('left: ', left);
+		// console.log('tLeft: ', tLeft);
+		// var tTop = tooltipTop(tooltipContainer);
+		// if (scrollTop > tTop) top = scrollTop;
+
+		// if (tLeft < scrollLeft) left = scrollLeft + 5;
+		// if (tLeft + width > windowWidth) left = left - width/2 + 5;
+
+		tooltipContainer.style.left = left+'px';
+		tooltipContainer.style.top = top+'px';
+		tooltipContainer.style.opacity = 1;
+		tooltipContainer.style.position = 'absolute'; //fix scroll bar issue
+		tooltipContainer.style.pointerEvents = 'none'; //fix scroll bar issue
+
+		console.log('calling show fn');
+		return tooltip;
+	};
+
+	tooltip.close = function(){
+		console.log("calling close fn");
+		return tooltip;
+	};
+
+
+	var dispatch = d3.dispatch('tooltipShow', 'tooltipHide')
+
+	return tooltip;
+};

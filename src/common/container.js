@@ -127,7 +127,7 @@ d3.ma.container = function(selector) {
 		//The Graph will auto scale itself when resize
 		d3.ma.onResize( function() {
 
-			var windowWidth = d3.ma.windowSize().width
+			var windowWidth = d3.ma.windowSize().width;
 
 			if ( windowWidth < containerW ) {
 				container.attr({

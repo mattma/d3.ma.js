@@ -1,57 +1,88 @@
 <!doctype html>
 <html lang="en">
 <head>
-		<meta charset="UTF-8">
-		<title>D3 Test</title>
-		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-		<script src="libs/d3.v3.js"></script>
-		<script src="libs/d3.chart.js"></script>
+	<meta charset="UTF-8">
+	<title>D3 Test</title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<script src="libs/d3.v3.js"></script>
+	<script src="libs/d3.chart.js"></script>
 
 
-            <script src="src/common/core.js"></script>
-            <script src="src/common/utils.js"></script>
-            <script src="src/common/container.js"></script>
-            <script src="src/common/clippath.js"></script>
+	<script src="src/common/core.js"></script>
+	<script src="src/common/utils.js"></script>
+	<script src="src/common/container.js"></script>
+	<script src="src/common/clippath.js"></script>
 
-            <script src="src/components/axis.js"></script>
+	<script src="src/components/axis.js"></script>
 
 <!--
-		<script src="build/d3.ma.min.js"></script>
-    -->
-		<style>
-			svg {
-				font: 10px sans-serif;
-			}
-			.line {
-				fill: none; stroke: #000; stroke-width: 1.5px;
-			}
-			.axis path, .axis line {
-				fill: none; stroke: #000; shape-rendering: crispEdges;
-			}
-			#vis {
-				width: 1400px;
-				height: 600px;
-			}
+	<script src="build/d3.ma.min.js"></script>
+-->
+	<style>
+		svg {
+			font: 10px sans-serif;
+		}
+		.line {
+			fill: none; stroke: #000; stroke-width: 1.5px;
+		}
+		.axis path, .axis line {
+			fill: none; stroke: #000; shape-rendering: crispEdges;
+		}
+		#vis {
+			width: 1400px;
+			height: 600px;
+		}
 
-			.guides .tick {
-				stroke: lightgrey;
-				opacity: 0.5;
-			}
-			.guides path {
-				stroke-width: 0;
-			}
+		.guides .tick {
+			stroke: lightgrey;
+			opacity: 0.5;
+		}
+		.guides path {
+			stroke-width: 0;
+		}
+
+		/********************
+		 * TOOLTIP CSS
+		 */
+
+		.nvtooltip {
+			position: absolute;
+			background-color: rgba(255,255,255,0.75);
+			padding: 1px;
+			border: 1px solid rgba(0,0,0,.2);
+			z-index: 10000;
+
+			font-family: Arial;
+			font-size: 13px;
+			-moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+			-webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+			box-shadow: 0 5px 10px rgba(0,0,0,.2);
+
+			-webkit-border-radius: 6px;
+			-moz-border-radius: 6px;
+			border-radius: 6px;
+
+			pointer-events: none;
+
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
 		</style>
 </head>
 <body>
-	 <div id="vis"></div>
+	<div id="vis"></div>
 
 	<script>
 		// http://jsbin.com/isawar/4/edit
 
 
-            // TODO:
-            // Also update the box(), width(), height()
-            //update the scale width and height, bar width and height for resize service
+		// TODO:
+		// Also update the box(), width(), height()
+		//update the scale width and height, bar width and height for resize service
 
 		// TODO: Move the onData, onInsert, onEnter, etc
 		// to the prototype level, so do not need to defined in each one
@@ -66,16 +97,16 @@
 
 			initialize: function() {
 
-			      var color = d3.scale.category10();
+				var color = d3.scale.category10();
 
-     			      var width = this.base.attr('width'),
+				var width = this.base.attr('width'),
 					height = this.base.attr('height');
 
-			      this.yScale = d3.scale.linear()
-			                                .range([height, 0]);
+				this.yScale = d3.scale.linear()
+								.range([height, 0]);
 
-			      this.xScale = d3.scale.ordinal()
-			                                .rangeRoundBands([0, width], 0.1);
+				this.xScale = d3.scale.ordinal()
+								.rangeRoundBands([0, width], 0.1);
 
 				// create a layer of circles that will go into
 				// a new group element on the base of the chart
@@ -88,11 +119,10 @@
 
 						chart.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
 
-					      var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
-					      chart.yScale.domain([ 0, maxY ]);
+						var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
+						chart.yScale.domain([ 0, maxY ]);
 
-						return this.selectAll(".group")
-							.data(data);
+						return this.selectAll(".group").data(data);
 					},
 
 					// insert actual bars
@@ -108,14 +138,26 @@
 						"enter": function() {
 							var chart = this.chart();
 
-							this.append('rect').attr({
-						            'x': function(d, i) { return chart.xScale(d.label); },
-						            'y': function(d) { return chart.yScale(d.value); },
-						            'width': function(d) { return chart.xScale.rangeBand() ; },
-						            'height': function(d) { return height - chart.yScale(d.value); },
-						            'fill': function(d) { return color(d.value); },
-                                                'opacity': '0.8'
-						        });
+							var rect = this.append('rect');
+
+							rect.attr({
+								'x': function(d, i) { return chart.xScale(d.label); },
+								'y': function(d) { return chart.yScale(d.value); },
+								'width': function(d) { return chart.xScale.rangeBand() ; },
+								'height': function(d) { return height - chart.yScale(d.value); },
+								'fill': function(d) { return color(d.value); },
+								'opacity': '0.8'
+							});
+
+							rect.on('mouseover', function(d, i){
+								// value: getY(d,i),
+								// point: d,
+								// series: data[d.series],
+								// pos: [x(getX(d,i)) + (x.rangeBand() * (d.series + .5) / data.length), y(getY(d,i))],  // TODO: Figure out why the value appears to be shifted
+								// pointIndex: i,
+								// seriesIndex: d.series,
+								// e: d3.event
+							});
 						}
 						// // then transition them to a radius of 5 and change
 						// // their fill to blue
@@ -143,9 +185,9 @@
 		d3.chart("FinalChart", {
 			initialize: function() {
 
-                        // Used for the clipPath object
+				// Used for the clipPath object
 				// var clip =  this.mixin("Clip",  this.base);
-    //                     clip.box(600, 500).xy(400, 50);
+				// clip.box(600, 500).xy(400, 50);
 
 				// TODO: Simplify the initialization part of the setting
 				var guideLineG = this.base.append("g").classed('guideline', true).attr({
@@ -156,7 +198,7 @@
 				var barsG = this.base.append("g").classed('bars', true).attr({
 					'width': this.base.attr('width'),
 					'height': this.base.attr('height')
-                              //'clip-path': clip.url()
+					//'clip-path': clip.url()
 				});
 
 
@@ -177,50 +219,59 @@
 
 				axis.x('ordinal').render();
 
-				this.bars = this.mixin("BarChart", barsG);
+				var bars = this.mixin("BarChart", barsG);
+
+				var tt = d3.ma.tooltip();
+
+				tt.show([30, 100], 'hello', d3.select('#vis')[0][0]);
+
+			 // tt.close();
+
 			}
 
 		});
 
 		var container = d3.ma.container('#vis');
-            container.resize().box(1400, 600);
 
-          var canvas = container.canvas().chart("FinalChart");
+		container.resize().box(1400, 600);
 
-   var data = [
-      {
-        "label" : "A" ,
-        "value" : 29.765957771107
-      } ,
-      {
-        "label" : "B" ,
-        "value" : 0
-      } ,
-      {
-        "label" : "C" ,
-        "value" : 32.807804682612
-      } ,
-      {
-        "label" : "D" ,
-        "value" : 196.45946739256
-      } ,
-      {
-        "label" : "E" ,
-        "value" : 0.19434030906893
-      } ,
-      {
-        "label" : "F" ,
-        "value" : 98.079782601442
-      } ,
-      {
-        "label" : "G" ,
-        "value" : 13.925743130903
-      } ,
-      {
-        "label" : "H" ,
-        "value" : 5.1387322875705
-      }
-    ];
+		var canvas = container.canvas().chart("FinalChart");
+
+		var data = [
+			{
+				"label" : "A" ,
+				"value" : 29.765957771107
+			} ,
+			{
+				"label" : "B" ,
+				"value" : 0
+			} ,
+			{
+				"label" : "C" ,
+				"value" : 32.807804682612
+			} ,
+			{
+				"label" : "D" ,
+				"value" : 196.45946739256
+			} ,
+			{
+				"label" : "E" ,
+				"value" : 0.19434030906893
+			} ,
+			{
+				"label" : "F" ,
+				"value" : 98.079782601442
+			} ,
+			{
+				"label" : "G" ,
+				"value" : 13.925743130903
+			} ,
+			{
+				"label" : "H" ,
+				"value" : 5.1387322875705
+			}
+		];
+
 		//render it with some data
 		canvas.draw(data);
 
