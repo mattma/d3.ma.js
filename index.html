@@ -7,12 +7,17 @@
 		<script src="libs/d3.v3.js"></script>
 		<script src="libs/d3.chart.js"></script>
 
+
             <script src="src/common/core.js"></script>
             <script src="src/common/utils.js"></script>
-		<script src="src/common/container.js"></script>
-		<script src="src/common/clippath.js"></script>
+            <script src="src/common/container.js"></script>
+            <script src="src/common/clippath.js"></script>
 
-		<script src="src/components/axis.js"></script>
+            <script src="src/components/axis.js"></script>
+
+<!--
+		<script src="build/d3.ma.min.js"></script>
+    -->
 		<style>
 			svg {
 				font: 10px sans-serif;
@@ -108,7 +113,8 @@
 						            'y': function(d) { return chart.yScale(d.value); },
 						            'width': function(d) { return chart.xScale.rangeBand() ; },
 						            'height': function(d) { return height - chart.yScale(d.value); },
-						            'fill': function(d) { return color(d.value); }
+						            'fill': function(d) { return color(d.value); },
+                                                'opacity': '0.8'
 						        });
 						}
 						// // then transition them to a radius of 5 and change
