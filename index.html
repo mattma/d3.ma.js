@@ -172,32 +172,30 @@
 				axis.x('ordinal').render();
 
 				this.bars = this.mixin("BarChart", barsG);
+
+                    // TODO: working on the window resize and resize the graph
+                      // d3.ma.onResize( function() {
+                      //     d3.select('#vis svg').attr({
+                      //          'width': d3.ma.windowSize().width,
+                      //          'height': d3.ma.windowSize().height
+                      //     });
+
+                      //     // d3.select('.guideline').attr({
+                      //     //     "width":    d3.ma.windowSize().width,
+                      //     //      "height":  d3.ma.windowSize().height
+                      //     // });
+                      // });
 			}
 
 		});
 
-		var container = d3.ma.container('#vis').box(1400,500);
+		var container = d3.ma.container('#vis');
 
-		var canvas = container.canvas().chart("FinalChart");
-
-           // TODO: working on the window resize and resize the graph
+            //container.box(d3.ma.windowSize().width,d3.ma.windowSize().height);
            console.log('d3.ma.windowSize().width: ', d3.ma.windowSize().width);
-          d3.ma.onResize( function() {
-              container.box(
-               d3.ma.windowSize().width,
-              d3.ma.windowSize().height
-              );
+            container.box(1400, 600);
 
-              d3.select('.guideline').attr({
-                  "width":    d3.ma.windowSize().width,
-                   "height":  d3.ma.windowSize().height
-              });
-
-              d3.select('.bars').attr({
-                  "width":  d3.ma.windowSize().width,
-                   "height":  d3.ma.windowSize().height
-              });
-          });
+          var canvas = container.canvas().chart("FinalChart");
 
    var data = [
       {

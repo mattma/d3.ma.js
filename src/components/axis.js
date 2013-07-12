@@ -32,8 +32,8 @@
 d3.chart('Axis', {
 	initialize: function() {
 
-		this.width = this.base.attr('width');
-		this.height = this.base.attr('height');
+		this.width = this.base.attr('width') || 1;
+		this.height = this.base.attr('height') || 1;
 
 		var self = this;
 

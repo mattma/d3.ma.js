@@ -28,7 +28,19 @@ d3.ma.container = function(selector) {
 		container = selection.append('svg'),  // Create container, append svg element to the selection
 		// Create a new group element append to svg
 		// Set the canvas layout with a good amount of offset, has canvas class for easy targeting
-		g = container.append('g').classed('canvas', true);
+		g = container.append('g').classed('canvas', true),
+
+		// http://www.w3.org/TR/SVGTiny12/coords.html#PreserveAspectRatioAttribute
+		aspectRatio = 'xMidYMid',
+		scaleRatio = containerW / containerH;
+
+	// var aspect = 1400 / 600;
+	// // TODO: working on the window resize and resize the graph
+	// d3.ma.onResize( function() {
+	// 	var targetWidth = d3.ma.windowSize().width;
+	// 	container.attr("width", targetWidth);
+	// 	container.attr("height", targetWidth / aspect);
+	// });
 
 	var canvasW = container.canvasW = function(_width, boxCalled) {
 		if (!arguments.length) { return g.attr('width'); }
@@ -48,8 +60,8 @@ d3.ma.container = function(selector) {
 		if(!arguments.length) {
 			var m = container.margin();
 			return {
-				'containerWidth': canvasW() + m.left + m.right,
-				'containerHeight': canvasH() + m.top + m.bottom
+				'containerWidth': +canvasW() + (+m.left) + (+m.right),
+				'containerHeight': +canvasH() + (+m.top) + (+m.bottom)
 			};
 		}
 
@@ -61,8 +73,15 @@ d3.ma.container = function(selector) {
 
 		container.attr({
 			'width': _width,
-			'height': h
+			'height': h,
+			'viewBox': '0 0 '+ _width + ' ' + h,
+			'preserveAspectRatio': aspectRatio
 		});
+
+		scaleRatio = _width / h;
+
+		containerW = _width;
+		containerH = h;
 
 		gTransform();
 
@@ -82,6 +101,13 @@ d3.ma.container = function(selector) {
 		return container;
 	};
 
+	container.ratio = function(_ratio){
+		if(!arguments.length) { return aspectRatio; }
+		aspectRatio = _ratio;
+		container.attr('preserveAspectRatio', _ratio);
+		return container;
+	};
+
 	// Return the canvas object for easy chaining
 	container.canvas = function(){
 		return container.select('g');
@@ -92,9 +118,30 @@ d3.ma.container = function(selector) {
 		g.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 	}
 
+	// The Graph will auto scale itself when resize
+	d3.ma.onResize( function() {
+
+		var windowWidth = d3.ma.windowSize().width
+
+		if ( windowWidth < containerW ) {
+			container.attr({
+				'width': windowWidth,
+				'height':  Math.round( windowWidth / scaleRatio )
+			});
+		} else {
+			// if it is the same value, do not need to set any more
+			// reset the graph value to its original width and height
+			if( containerW !== +containerW) {
+				container.attr({
+					'width': containerW,
+					'height':  Math.round( containerW / scaleRatio )
+				});
+			}
+		}
+	});
+
 	// Set the svg container width and height
 	// Set the container width and height, and its transform values
 	container.box(containerW, containerH);
-
 	return container;
 };
