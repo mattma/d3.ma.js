@@ -66,7 +66,12 @@ module.exports = function( grunt ) {
 			build: {
 				src: [
 					'src/intro.js',
+					'src/common/core.js',
+					'src/common/utils.js',
 					'src/common/container.js',
+					'src/common/clippath.js',
+
+					'src/components/axis.js',
 					'src/outro.js'
 				],
 				dest: '<%= CONFIGS.BUILD %>/d3.ma.js'

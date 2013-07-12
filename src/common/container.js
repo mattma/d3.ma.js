@@ -1,8 +1,3 @@
-
-var d3 = window.d3;
-
-d3.ma = {};
-
 /*
 	return element: Most of methods return svg canvas object for easy chaining
 	E.G: d3.ma.container('body').margin({top: 80, left: 80}).box(600, 500)
