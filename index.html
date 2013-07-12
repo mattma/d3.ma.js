@@ -45,7 +45,12 @@
 		 * TOOLTIP CSS
 		 */
 
-		.nvtooltip {
+		 .d3maTooltip-pending-removal {
+			position: absolute;
+			pointer-events: none;
+		}
+
+		.d3maTooltip {
 			position: absolute;
 			background-color: rgba(255,255,255,0.75);
 			padding: 1px;
@@ -108,6 +113,8 @@
 				this.xScale = d3.scale.ordinal()
 								.rangeRoundBands([0, width], 0.1);
 
+				this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
+
 				// create a layer of circles that will go into
 				// a new group element on the base of the chart
 				this.layer("bars", this.base, {
@@ -149,14 +156,38 @@
 								'opacity': '0.8'
 							});
 
+							var self = this;
+
 							rect.on('mouseover', function(d, i){
-								// value: getY(d,i),
-								// point: d,
-								// series: data[d.series],
-								// pos: [x(getX(d,i)) + (x.rangeBand() * (d.series + .5) / data.length), y(getY(d,i))],  // TODO: Figure out why the value appears to be shifted
-								// pointIndex: i,
-								// seriesIndex: d.series,
-								// e: d3.event
+								d3.select(this).classed('hover', true);
+								var obj = {
+									'value': d.value,
+									'pointIndex': i,
+									'point': d,
+									'event': d3.event,
+									'pos': [
+										chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
+										chart.yScale(d.value)
+									]
+								};
+
+								chart.dispatch.d3maMouseover(obj);
+							});
+
+							rect.on('mouseout', function(d, i){
+								d3.select(this).classed('hover', false);
+								var obj = {
+									'value': d.value,
+									'pointIndex': i,
+									'point': d,
+									'event': d3.event,
+									'pos': [
+										chart.xScale(d.label) + chart.xScale.rangeBand() / 2,
+										chart.yScale(d.value)
+									]
+								};
+
+								chart.dispatch.d3maMouseout(obj);
 							});
 						}
 						// // then transition them to a radius of 5 and change
@@ -220,12 +251,20 @@
 				axis.x('ordinal').render();
 
 				var bars = this.mixin("BarChart", barsG);
+				var tooltip = d3.ma.tooltip();
 
-				var tt = d3.ma.tooltip();
+				bars.dispatch.on('d3maMouseover', function(e){
+					console.log('e: ', e);
+					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 
-				tt.show([30, 100], 'hello', d3.select('#vis')[0][0]);
+					tooltip.show([e.pos[0], e.pos[1]], 'hello', d3.select('#vis')[0][0]);
+				});
 
-			 // tt.close();
+				bars.dispatch.on('d3maMouseout', function(e){
+					console.log('e: ', e);
+					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
+					tooltip.close();
+				});
 
 			}
 

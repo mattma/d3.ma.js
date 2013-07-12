@@ -56,7 +56,7 @@ d3.ma.tooltip = function() {
 	var tooltip = {};
 
 	var tooltipContainer = document.createElement('div');
-		tooltipContainer.className = 'nvtooltip';
+		tooltipContainer.className = 'd3maTooltip';
 
 	console.log(tooltipContainer);
 
@@ -120,8 +120,9 @@ d3.ma.tooltip = function() {
 			return offsetLeft;
 		};
 
-		left = pos[0] - ( width / 2);
-		top = pos[1] - height - dist;
+		console.log('pos: ', pos);
+		left = pos[0]; //- ( width / 2);
+		top = pos[1]; //- height - dist;
 
 		// var m = d3.mouse(tooltipContainer);
 
@@ -143,17 +144,31 @@ d3.ma.tooltip = function() {
 		tooltipContainer.style.position = 'absolute'; //fix scroll bar issue
 		tooltipContainer.style.pointerEvents = 'none'; //fix scroll bar issue
 
-		console.log('calling show fn');
 		return tooltip;
 	};
 
 	tooltip.close = function(){
-		console.log("calling close fn");
+		var tooltips = document.getElementsByClassName('d3maTooltip');
+		var purging = [];
+		while(tooltips.length) {
+			purging.push(tooltips[0]);
+			tooltips[0].style.transitionDelay = '0 !important';
+			tooltips[0].style.opacity = 0;
+			tooltips[0].className = 'd3maTooltip-pending-removal';
+		}
+
+		setTimeout(function() {
+			while (purging.length) {
+				var removeMe = purging.pop();
+				removeMe.parentNode.removeChild(removeMe);
+			}
+		}, 500);
+
 		return tooltip;
 	};
 
 
-	var dispatch = d3.dispatch('tooltipShow', 'tooltipHide')
+	//var dispatch = d3.dispatch('tooltipShow', 'tooltipHide')
 
 	return tooltip;
 };
