@@ -14,6 +14,9 @@
 	box() is optional, by default, it will take the container width and height. to set/get/retrieve the svg/container width and height, if  only one value provide, width and height would be the same
 
 	canvasW() and canvasH() is optional, will set/get the canvas width and height. Normally, do not need to set explicitly, Use box() will auto set the canvas width and height as properly
+
+	 resize(), is optional, no args, by default, the graph would not resize when window resize, by calling container.resize() will enable
+	 the graph resize when window size changes.
  */
 
 d3.ma.container = function(selector) {
@@ -118,27 +121,33 @@ d3.ma.container = function(selector) {
 		g.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 	}
 
-	// The Graph will auto scale itself when resize
-	d3.ma.onResize( function() {
+	// e.g container.resize().box(1400, 600);
+	// resize() fn could be called from anywhere, it is chainable
+	container.resize = function() {
+		//The Graph will auto scale itself when resize
+		d3.ma.onResize( function() {
 
-		var windowWidth = d3.ma.windowSize().width
+			var windowWidth = d3.ma.windowSize().width
 
-		if ( windowWidth < containerW ) {
-			container.attr({
-				'width': windowWidth,
-				'height':  Math.round( windowWidth / scaleRatio )
-			});
-		} else {
-			// if it is the same value, do not need to set any more
-			// reset the graph value to its original width and height
-			if( containerW !== +containerW) {
+			if ( windowWidth < containerW ) {
 				container.attr({
-					'width': containerW,
-					'height':  Math.round( containerW / scaleRatio )
+					'width': windowWidth,
+					'height':  Math.round( windowWidth / scaleRatio )
 				});
+			} else {
+				// reset the graph value to its original width and height
+				// if it is the same value, do not need to set any more
+				var _w = +(container.attr('width'));
+				if( containerW !== _w) {
+					container.attr({
+						'width': containerW,
+						'height':  containerH
+					});
+				}
 			}
-		}
-	});
+		});
+		return container;
+	};
 
 	// Set the svg container width and height
 	// Set the container width and height, and its transform values

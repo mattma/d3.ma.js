@@ -172,28 +172,12 @@
 				axis.x('ordinal').render();
 
 				this.bars = this.mixin("BarChart", barsG);
-
-                    // TODO: working on the window resize and resize the graph
-                      // d3.ma.onResize( function() {
-                      //     d3.select('#vis svg').attr({
-                      //          'width': d3.ma.windowSize().width,
-                      //          'height': d3.ma.windowSize().height
-                      //     });
-
-                      //     // d3.select('.guideline').attr({
-                      //     //     "width":    d3.ma.windowSize().width,
-                      //     //      "height":  d3.ma.windowSize().height
-                      //     // });
-                      // });
 			}
 
 		});
 
 		var container = d3.ma.container('#vis');
-
-            //container.box(d3.ma.windowSize().width,d3.ma.windowSize().height);
-           console.log('d3.ma.windowSize().width: ', d3.ma.windowSize().width);
-            container.box(1400, 600);
+            container.resize().box(1400, 600);
 
           var canvas = container.canvas().chart("FinalChart");
 
