@@ -86,9 +86,19 @@ d3.ma.$$ = function(selector, element) {
 	return ret[0];
 };
 
-d3.ma.tooltip = function() {
-	var tooltip = {};
 
+/*
+	if init the tooltip, pass the this.base context,
+	when call show(), do not need to pass parentContainer, cause it will set itself
+	E.G  var tooltip = d3.ma.tooltip(this.base);
+
+	otherwise, when call show(), it will need to pass at least 3 args to set up the tooltips
+	E.G  tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+ */
+
+d3.ma.tooltip = function(context) {
+	var tooltip = {},
+		context = context || tooltip;
 
 	tooltip.show = function(pos, content, parentContainer, classes){
 
@@ -96,12 +106,10 @@ d3.ma.tooltip = function() {
 
 		tooltipContainer.className = 'd3maTooltip ' +  (classes ? classes : '');
 
-		console.log('parentContainer: ', parentContainer);
+		var body = parentContainer || document.getElementsByTagName('body')[0];
 
-		var body = parentContainer;
-		if ( !parentContainer || parentContainer.tagName.match(/g|svg/i)) {
-			//If the parent element is an SVG element, place tooltip in the <body> element.
-			body = document.getElementsByTagName('body')[0];
+		if(tooltip !== context) {
+			body = context[0][0].parentNode.parentElement;
 		}
 
 		tooltipContainer.innerHTML = content;

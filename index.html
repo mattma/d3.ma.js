@@ -261,14 +261,13 @@
 				var bars = this.mixin("BarChart", barsG);
 				var tooltip = d3.ma.tooltip();
 
-
 				// Tooltip section
 				bars.dispatch.on('d3maMouseover', function(e){
 					console.log('e: ', e);
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
-					//tooltip.show([e.pos[0], e.pos[1]], html, d3.select('#vis')[0][0]);
-					tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'), 'test');
+					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+					tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
 				});
 
 				bars.dispatch.on('d3maMouseout', function(e){
