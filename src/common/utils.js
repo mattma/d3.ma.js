@@ -55,14 +55,13 @@ http://www.w3.org/TR/SVGTiny12/coords.html#ViewBoxAttribute
 d3.ma.tooltip = function() {
 	var tooltip = {};
 
-	var tooltipContainer = document.createElement('div');
-		tooltipContainer.className = 'd3maTooltip';
-
-	console.log(tooltipContainer);
 
 	tooltip.show = function(pos, content, parentContainer, classes){
 
-		console.log('parentContainer: ', parentContainer);
+		var tooltipContainer = document.createElement('div');
+			tooltipContainer.className = 'd3maTooltip';
+
+		//console.log('parentContainer: ', parentContainer);
 
 		var body = parentContainer;
 		if ( !parentContainer || parentContainer.tagName.match(/g|svg/i)) {
@@ -159,7 +158,10 @@ d3.ma.tooltip = function() {
 
 		setTimeout(function() {
 			while (purging.length) {
+				console.log('purging: ', purging);
 				var removeMe = purging.pop();
+				console.log('purging: ', purging);
+				console.log('removeMe.parentNode: ', removeMe.parentNode);
 				removeMe.parentNode.removeChild(removeMe);
 			}
 		}, 500);

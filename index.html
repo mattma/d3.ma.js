@@ -253,6 +253,8 @@
 				var bars = this.mixin("BarChart", barsG);
 				var tooltip = d3.ma.tooltip();
 
+
+				// Tooltip section
 				bars.dispatch.on('d3maMouseover', function(e){
 					console.log('e: ', e);
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
@@ -262,7 +264,6 @@
 
 				bars.dispatch.on('d3maMouseout', function(e){
 					console.log('e: ', e);
-					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					tooltip.close();
 				});
 
