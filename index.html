@@ -79,14 +79,11 @@
 		}
 		rect:hover {
 			fill-opacity: 1;
-			/*opacity: 1;*/
 		}
 		</style>
 </head>
 <body>
 	<div id="vis"></div>
-
-	<div class="great"></div>
 
 	<script>
 		// http://jsbin.com/isawar/4/edit
@@ -141,7 +138,7 @@
 
 					// insert actual bars
 					insert: function() {
-						return this.append('g').classed('group', true);
+						return this.append('g').classed('group', true).append('rect');
 					},
 
 					// define lifecycle events
@@ -152,21 +149,16 @@
 						"enter": function() {
 							var chart = this.chart();
 
-							var rect = this.append('rect');
-
-							rect.attr({
+							this.attr({
 								'x': function(d, i) { return chart.xScale(d.label); },
 								'y': function(d) { return chart.yScale(d.value); },
 								'width': function(d) { return chart.xScale.rangeBand() ; },
 								'height': function(d) { return height - chart.yScale(d.value); },
 								'fill': function(d) { return color(d.value); },
-								'fill-opacity': 0.8,
-								//'opacity': '0.8'
+								'fill-opacity': 0
 							});
 
-							var self = this;
-
-							rect.on('mouseover', function(d, i){
+							this.on('mouseover', function(d, i){
 								d3.select(this).classed('hover', true);
 								var obj = {
 									'value': d.value,
@@ -182,7 +174,7 @@
 								chart.dispatch.d3maMouseover(obj);
 							});
 
-							rect.on('mouseout', function(d, i){
+							this.on('mouseout', function(d, i){
 								d3.select(this).classed('hover', false);
 								var obj = {
 									'value': d.value,
@@ -197,16 +189,16 @@
 
 								chart.dispatch.d3maMouseout(obj);
 							});
+						},
+
+						'enter:transition': function() {
+							var chart = this.chart();
+							return this
+								.duration(1000)
+								.attr({
+									'fill-opacity': 0.8
+								})
 						}
-						// // then transition them to a radius of 5 and change
-						// // their fill to blue
-						// "enter:transition": function() {
-						// 	var chart = this.chart();
-						// 	return this
-						// 		.delay(500)
-						// 		.attr("r", chart.radius())
-						// 		.style("fill", "yellow");
-						// }
 					}
 				});
 			},
@@ -259,7 +251,8 @@
 				axis.x('ordinal').render();
 
 				var bars = this.mixin("BarChart", barsG);
-				var tooltip = d3.ma.tooltip();
+
+				var tooltip = d3.ma.tooltip(this.base);
 
 				// Tooltip section
 				bars.dispatch.on('d3maMouseover', function(e){
@@ -267,7 +260,7 @@
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
 					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
-					tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+					tooltip.show([e.pos[0], e.pos[1]], html);
 				});
 
 				bars.dispatch.on('d3maMouseout', function(e){
