@@ -59,7 +59,8 @@ d3.ma.tooltip = function() {
 	tooltip.show = function(pos, content, parentContainer, classes){
 
 		var tooltipContainer = document.createElement('div');
-			tooltipContainer.className = 'd3maTooltip';
+
+		tooltipContainer.className = 'd3maTooltip';
 
 		//console.log('parentContainer: ', parentContainer);
 
@@ -76,66 +77,18 @@ d3.ma.tooltip = function() {
 
 		body.appendChild(tooltipContainer);
 
-		var height = parseInt(tooltipContainer.offsetHeight),
-			width = parseInt(tooltipContainer.offsetWidth),
-			windowWidth = d3.ma.windowSize().width,
-			windowHeight = d3.ma.windowSize().height,
-			scrollTop = window.scrollY,
-			scrollLeft = window.scrollX,
-			left, top;
+		// var height = parseInt(tooltipContainer.offsetHeight),
+		// 	width = parseInt(tooltipContainer.offsetWidth),
+		// 	windowWidth = d3.ma.windowSize().width,
+		// 	windowHeight = d3.ma.windowSize().height,
+		// 	scrollTop = window.scrollY,
+		// 	scrollLeft = window.scrollX,
 
+		var left = pos[0],
+			top = pos[1];
 
-		var dist = 20;
-
-		windowHeight = window.innerWidth >= document.body.scrollWidth ? windowHeight : windowHeight - 16;
-		windowWidth = window.innerHeight >= document.body.scrollHeight ? windowWidth : windowWidth - 16;
-
-		var tooltipTop = function ( Elem ) {
-			var offsetTop = top;
-			console.log('offsetTop: ', offsetTop);
-			// do {
-			// 	if( !isNaN( Elem.offsetTop ) ) {
-			// 		offsetTop += (Elem.offsetTop);
-			// 	}
-			// }
-			// while(
-			// 	Elem = Elem.offsetParent;
-			// );
-			return offsetTop;
-		};
-
-		var tooltipLeft = function ( Elem ) {
-			var offsetLeft = left;
-			console.log('Elem: ', Elem);
-			console.log('Elem.offsetLeft: ', Elem.offsetLeft);
-			console.log('Elem.offsetParent: ', Elem.offsetParent);
-			// do {
-			// 	if( !isNaN( Elem.offsetLeft ) ) {
-			// 		offsetLeft += (Elem.offsetLeft);
-			// 	}
-			// } while(
-			// 	Elem = Elem.offsetParent;
-			// );
-			return offsetLeft;
-		};
-
-		console.log('pos: ', pos);
-		left = pos[0]; //- ( width / 2);
-		top = pos[1]; //- height - dist;
-
-		// var m = d3.mouse(tooltipContainer);
-
-		// 	console.log('m: ', m);
-
-		// var tLeft = tooltipLeft(tooltipContainer);
-
-		// console.log('left: ', left);
-		// console.log('tLeft: ', tLeft);
-		// var tTop = tooltipTop(tooltipContainer);
-		// if (scrollTop > tTop) top = scrollTop;
-
-		// if (tLeft < scrollLeft) left = scrollLeft + 5;
-		// if (tLeft + width > windowWidth) left = left - width/2 + 5;
+		// windowHeight = window.innerWidth >= document.body.scrollWidth ? windowHeight : windowHeight - 16;
+		// windowWidth = window.innerHeight >= document.body.scrollHeight ? windowWidth : windowWidth - 16;
 
 		tooltipContainer.style.left = left+'px';
 		tooltipContainer.style.top = top+'px';
