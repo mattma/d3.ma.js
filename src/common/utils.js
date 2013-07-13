@@ -60,9 +60,9 @@ d3.ma.tooltip = function() {
 
 		var tooltipContainer = document.createElement('div');
 
-		tooltipContainer.className = 'd3maTooltip';
+		tooltipContainer.className = 'd3maTooltip ' +  (classes ? classes : '');
 
-		//console.log('parentContainer: ', parentContainer);
+		console.log('parentContainer: ', parentContainer);
 
 		var body = parentContainer;
 		if ( !parentContainer || parentContainer.tagName.match(/g|svg/i)) {
