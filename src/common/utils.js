@@ -143,6 +143,11 @@ d3.ma.tooltip = function() {
 		tooltipContainer.style.position = 'absolute'; //fix scroll bar issue
 		tooltipContainer.style.pointerEvents = 'none'; //fix scroll bar issue
 
+		// d3.select('.d3maTooltip')
+		// 	.transition()
+		// 	.duration(200)
+		// 	.style('opacity', 1);
+
 		return tooltip;
 	};
 
@@ -158,10 +163,7 @@ d3.ma.tooltip = function() {
 
 		setTimeout(function() {
 			while (purging.length) {
-				console.log('purging: ', purging);
 				var removeMe = purging.pop();
-				console.log('purging: ', purging);
-				console.log('removeMe.parentNode: ', removeMe.parentNode);
 				removeMe.parentNode.removeChild(removeMe);
 			}
 		}, 500);
