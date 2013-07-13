@@ -52,6 +52,40 @@ http://www.w3.org/TR/SVGTiny12/coords.html#ViewBoxAttribute
  */
 
 
+// by default, element is going to  document
+// selector could be any string
+// modified implementation from zepto.js library
+d3.ma.$ = function(selector, element) {
+
+	var found,
+		element = element || document,
+		slice = Array.prototype.slice,
+		classSelectorRE = /^\.([\w-]+)$/,
+		tagSelectorRE = /^[\w-]+$/,
+		idSelectorRE = /^#([\w-]*)$/;
+
+	function isDocument(obj)   {
+		return obj != null && obj.nodeType == obj.DOCUMENT_NODE;
+	}
+
+	return (isDocument(element) && idSelectorRE.test(selector)) ?
+		( (found = element.getElementById(RegExp.$1)) ? [found] : [] ) :
+		(element.nodeType !== 1 && element.nodeType !== 9) ? [] :
+		slice.call(
+			classSelectorRE.test(selector) ? element.getElementsByClassName(RegExp.$1) :
+			tagSelectorRE.test(selector) ? element.getElementsByTagName(selector) :
+			element.querySelectorAll(selector)
+		);
+};
+
+// Always return the first index of the array
+// for example, if using id selection, the element would be returned.
+// so it is usefully when dealing with d3.ma.tooltip(), 3rd arg would expect to have a DOM element
+d3.ma.$$ = function(selector, element) {
+	var ret = d3.ma.$(selector, element);
+	return ret[0];
+};
+
 d3.ma.tooltip = function() {
 	var tooltip = {};
 
@@ -128,4 +162,11 @@ d3.ma.tooltip = function() {
 	//var dispatch = d3.dispatch('tooltipShow', 'tooltipHide')
 
 	return tooltip;
+};
+
+// TODO: Implement zoom feature here
+d3.ma.zoom = function() {
+	var zoom = {};
+
+	return zoom;
 };

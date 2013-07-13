@@ -86,6 +86,8 @@
 <body>
 	<div id="vis"></div>
 
+	<div class="great"></div>
+
 	<script>
 		// http://jsbin.com/isawar/4/edit
 
@@ -266,7 +268,7 @@
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
 					//tooltip.show([e.pos[0], e.pos[1]], html, d3.select('#vis')[0][0]);
-					tooltip.show([e.pos[0], e.pos[1]], html, document.getElementById('vis'), 'test');
+					tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'), 'test');
 				});
 
 				bars.dispatch.on('d3maMouseout', function(e){
@@ -277,6 +279,7 @@
 			}
 
 		});
+
 
 		var container = d3.ma.container('#vis');
 
