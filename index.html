@@ -16,6 +16,7 @@
 	<script src="src/components/axis.js"></script>
 
 	<script src="src/basic/base.js"></script>
+	<script src="src/basic/bars.js"></script>
 
 <!--
 	<script src="build/d3.ma.min.js"></script>
@@ -222,10 +223,11 @@
 				// var clip =  this.mixin("Clip",  this.base);
 				// clip.box(600, 500).xy(400, 50);
 				//
-				var base = this.mixin('Base', this.base.append('g').classed('base', true), {
+				var bars = this.mixin('Bars', this.base.append('g').classed('bars', true), {
 					width: 1000,
 					height: 200
 				});
+
 
 				var axisG = this.base.append("g").classed('axisgroup', true);
 
