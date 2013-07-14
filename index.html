@@ -15,6 +15,8 @@
 
 	<script src="src/components/axis.js"></script>
 
+	<script src="src/basic/base.js"></script>
+
 <!--
 	<script src="build/d3.ma.min.js"></script>
 -->
@@ -219,8 +221,9 @@
 				// Used for the clipPath object
 				// var clip =  this.mixin("Clip",  this.base);
 				// clip.box(600, 500).xy(400, 50);
+				//
+				var base = this.mixin('Base', this.base.append('g').classed('base', true) );
 
-				// TODO: Simplify the initialization part of the setting
 				var axisG = this.base.append("g").classed('axisgroup', true);
 
 				var barsG = this.base.append("g").classed('bars', true).attr({
@@ -252,7 +255,7 @@
 
 				// Tooltip section
 				bars.dispatch.on('d3maMouseover', function(e){
-					console.log('e: ', e);
+					//console.log('e: ', e);
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
 					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
@@ -260,7 +263,6 @@
 				});
 
 				bars.dispatch.on('d3maMouseout', function(e){
-					//console.log('e: ', e);
 					tooltip.close();
 				});
 

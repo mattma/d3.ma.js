@@ -17,6 +17,8 @@
 d3.chart('Axis', {
 	initialize: function(options) {
 
+		options = options || {};
+
 		this.width = options.width || this.base.attr('width') || 1;
 		this.height = options.height || this.base.attr('height') || 1;
 		this.guide = options.guide || false;

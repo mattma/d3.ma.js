@@ -2,6 +2,8 @@ d3.chart('Base', {
 
 	initialize: function(options) {
 
+		options = options || {};
+
 		this._width = options.width || this.base.attr('width'),
 		this._height = options.height || this.base.attr('height');
 
