@@ -98,14 +98,6 @@ d3.chart('Axis', {
 		this.guides = this.base.append('g')
 			.attr('class', 'guides');
 
-		this.xGuide = d3.select('.guides').append('g')
-			.attr('class', 'x guide')
-			.attr('transform', 'translate(0,' + this.height + ')');
-
-		//The last thing that is included in the code to draw the grid lines is the instruction to suppress printing any label for the ticks;
-		this.yGuide = d3.select('.guides').append('g')
-			.attr('class', 'y guide');
-
 		// create a labels layer
 		this.layer('guidline', this.base, {
 			dataBind: function(data) {
@@ -121,7 +113,8 @@ d3.chart('Axis', {
 			insert: function(){
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(); }
-				return this.append('g');
+
+				return this.append('g').style('display', 'none');
 			},
 
 			events: {
@@ -162,14 +155,22 @@ d3.chart('Axis', {
 
 	drawGuides: function() {
 
-		this.xGuide.call(
+		var xGuide = d3.select('.guides').append('g')
+			.attr('class', 'x guide')
+			.attr('transform', 'translate(0,' + this.height + ')');
+
+		//The last thing that is included in the code to draw the grid lines is the instruction to suppress printing any label for the ticks;
+		var yGuide = d3.select('.guides').append('g')
+			.attr('class', 'y guide');
+
+		xGuide.call(
 			this.xAxis
 				.tickSize(-this.height, 0, 0)
 				.tickFormat('')
 		);
 		//axis.tickSize([major[​[, minor], end]])
 
-		this.yGuide.call(
+		yGuide.call(
 			this.yAxis
 				.tickSize(-this.width, 0, 0)
 				.tickFormat('')
