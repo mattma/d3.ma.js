@@ -29,8 +29,6 @@ d3.chart('Scale').extend('Base', {
 
 		this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
 
-		// create a layer of circles that will go into
-		// a new group element on the base of the chart
 		// this.layer('base', this.base, {
 
 		// 	// select the elements we wish to bind to and

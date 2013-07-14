@@ -50,6 +50,7 @@
 				// Used for the clipPath object
 				// var clip =  this.mixin("Clip",  this.base);
 				// clip.box(600, 500).xy(400, 50);
+				var color = d3.scale.category10();
 
 				var axis =  this.mixin("Axis",  this.base.append("g").classed('axisgroup', true), {
 					x: 'ordinal',
@@ -58,12 +59,17 @@
 					guide: true
 				});
 
-				axis.onData = function(){
-					axis.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
-
-					axis.yAxis.tickFormat(d3.format(',.1f'));
+				function domain(context) {
+					// Setup xScale domain range
+					context.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
+					// Setup yScale domain range
 					var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
-					axis.yScale.domain([ 0, maxY ]);
+					context.yScale.domain([ 0, maxY ]);
+				}
+
+				axis.onData = function(){
+					domain(axis);
+					axis.yAxis.tickFormat(d3.format(',.1f'));
 				};
 
 				var bars = this.mixin("Bars", this.base.append('g').classed('bars', true), {
@@ -71,6 +77,22 @@
 					width: this.base.attr('width'),
 					height: this.base.attr('height')
 				});
+
+				bars.onData = function() {
+					domain(bars);
+				};
+
+				// bars.onEnter = function() {
+				// 	console.log('this: ', this);
+				// 	console.log('bars: ', bars);
+				// 	this.attr({
+				// 		'x': function(d, i) { return this.xScale(d.label); },
+				// 		'y': function(d) { return this.yScale(d.value); },
+				// 		'width': function(d) { return this.xScale.rangeBand() ; },
+				// 		'height': function(d) { return this.height - this.yScale(d.value); },
+				// 		'fill': function(d) { return color(d.value); }
+				// 	});
+				// }
 
 				// var tooltip = d3.ma.tooltip(this.base);
 

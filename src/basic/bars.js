@@ -8,31 +8,26 @@ d3.chart('Base').extend('Bars', {
 
 		//this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
 		//
-		this.layer("bars", this.base, {
+		this.layer('bars', this.base, {
 
 			dataBind: function(data) {
 				var chart = this.chart();
-
-				chart.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
-
-				var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
-				chart.yScale.domain([ 0, maxY ]);
-
-				return this.selectAll(".group").data(data);
+				if(chart.onData) { chart.onData(); }
+				return this.selectAll('.group').data(data);
 			},
 
 			// insert actual bars
 			insert: function() {
+				var chart = this.chart();
+				if(chart.onInsert) { chart.onInsert(); }
 				return this.append('g').classed('group', true).append('rect');
 			},
 
 			// define lifecycle events
 			events: {
-
-				// paint new elements, but set their radius to 0
-				// and make them red
-				"enter": function() {
+				'enter': function() {
 					var chart = this.chart();
+					if(chart.onEnter) { chart.onEnter(); }
 
 					this.attr({
 						'x': function(d, i) { return chart.xScale(d.label); },
