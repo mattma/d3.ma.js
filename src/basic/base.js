@@ -1,3 +1,24 @@
+/*
+	Base is extended from Scale
+	it will auto gain the four variables: this.xScale, this.yScale, this.width, this.height
+
+	That means, when create an instance of base, or other basic charts or complext charts.
+
+	It all have options object need to be defined in the initialization phrase.
+
+	e.g.  var chart =  this.mixin('Base',  axisG, {
+			x: 'ordinal',
+			y: 'log',
+			width: this.base.attr('width'),
+			height: this.base.attr('height')
+		});
+
+	By default, API provides three methods:
+
+	this.box() to set/get the container width value and height value
+	this.w()  to set/get the container width value
+	this.h()  to set/get the container height value
+ */
 d3.chart('Scale').extend('Base', {
 
 	initialize: function(options) {
