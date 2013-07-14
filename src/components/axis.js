@@ -3,9 +3,9 @@
 		var axis =  this.mixin("Axis",  guideLineG, {
 			x: 'ordinal',
 			y: 'log',
-			guide: true,
 			width: this.base.attr('width'),
-			height: this.base.attr('height')
+			height: this.base.attr('height'),
+			guide: true
 		});
 
 		Passing options object as a third argument. take x or y as a key, value should be
@@ -14,41 +14,12 @@
 		guide key, is a boolean value, default to false. If you want to draw the guides, just need to setup
 		guide key to true.
  */
-d3.chart('Axis', {
-	initialize: function(options) {
+d3.chart('Scale').extend("Axis", {
 
+	initialize: function(options) {
 		options = options || {};
 
-		this.width = options.width || this.base.attr('width') || 1;
-		this.height = options.height || this.base.attr('height') || 1;
 		this.guide = options.guide || false;
-
-		var x = options.x || 'linear';
-		var y = options.y || 'linear';
-
-		// init the scale
-		this.xScale = this._scale(x);
-		this.yScale = this._scale(y);
-
-		switch(x) {
-			case 'linear' :
-				this.xScale.range([0, this.width]);
-			break;
-
-			case 'ordinal' :
-				this.xScale.rangeRoundBands([0, this.width], 0.1);
-			break;
-		}
-
-		switch(y) {
-			case 'linear' :
-				this.yScale.range([this.height, 0]);
-			break;
-
-			case 'ordinal' :
-				this.yScale.rangeRoundBands([this.height, 0], 0.1);
-			break;
-		}
 
 		this.xAxis = d3.svg.axis().scale(this.xScale).orient('bottom');
 
@@ -105,21 +76,5 @@ d3.chart('Axis', {
 		);
 
 		return this;
-	},
-
-	_scale: function(scale) {
-		switch(scale) {
-			case 'linear':
-				return d3.scale.linear();
-			break;
-
-			case 'ordinal':
-				return d3.scale.ordinal();
-			break;
-
-			default:
-				return d3.scale.linear();
-			break;
-		}
 	}
 });
