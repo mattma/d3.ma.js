@@ -95,13 +95,16 @@ d3.chart('Axis', {
 			'class': 'y axis'
 		});
 
-		this.xGuide = this.base.append('g')
-			.attr('class', 'guides')
+		this.guides = this.base.append('g')
+			.attr('class', 'guides');
+
+		this.xGuide = d3.select('.guides').append('g')
+			.attr('class', 'x guide')
 			.attr('transform', 'translate(0,' + this.height + ')');
 
 		//The last thing that is included in the code to draw the grid lines is the instruction to suppress printing any label for the ticks;
-		this.yGuide = this.base.append('g')
-			.attr('class', 'guides');
+		this.yGuide = d3.select('.guides').append('g')
+			.attr('class', 'y guide');
 
 		// create a labels layer
 		this.layer('guidline', this.base, {
@@ -112,7 +115,7 @@ d3.chart('Axis', {
 				// xScale, yScale, xAxis, yAxis etc.
 				if(chart.onData) { chart.onData(); }
 
-				return this.selectAll('g').data(data);
+				return this.select('.guides').selectAll('g').data(data);
 			},
 
 			insert: function(){
