@@ -1,68 +1,34 @@
 /*
-	E.G:
-		var axis =  this.mixin("GuideLine",  guideLineG);
-
-		// As long as you define, onData, onInsert, onEnter, it would be called in the
-		// appropriate section, and auto render the fn for you. You just need to define the fn
-		// Need to include the custom behavior to those fn block
-		axis.onData = function() { }
-		axis.onInsert = function() { }
-		axis.onEnter = function() { }
-
-		//Draw Guides here, perfer the first method
-		axis.onEnter = function(){
-			axis.drawGuides();
-		};
-		or use :
-		axis.layer("guidline").on("enter", function(t) {
-			axis.drawGuides();
+	E.G.
+		var axis =  this.mixin("Axis",  guideLineG, {
+			x: 'ordinal',
+			y: 'log',
+			guide: true
 		});
 
-		// .x(), .y() could be chained, here is just for a demo,
-		// you have to call ordinal or any other (current only support linear and ordinal) to override the default scale
-		// otherwise, it would assume to be 'linear'
-		// dev have to always manually call render() fn to draw the axis after you set up the good defaults
+		Passing options object as a third argument. take x or y as a key, value should be
+		a string representation of scale value, default value is linear, everything will override the default
 
-		axis.x('ordinal').render();
-
-		Note: render() is always the last fn to call. Always the last one.
-			The goal here, is to define all the chart specified behavior, Once you
-			have all the logic in place, call render and simply draw the chart
+		guide key, is a boolean value, default to false. If you want to draw the guides, just need to setup
+		guide key to true.
  */
 d3.chart('Axis', {
-	initialize: function() {
+	initialize: function(options) {
+
+		console.log('options: ', options);
 
 		this.width = this.base.attr('width') || 1;
 		this.height = this.base.attr('height') || 1;
 
-		var self = this;
+		var x = options.x || 'linear';
+		var y = options.y || 'linear';
+		this.guide = options.guide || false;
 
-		// this._x, this._y is the internal state to maintain the current scale in String format
-		// by default, it is using linear
-		this._x = (this._x) ? this._x : 'linear';
-		this._y = (this._y) ? this._y : 'linear';
+		// init the scale
+		this.xScale = this._scale(x);
+		this.yScale = this._scale(y);
 
-		// trigger to retrieve the current xScale and yScale
-		this.xScale = this.x(this._x, true)._xScale;
-		this.yScale = this.y(this._y, true)._yScale;
-
-		// called from this.x() and this.y()
-		// when an instance called x() and y(), it will rebuild the context of scale
-		// and return the new xScale and yScale
-		this.on('xscale', function(scale){
-			self.xScale = self._scale(scale);
-		});
-
-		this.on('yscale', function(scale){
-			self.yScale = self._scale(scale);
-		});
-	},
-
-	// render() won't call by default, developer has to call it manually in each instance.
-	// The reason for that, it will avoid multiple rendering when switch the scale context
-	render: function() {
-
-		switch(this._x) {
+		switch(x) {
 			case 'linear' :
 				this.xScale.range([0, this.width]);
 			break;
@@ -72,7 +38,7 @@ d3.chart('Axis', {
 			break;
 		}
 
-		switch(this._y) {
+		switch(y) {
 			case 'linear' :
 				this.yScale.range([this.height, 0]);
 			break;
@@ -84,7 +50,7 @@ d3.chart('Axis', {
 
 		this.xAxis = d3.svg.axis().scale(this.xScale).orient('bottom');
 
-		this.yAxis = d3.svg.axis().scale(this.yScale).orient("left")
+		this.yAxis = d3.svg.axis().scale(this.yScale).orient('left');
 
 		this.xAxisG =  this.base.append('g').attr({
 			'class': 'x axis',
@@ -94,68 +60,29 @@ d3.chart('Axis', {
 		this.yAxisG = this.base.append('g').attr({
 			'class': 'y axis'
 		});
-
-		this.guides = this.base.append('g')
-			.attr('class', 'guides');
-
-		// create a labels layer
-		this.layer('guidline', this.base, {
-			dataBind: function(data) {
-				var chart = this.chart();
-
-				// Used onData to override any default behavior for
-				// xScale, yScale, xAxis, yAxis etc.
-				if(chart.onData) { chart.onData(); }
-
-				return this.select('.guides').selectAll('g').data(data);
-			},
-
-			insert: function(){
-				var chart = this.chart();
-				if(chart.onInsert) { chart.onInsert(); }
-
-				return this.append('g').style('display', 'none');
-			},
-
-			events: {
-				'enter': function() {
-					var chart = this.chart();
-
-					//Acutally draw the xAxis, yAxis on the screen
-					chart.xAxisG.call( chart.xAxis);
-					chart.yAxisG.call( chart.yAxis);
-
-					// Any additional onEnter behavior
-					// would add here,
-					// E.G, draw guides fn could be called here
-					if(chart.onEnter) { chart.onEnter(); }
-				}
-			}
-		});
 	},
 
-	x: function(scale, internal) {
-		if (arguments.length === 0) { return this._xScale; }
-		this._x = scale;
+	transform: function(data) {
+		//Acutally draw the xAxis, yAxis on the screen
+		if(this.onData) { this.onData(); }
 
-		// Concept of 2nd arg, internal.
-		// default: false;  when an instance called x() and y(), basically outside of the constructor
-		// module, it will auto call trigger scale for you. But when use in the internal module, it won't call any
-		// trigger scale function since it will set it by default for you. Here is linear scale
-		(internal) ? this._xScale = this._scale(scale) : this.trigger('xscale', scale);
-		return this;
+		this.xAxisG.call( this.xAxis);
+		this.yAxisG.call( this.yAxis);
+
+		if(this.guide) { this._drawGuides(); }
+
+		return data;
 	},
 
-	y: function(scale, internal) {
-		if (arguments.length === 0) { return this._yScale; }
-		this._y = scale;
-		(internal) ? this._yScale = this._scale(scale) : this.trigger('yscale', scale);
-		return this;
-	},
+	// _drawGuides() is internal fn, will draw the guide lines on the
+	// x and y axis. it will be determined by the intialization options
+	// operator { guide: true }
+	_drawGuides: function() {
 
-	drawGuides: function() {
+		var 	guides = this.base.append('g')
+						.attr('class', 'guides'),
 
-		var xGuide = d3.select('.guides').append('g')
+			xGuide = d3.select('.guides').append('g')
 						.attr('class', 'x guide')
 						.attr('transform', 'translate(0,' + this.height + ')'),
 
@@ -193,32 +120,4 @@ d3.chart('Axis', {
 			break;
 		}
 	}
-
-	// _width: function(_width) {
-	// 	if (arguments.length === 0) { return this.width; }
-	// 	this.width = _width;
-	// 	this.attr('width', _width);
-	// 	return this;
-	// },
-
-	// _height: function(_height) {
-	// 	if (arguments.length === 0) { return this.height; }
-	// 	this.height = _height;
-	// 	this.attr('height', _height);
-	// 	return this;
-	// },
-
-	// // Recommanded to use box() to get/set the rect size,
-	// // rarely use _width() and _height() fn to set individual sizes
-	// box: function(_width, _height) {
-	// 	if (arguments.length === 0) {
-	// 		return {
-	// 			'width': this.width,
-	// 			'height': this.height
-	// 		}
-	// 	}
-	// 	this._width(_width);
-	// 	(arguments.length === 1) ?  this._height(_width) :  this._height(_height);
-	// 	return this;
-	// }
 });

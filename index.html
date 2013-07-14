@@ -233,22 +233,19 @@
 				});
 
 
-				var axis =  this.mixin("Axis",  guideLineG);
+				var axis =  this.mixin("Axis",  guideLineG, {
+					x: 'ordinal',
+					guide: true
+				});
 
 				axis.onData = function(){
-					axis.yAxis.tickFormat(d3.format(',.1f'));
 					axis.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
 
+					axis.yAxis.tickFormat(d3.format(',.1f'));
 					var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
 					axis.yScale.domain([ 0, maxY ]);
 				};
 
-				//Draw Guides here
-				axis.onEnter = function(){
-					axis.drawGuides();
-				};
-
-				axis.x('ordinal').render();
 
 				var bars = this.mixin("BarChart", barsG);
 
@@ -271,6 +268,56 @@
 			}
 
 		});
+
+
+
+	// // render() won't call by default, developer has to call it manually in each instance.
+	// // The reason for that, it will avoid multiple rendering when switch the scale context
+	// render: function() {
+	// 	// As long as you define, onData, onInsert, onEnter, it would be called in the
+	// 	// appropriate section, and auto render the fn for you. You just need to define the fn
+	// 	// Need to include the custom behavior to those fn block
+	// 	// axis.onData = function() { }
+	// 	// axis.onInsert = function() { }
+	// 	// axis.onEnter = function() { }
+
+
+	// 	// create a labels layer
+	// 	// this.layer('guidline', this.base, {
+	// 	// 	dataBind: function(data) {
+	// 	// 		var chart = this.chart();
+
+	// 	// 		// Used onData to override any default behavior for
+	// 	// 		// xScale, yScale, xAxis, yAxis etc.
+	// 	// 		if(chart.onData) { chart.onData(); }
+
+	// 	// 		return this.select('.guides').selectAll('g').data(data);
+	// 	// 	},
+
+	// 	// 	insert: function(){
+	// 	// 		var chart = this.chart();
+	// 	// 		if(chart.onInsert) { chart.onInsert(); }
+
+	// 	// 		return this.append('g').style('display', 'none');
+	// 	// 	},
+
+	// 	// 	events: {
+	// 	// 		'enter': function() {
+	// 	// 			var chart = this.chart();
+
+	// 	// 			//Acutally draw the xAxis, yAxis on the screen
+	// 	// 			chart.xAxisG.call( chart.xAxis);
+	// 	// 			chart.yAxisG.call( chart.yAxis);
+
+	// 	// 			// Any additional onEnter behavior
+	// 	// 			// would add here,
+	// 	// 			// E.G, draw guides fn could be called here
+	// 	// 			if(chart.onEnter) { chart.onEnter(); }
+	// 	// 		}
+	// 	// 	}
+	// 	// });
+	// },
+
 
 
 		var container = d3.ma.container('#vis');
