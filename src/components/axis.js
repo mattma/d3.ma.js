@@ -156,12 +156,11 @@ d3.chart('Axis', {
 	drawGuides: function() {
 
 		var xGuide = d3.select('.guides').append('g')
-			.attr('class', 'x guide')
-			.attr('transform', 'translate(0,' + this.height + ')');
+						.attr('class', 'x guide')
+						.attr('transform', 'translate(0,' + this.height + ')'),
 
-		//The last thing that is included in the code to draw the grid lines is the instruction to suppress printing any label for the ticks;
-		var yGuide = d3.select('.guides').append('g')
-			.attr('class', 'y guide');
+			yGuide = d3.select('.guides').append('g')
+						.attr('class', 'y guide');
 
 		xGuide.call(
 			this.xAxis
