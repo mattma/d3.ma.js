@@ -3,7 +3,9 @@
 		var axis =  this.mixin("Axis",  guideLineG, {
 			x: 'ordinal',
 			y: 'log',
-			guide: true
+			guide: true,
+			width: this.base.attr('width'),
+			height: this.base.attr('height')
 		});
 
 		Passing options object as a third argument. take x or y as a key, value should be
@@ -15,14 +17,12 @@
 d3.chart('Axis', {
 	initialize: function(options) {
 
-		console.log('options: ', options);
-
-		this.width = this.base.attr('width') || 1;
-		this.height = this.base.attr('height') || 1;
+		this.width = options.width || this.base.attr('width') || 1;
+		this.height = options.height || this.base.attr('height') || 1;
+		this.guide = options.guide || false;
 
 		var x = options.x || 'linear';
 		var y = options.y || 'linear';
-		this.guide = options.guide || false;
 
 		// init the scale
 		this.xScale = this._scale(x);
