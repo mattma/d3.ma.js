@@ -222,7 +222,10 @@
 				// var clip =  this.mixin("Clip",  this.base);
 				// clip.box(600, 500).xy(400, 50);
 				//
-				var base = this.mixin('Base', this.base.append('g').classed('base', true) );
+				var base = this.mixin('Base', this.base.append('g').classed('base', true), {
+					width: 1000,
+					height: 200
+				});
 
 				var axisG = this.base.append("g").classed('axisgroup', true);
 

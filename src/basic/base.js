@@ -4,8 +4,10 @@ d3.chart('Base', {
 
 		options = options || {};
 
-		this._width = options.width || this.base.attr('width'),
-		this._height = options.height || this.base.attr('height');
+		this._width = options.width || this.base.attr('width') || 1,
+		this._height = options.height || this.base.attr('height') || 1;
+
+		this.box(this._width, this._height);
 
 		this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
 
@@ -106,11 +108,8 @@ d3.chart('Base', {
 			};
 		}
 
-		// When arguments are more than one, set svg and container width & height
-		var h = (_height) ? _height : _width;
-
 		this.width(_width);
-		this.height(h);
+		this.height((_height) ? _height : _width);
 
 		return this;
 	}
