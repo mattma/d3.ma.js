@@ -15,9 +15,12 @@
 	<script src="src/common/container.js"></script>
 	<script src="src/common/clippath.js"></script>
 
+
 	<script src="src/core/scale.js"></script>
 
+
 	<script src="src/components/axis.js"></script>
+
 
 	<script src="src/basic/base.js"></script>
 	<script src="src/basic/bars.js"></script>
@@ -34,15 +37,10 @@
 		// http://jsbin.com/isawar/4/edit
 
 
-		// TODO:
-		// Also update the box(), width(), height()
-		//update the scale width and height, bar width and height for resize service
-
 		// TODO: Move the onData, onInsert, onEnter, etc
 		// to the prototype level, so do not need to defined in each one
 		// d3.selection.prototype.layer = function(options) {
 		// 	//d3.selection.prototype.layer.call(this, options);
-
 		// 	return this;
 		// };
 
@@ -146,15 +144,6 @@
 						}
 					}
 				});
-			},
-			width: function(newWidth) {
-				if (arguments.length === 0) {
-						return this._width;
-				}
-				this._width = newWidth;
-				this.base.attr("width", this._width);
-				this.xScale.range([0, this._width]);
-				return this;
 			}
 		});
 
