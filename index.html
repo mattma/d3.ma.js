@@ -44,135 +44,18 @@
 		// 	return this;
 		// };
 
-		// define a new chart type: a circle chart
-		d3.chart("BarChart", {
-
-			initialize: function() {
-
-				var color = d3.scale.category10();
-
-				var width = this.base.attr('width'),
-					height = this.base.attr('height');
-
-				this.yScale = d3.scale.linear()
-								.range([height, 0]);
-
-				this.xScale = d3.scale.ordinal()
-								.rangeRoundBands([0, width], 0.1);
-
-				this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
-
-				// create a layer of circles that will go into
-				// a new group element on the base of the chart
-				this.layer("bars", this.base, {
-
-					// select the elements we wish to bind to and
-					// bind the data to them.
-					dataBind: function(data) {
-						var chart = this.chart();
-
-						chart.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
-
-						var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
-						chart.yScale.domain([ 0, maxY ]);
-
-						return this.selectAll(".group").data(data);
-					},
-
-					// insert actual bars
-					insert: function() {
-						return this.append('g').classed('group', true).append('rect');
-					},
-
-					// define lifecycle events
-					events: {
-
-						// paint new elements, but set their radius to 0
-						// and make them red
-						"enter": function() {
-							var chart = this.chart();
-
-							this.attr({
-								'x': function(d, i) { return chart.xScale(d.label); },
-								'y': function(d) { return chart.yScale(d.value); },
-								'width': function(d) { return chart.xScale.rangeBand() ; },
-								'height': function(d) { return height - chart.yScale(d.value); },
-								'fill': function(d) { return color(d.value); },
-								'fill-opacity': 0
-							});
-
-							this.on('mouseover', function(d, i){
-								d3.select(this).classed('hover', true);
-								var obj = {
-									'value': d.value,
-									'pointIndex': i,
-									'd': d,
-									'event': d3.event,
-									'pos': [
-										chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
-										chart.yScale(d.value)
-									]
-								};
-
-								chart.dispatch.d3maMouseover(obj);
-							});
-
-							this.on('mouseout', function(d, i){
-								d3.select(this).classed('hover', false);
-								var obj = {
-									'value': d.value,
-									'pointIndex': i,
-									'd': d,
-									'event': d3.event,
-									'pos': [
-										chart.xScale(d.label) + chart.xScale.rangeBand() / 2,
-										chart.yScale(d.value)
-									]
-								};
-
-								chart.dispatch.d3maMouseout(obj);
-							});
-						},
-
-						'enter:transition': function() {
-							var chart = this.chart();
-							return this
-								.duration(1000)
-								.attr({
-									'fill-opacity': 0.8
-								})
-						}
-					}
-				});
-			}
-		});
-
 		d3.chart("FinalChart", {
 			initialize: function() {
 
 				// Used for the clipPath object
 				// var clip =  this.mixin("Clip",  this.base);
 				// clip.box(600, 500).xy(400, 50);
-				//
-				var bars = this.mixin('Bars', this.base.append('g').classed('bars', true), {
-					width: 1000,
-					height: 200
-				});
 
-				var axisG = this.base.append("g").classed('axisgroup', true);
-
-				var barsG = this.base.append("g").classed('bars', true).attr({
-					'width': this.base.attr('width'),
-					'height': this.base.attr('height')
-					//'clip-path': clip.url()
-				});
-
-
-				var axis =  this.mixin("Axis",  axisG, {
+				var axis =  this.mixin("Axis",  this.base.append("g").classed('axisgroup', true), {
 					x: 'ordinal',
-					guide: true,
 					width: this.base.attr('width'),
-					height: this.base.attr('height')
+					height: this.base.attr('height'),
+					guide: true
 				});
 
 				axis.onData = function(){
@@ -183,23 +66,26 @@
 					axis.yScale.domain([ 0, maxY ]);
 				};
 
-
-				var bars = this.mixin("BarChart", barsG);
-
-				var tooltip = d3.ma.tooltip(this.base);
-
-				// Tooltip section
-				bars.dispatch.on('d3maMouseover', function(e){
-					//console.log('e: ', e);
-					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
-					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
-					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
-					tooltip.show([e.pos[0], e.pos[1]], html);
+				var bars = this.mixin("Bars", this.base.append('g').classed('bars', true), {
+					x: 'ordinal',
+					width: this.base.attr('width'),
+					height: this.base.attr('height')
 				});
 
-				bars.dispatch.on('d3maMouseout', function(e){
-					tooltip.close();
-				});
+				// var tooltip = d3.ma.tooltip(this.base);
+
+				// // Tooltip section
+				// bars.dispatch.on('d3maMouseover', function(e){
+				// 	//console.log('e: ', e);
+				// 	e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
+				// 	var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
+				// 	//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+				// 	tooltip.show([e.pos[0], e.pos[1]], html);
+				// });
+
+				// bars.dispatch.on('d3maMouseout', function(e){
+				// 	tooltip.close();
+				// });
 
 			}
 
