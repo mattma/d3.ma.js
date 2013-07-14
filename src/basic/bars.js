@@ -19,7 +19,7 @@ d3.chart('Base').extend('Bars', {
 			// insert actual bars
 			insert: function() {
 				var chart = this.chart();
-				if(chart.onInsert) { chart.onInsert(); }
+				if(chart.onInsert) { chart.onInsert(chart); }
 				return this.append('g').classed('group', true).append('rect');
 			},
 
@@ -27,14 +27,14 @@ d3.chart('Base').extend('Bars', {
 			events: {
 				'enter': function() {
 					var chart = this.chart();
-					if(chart.onEnter) { chart.onEnter(); }
 
+					// onEnter fn will take two args
+					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
+					// this   # refer to each individual group just appended by insert command
+					if(chart.onEnter) { chart.onEnter(chart, this); }
+
+					// Used for animation the fill opacity property, work with enter:transition
 					this.attr({
-						'x': function(d, i) { return chart.xScale(d.label); },
-						'y': function(d) { return chart.yScale(d.value); },
-						'width': function(d) { return chart.xScale.rangeBand() ; },
-						'height': function(d) { return chart.height - chart.yScale(d.value); },
-						'fill': function(d) { return color(d.value); },
 						'fill-opacity': 0
 					});
 
@@ -74,10 +74,10 @@ d3.chart('Base').extend('Bars', {
 				'enter:transition': function() {
 					var chart = this.chart();
 					return this
-						.duration(1000)
-						.attr({
-							'fill-opacity': 0.8
-						});
+							.duration(1000)
+							.attr({
+								'fill-opacity': 0.8
+							});
 				}
 			}
 		});

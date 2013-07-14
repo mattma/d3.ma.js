@@ -67,9 +67,10 @@
 					context.yScale.domain([ 0, maxY ]);
 				}
 
-				axis.onData = function(){
-					domain(axis);
-					axis.yAxis.tickFormat(d3.format(',.1f'));
+				axis.onData = function(chart){
+					var chart = chart || axis;
+					domain(chart);
+					chart.yAxis.tickFormat(d3.format(',.1f'));
 				};
 
 				var bars = this.mixin("Bars", this.base.append('g').classed('bars', true), {
@@ -78,21 +79,21 @@
 					height: this.base.attr('height')
 				});
 
-				bars.onData = function() {
-					domain(bars);
+				bars.onData = function(chart) {
+					var chart = chart || bars;
+					domain(chart);
 				};
 
-				// bars.onEnter = function() {
-				// 	console.log('this: ', this);
-				// 	console.log('bars: ', bars);
-				// 	this.attr({
-				// 		'x': function(d, i) { return this.xScale(d.label); },
-				// 		'y': function(d) { return this.yScale(d.value); },
-				// 		'width': function(d) { return this.xScale.rangeBand() ; },
-				// 		'height': function(d) { return this.height - this.yScale(d.value); },
-				// 		'fill': function(d) { return color(d.value); }
-				// 	});
-				// }
+				bars.onEnter = function(chart, single) {
+					var chart = chart || bars;
+					single.attr({
+						'x': function(d, i) { return chart.xScale(d.label); },
+						'y': function(d) { return chart.yScale(d.value); },
+						'width': function(d) { return chart.xScale.rangeBand() ; },
+						'height': function(d) { return chart.height - chart.yScale(d.value); },
+						'fill': function(d) { return color(d.value); }
+					});
+				}
 
 				// var tooltip = d3.ma.tooltip(this.base);
 
