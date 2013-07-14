@@ -1,13 +1,10 @@
-d3.chart('Base', {
+d3.chart('Scale').extend('Base', {
 
 	initialize: function(options) {
 
 		options = options || {};
 
-		this._width = options.width || this.base.attr('width') || 1,
-		this._height = options.height || this.base.attr('height') || 1;
-
-		this.box(this._width, this._height);
+		this.box(this.width, this.height);
 
 		this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
 
@@ -82,34 +79,34 @@ d3.chart('Base', {
 		// });
 	},
 
-	width: function(newWidth) {
+	w: function(_width) {
 		if (arguments.length === 0) {
-			return this._width;
+			return this.width;
 		}
-		this._width = newWidth;
-		this.base.attr('width', this._width);
+		this.width = _width;
+		this.base.attr('width', this.width);
 		return this;
 	},
 
-	height: function(newHeight) {
+	h: function(_height) {
 		if (arguments.length === 0) {
-			return this._height;
+			return this.height;
 		}
-		this._height = newHeight;
-		this.base.attr('height', this._height);
+		this.height = _height;
+		this.base.attr('height', this.height);
 		return this;
 	},
 
 	box: function(_width, _height) {
 		if(!arguments.length) {
 			return {
-				'width': this._width,
-				'height': this._height
+				'width': this.width,
+				'height': this.height
 			};
 		}
 
-		this.width(_width);
-		this.height((_height) ? _height : _width);
+		this.w(_width);
+		this.h((_height) ? _height : _width);
 
 		return this;
 	}
