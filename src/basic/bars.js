@@ -18,8 +18,8 @@
 			Note: x, y could only be set by the initialization fn, option objects.
 
 		public attributes:
-			width, height,  ( # axis container width and height values. from scale.js )
-			xScale, yScale (# scale fn on the x & y axis. from scale.js)
+			width, height,  (# container width and height values.)
+			xScale, yScale (# scale fn on the x & y axis. )
 
 	APIs:  ( defined in the constructor level )
 		bars.box(_width, _height)
