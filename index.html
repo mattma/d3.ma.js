@@ -98,6 +98,21 @@
 
 				var tooltip = d3.ma.tooltip(this.base);
 
+				bars.onMouseover = function(d, i, chart) {
+					var chart = chart || bars;
+					var obj = {
+						'value': d.value,
+						'pointIndex': i,
+						'd': d,
+						'event': d3.event,
+						'pos': [
+							chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
+							chart.yScale(d.value)
+						]
+					};
+					return obj;
+				};
+
 				// Tooltip section
 				bars.dispatch.on('d3maMouseover', function(e){
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
@@ -109,7 +124,6 @@
 				bars.dispatch.on('d3maMouseout', function(e){
 					tooltip.close();
 				});
-
 			}
 
 		});

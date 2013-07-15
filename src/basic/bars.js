@@ -38,35 +38,52 @@ d3.chart('Base').extend('Bars', {
 						'fill-opacity': 0
 					});
 
+					// Both onMouseover() and onMouseout() fn are optional
+					// they are used for passing the customized data to the
+					// d3maMouseover and d3maMouseout events
+
+					// E.G
+						// bars.onMouseover = function(d, i, chart) {
+						// 	var chart = chart || bars;
+						// 	var obj = {
+						// 		'value': d.value,
+						// 		'pointIndex': i,
+						// 		'd': d,
+						// 		'event': d3.event,
+						// 		'pos': [
+						// 			chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
+						// 			chart.yScale(d.value)
+						// 		]
+						// 	};
+						// 	return obj;
+						// };
+
+						// Tooltip section
+						// bars.dispatch.on('d3maMouseover', function(e){
+						// 	e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
+						// 	var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
+						// 	//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+						// 	tooltip.show([e.pos[0], e.pos[1]], html);
+						// });
+
 					this.on('mouseover', function(d, i){
 						d3.select(this).classed('hover', true);
-						var obj = {
-							'value': d.value,
-							'pointIndex': i,
-							'd': d,
-							'event': d3.event,
-							'pos': [
-								chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
-								chart.yScale(d.value)
-							]
-						};
-
+						var obj = {};
+						if(chart.onMouseover) {
+							obj = chart.onMouseover(d, i, chart);
+						}
 						chart.dispatch.d3maMouseover(obj);
 					});
 
+					// Remove the hover event on mouseout, onMouseout() is optional here
+					// it will always trigger d3maMouseout event no matter what.
+					// optional pass the obj arg, by default, it is an empty object
 					this.on('mouseout', function(d, i){
 						d3.select(this).classed('hover', false);
-						var obj = {
-							'value': d.value,
-							'pointIndex': i,
-							'd': d,
-							'event': d3.event,
-							'pos': [
-								chart.xScale(d.label) + chart.xScale.rangeBand() / 2,
-								chart.yScale(d.value)
-							]
-						};
-
+						var obj = {};
+						if(chart.onMouseout) {
+							obj = chart.onMouseout(d, i, chart);
+						}
 						chart.dispatch.d3maMouseout(obj);
 					});
 				},
