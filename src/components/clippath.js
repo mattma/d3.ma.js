@@ -1,41 +1,40 @@
 /*
-For reusable components. it could be mixed into any chart modules. quickly mask out a portion of the view.
+	For reusable components. it could be mixed into any chart modules. quickly mask out a portion of the view.
 
-Generated Markup:
-	<defs>
-		<clipPath id='clip-342'>
-			<rect width="0" height="0" x='0' y='0' />
-		</clipPath>
-	</defs>
+	Generated Markup:
+		<defs>
+			<clipPath id='clip-342'>
+				<rect width="0" height="0" x='0' y='0' />
+			</clipPath>
+		</defs>
 
-Usage:
-	<g clip-path="url(#clip-342)">
+	Usage:
+		<g clip-path="url(#clip-342)">
 
-Initalization:
-	var clip =  this.mixin("Clip",  this.base);
-	clip.box(600, 500).xy(400, 50);
+	Initalization:
+		var clip =  this.mixin("Clip",  this.base);
+		clip.box(600, 500).xy(400, 50);
 
-	var barsG = this.base.append("g").classed('bars', true).attr({
-		'width': this.base.attr('width'),
-		'height': this.base.attr('height'),
-            'clip-path': clip.url()
-	});
+		var barsG = this.base.append("g").classed('bars', true).attr({
+			'width': this.base.attr('width'),
+			'height': this.base.attr('height'),
+	            'clip-path': clip.url()
+		});
 
-APIs:
-	public attributes:   width, height, x, y, clipPath(current clipPath element), rect (current rect element), cid ( clipPath element id attribute)
+	APIs:
+		public attributes:   width, height, x, y, clipPath(current clipPath element), rect (current rect element), cid ( clipPath element id attribute)
 
-	clippath.id()
-	# setter/getter clipPath element id attribute
+		clippath.id()
+		# setter/getter clipPath element id attribute
 
-	clippath.url()
-	# getter  quickly return 'url(clip-342)' type of vlaue to use in clip-path attribute ready format e.g  clippath.url()
+		clippath.url()
+		# getter  quickly return 'url(clip-342)' type of vlaue to use in clip-path attribute ready format e.g  clippath.url()
 
-	clippath.box()
-	# setter/getter rect element width value and height value
+		clippath.box()
+		# setter/getter rect element width value and height value
 
-	clippath.xy()
-	# setter/getter rect element x and y coordinates attribute
-
+		clippath.xy()
+		# setter/getter rect element x and y coordinates attribute
  */
 
 d3.chart('Clip', {
