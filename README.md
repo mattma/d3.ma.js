@@ -40,3 +40,7 @@ reusable componment. it could be mixed into any chart modules. quickly mask out 
 4. basic folder
 
 It contains all the basic chart modules which could be mixin and extend. For example, bar chart, circle chart, line chart, area chart etc.
+
+# bars.js
+
+It is used for displaying the bar chart. It extended from scale.js and base.js

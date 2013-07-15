@@ -1,4 +1,127 @@
-// define an extended chart from the Base Chart  src/basic/base.js
+/*
+	define an extended chart from the Base Chart  src/basic/base.js
+	It is used for displaying the bar chart
+
+	Initalization:
+		var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
+			x: 'ordinal',
+			width: this.base.attr('width'),
+			height: this.base.attr('height')
+		});
+
+		// Passing options object as a third argument.
+
+	Arguments:
+		private atrribute:
+			x & y:  scale representation for the x axis and y axis. take x or y as a key, value should be a string representation of scale value, default value is linear, everything will override the default
+
+			Note: x, y could only be set by the initialization fn, option objects.
+
+		public attributes:
+			width, height,  ( # axis container width and height values. from scale.js )
+			xScale, yScale (# scale fn on the x & y axis. from scale.js)
+
+			xAxis, yAxis   ( # could use to override its default value, like defined ticks(), orient(), etc. )
+			xAxisG, yAxisG ( # could use to defined custom element attributes )
+
+		Note:  currently, xGuide, yGuide is remaining as private object, if needed, it could expose out to the api
+
+	APIs:  ( defined in the constructor level )
+		bars.box(_width, _height)
+			# setter/getter container width value and height values
+
+		bars.w(_width)
+			# setter/getter container width value  // always recommend to use bars.box() instead
+
+		bars.h(_height)
+			# setter/getter container height value  // always recommend to use bars.box() instead
+
+		onDataBind: function(chart) { }
+			# arg, chart: represent this.chart() inside the this.layer() fn. context for this graph, the whole object
+			# optional, but kind of like required, this is fn where you could use to override default methods using customized dataset to represent different visualization of the graphs. This is where you manipuated the custom data methods
+			Note: this is normally where you define dynamic xScale, yScale
+			E.G
+				onDataBind: function(chart) {
+					var chart = chart || this;
+					// Setup xScale domain range
+					chart.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
+					// Setup yScale domain range
+					var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
+					chart.yScale.domain([ 0, maxY ]);
+				}
+
+		onInsert: function(chart) { }
+			# arg, chart: represent this.chart() inside the this.layer() fn. context for this graph, the whole object
+			# arg,
+			# optional, trigger inside this.layer() insert method, you could define some default attributes here for each element which is going to be entered in selection.enter()
+
+		onEnter: function(chart, this) { }
+			# arg, chart: represent this.chart() inside the this.layer() fn. context for this graph, the whole object
+			# arg, this:  represent single bar element. context for each individual bar element
+			# optional, but kind of like required, this is fn where you could use to override dynamic attributes
+			E.G
+				onEnter: function(chart, single) {
+					var chart = chart || this,
+						color = d3.scale.category10();
+
+					single.attr({
+						'x': function(d, i) { return chart.xScale(d.label); },
+						'y': function(d) { return chart.yScale(d.value); },
+						'width': function(d) { return chart.xScale.rangeBand() ; },
+						'height': function(d) { return chart.height - chart.yScale(d.value); },
+						'fill': function(d) { return color(d.value); }
+					});
+				},
+
+		onDataMouseover: function(d, i, chart) { }
+			# arg, d: same like d3 option d
+			# arg, i: same like d3 option i
+			# arg, chart: represent this.chart() inside the this.layer() fn. context for this graph, the whole object
+
+			Optional. If defined, it must have a return object. It used to pass the customized data to the d3maMouseover event. So that it could build your customized HTML to the hover effect.
+
+			By default, it would do two things. 1, it will add the 'hover' class to the element that you are hovering. 2, it will trigger internal d3maMouseover event. Well, look at the Events section below, you need to defined the correspond handler to handle the (empty or full)data which passed in.
+
+			E.G
+				onDataMouseover: function(d, i, chart) {
+					var chart = chart || bars;
+					var obj = {
+						'value': d.value,
+						'pointIndex': i,
+						'd': d,
+						'event': d3.event,
+						'pos': [
+							chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
+							chart.yScale(d.value)
+						]
+					};
+					return obj;
+				}
+
+		onDataMouseout: function(d, i, chart) { }
+			Exact same above. Except, it is triggering the d3maMouseout event and its correspond handler. Normally, does not need to define this fn because you just need to close the tooltip.
+
+	Events:  ( defined in the instance level )
+		d3maMouseover:
+			# syntax: bars.dispatch.on('d3maMouseover', function(e){ });
+			# arg, e: it should be the return data obj which you defined in the constrcutor level fn, onDataMouseover()
+			E.G
+				var tooltip = d3.ma.tooltip(this.base);
+				bars.dispatch.on('d3maMouseover', function(e){
+					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
+					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
+					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+					tooltip.show([e.pos[0], e.pos[1]], html);
+				});
+
+		d3maMouseout
+			# syntax: bars.dispatch.on('d3maMouseout', function(e){ });
+			# arg, e: it should be the return data obj which you defined in the constrcutor level fn, onDataMouseout()
+			E.G
+				bars.dispatch.on('d3maMouseout', function(e){
+					tooltip.close();
+				});
+ */
 d3.chart('Base').extend('Bars', {
 
 	initialize: function(options) {
@@ -8,11 +131,11 @@ d3.chart('Base').extend('Bars', {
 
 			dataBind: function(data) {
 				var chart = this.chart();
-				if(chart.onDataBind) { chart.onDataBind(); }
+				if(chart.onDataBind) { chart.onDataBind(chart); }
 				return this.selectAll('.group').data(data);
 			},
 
-			// insert actual bars
+			// insert actual bars, defined its own attrs
 			insert: function() {
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
@@ -34,34 +157,6 @@ d3.chart('Base').extend('Bars', {
 						'fill-opacity': 0
 					});
 
-					// Both onMouseover() and onMouseout() fn are optional
-					// they are used for passing the customized data to the
-					// d3maMouseover and d3maMouseout events
-
-					// E.G
-						// onMouseover: function(d, i, chart) {
-						// 	var chart = chart || bars;
-						// 	var obj = {
-						// 		'value': d.value,
-						// 		'pointIndex': i,
-						// 		'd': d,
-						// 		'event': d3.event,
-						// 		'pos': [
-						// 			chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
-						// 			chart.yScale(d.value)
-						// 		]
-						// 	};
-						// 	return obj;
-						// };
-
-						// Tooltip section
-						// bars.dispatch.on('d3maMouseover', function(e){
-						// 	e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
-						// 	var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
-						// 	//d3.ma.tooltip().show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));  // no arg
-						// 	d3.ma.tooltip(this.base).show([e.pos[0], e.pos[1]], html);  // with arg  this.base
-						// });
-
 					this.on('mouseover', function(d, i){
 						d3.select(this).classed('hover', true);
 						var obj = {};
@@ -71,9 +166,6 @@ d3.chart('Base').extend('Bars', {
 						chart.dispatch.d3maMouseover(obj);
 					});
 
-					// Remove the hover event on mouseout, onMouseout() is optional here
-					// it will always trigger d3maMouseout event no matter what.
-					// optional pass the obj arg, by default, it is an empty object
 					this.on('mouseout', function(d, i){
 						d3.select(this).classed('hover', false);
 						var obj = {};
