@@ -154,3 +154,15 @@ d3.ma.container = function(selector) {
 	container.box(containerW, containerH);
 	return container;
 };
+
+/*
+http://www.w3.org/TR/SVGTiny12/coords.html#ViewBoxAttribute
+
+ viewBox = "min-x min-y width height" | "none"
+
+ separated by white space and/or a comma, which specify a rectangle in viewport space which must be mapped to the bounds of the viewport established by the given element, taking into account the 'preserveAspectRatio' attribute. If specified, an additional transformation is applied to all descendants of the given element to achieve the specified effect.
+
+ preserveAspectRatio =  ["defer"] <align> [<meet>]
+
+ typically when using the 'viewBox' attribute, it is desirable that the graphics stretch to fit non-uniformly to take up the entire viewport. In other cases, it is desirable that uniform scaling be used for the purposes of preserving the aspect ratio of the graphics.
+ */
