@@ -50,7 +50,6 @@
 				// Used for the clipPath object
 				// var clip =  this.mixin("Clip",  this.base);
 				// clip.box(600, 500).xy(400, 50);
-				var color = d3.scale.category10();
 
 				var axis =  this.mixin("Axis",  this.base.append("g").classed('axisgroup', true), {
 					x: 'ordinal',
@@ -84,6 +83,8 @@
 					domain(chart);
 				};
 
+				var color = d3.scale.category10();
+
 				bars.onEnter = function(chart, single) {
 					var chart = chart || bars;
 					single.attr({
@@ -95,20 +96,19 @@
 					});
 				}
 
-				// var tooltip = d3.ma.tooltip(this.base);
+				var tooltip = d3.ma.tooltip(this.base);
 
-				// // Tooltip section
-				// bars.dispatch.on('d3maMouseover', function(e){
-				// 	//console.log('e: ', e);
-				// 	e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
-				// 	var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
-				// 	//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
-				// 	tooltip.show([e.pos[0], e.pos[1]], html);
-				// });
+				// Tooltip section
+				bars.dispatch.on('d3maMouseover', function(e){
+					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
+					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
+					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+					tooltip.show([e.pos[0], e.pos[1]], html);
+				});
 
-				// bars.dispatch.on('d3maMouseout', function(e){
-				// 	tooltip.close();
-				// });
+				bars.dispatch.on('d3maMouseout', function(e){
+					tooltip.close();
+				});
 
 			}
 

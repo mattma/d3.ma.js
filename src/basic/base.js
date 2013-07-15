@@ -27,6 +27,8 @@ d3.chart('Scale').extend('Base', {
 
 		this.box(this.width, this.height);
 
+		// Used for constructor.dispatch.on trigger events
+		// Custom mouseover and mouseout events
 		this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
 
 		// this.layer('base', this.base, {

@@ -38,37 +38,37 @@ d3.chart('Base').extend('Bars', {
 						'fill-opacity': 0
 					});
 
-					// this.on('mouseover', function(d, i){
-					// 	d3.select(this).classed('hover', true);
-					// 	var obj = {
-					// 		'value': d.value,
-					// 		'pointIndex': i,
-					// 		'd': d,
-					// 		'event': d3.event,
-					// 		'pos': [
-					// 			chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
-					// 			chart.yScale(d.value)
-					// 		]
-					// 	};
+					this.on('mouseover', function(d, i){
+						d3.select(this).classed('hover', true);
+						var obj = {
+							'value': d.value,
+							'pointIndex': i,
+							'd': d,
+							'event': d3.event,
+							'pos': [
+								chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
+								chart.yScale(d.value)
+							]
+						};
 
-					// 	chart.dispatch.d3maMouseover(obj);
-					// });
+						chart.dispatch.d3maMouseover(obj);
+					});
 
-					// this.on('mouseout', function(d, i){
-					// 	d3.select(this).classed('hover', false);
-					// 	var obj = {
-					// 		'value': d.value,
-					// 		'pointIndex': i,
-					// 		'd': d,
-					// 		'event': d3.event,
-					// 		'pos': [
-					// 			chart.xScale(d.label) + chart.xScale.rangeBand() / 2,
-					// 			chart.yScale(d.value)
-					// 		]
-					// 	};
+					this.on('mouseout', function(d, i){
+						d3.select(this).classed('hover', false);
+						var obj = {
+							'value': d.value,
+							'pointIndex': i,
+							'd': d,
+							'event': d3.event,
+							'pos': [
+								chart.xScale(d.label) + chart.xScale.rangeBand() / 2,
+								chart.yScale(d.value)
+							]
+						};
 
-					// 	chart.dispatch.d3maMouseout(obj);
-					// });
+						chart.dispatch.d3maMouseout(obj);
+					});
 				},
 
 				'enter:transition': function() {
