@@ -44,6 +44,22 @@
 		// 	return this;
 		// };
 
+		function domain(context) {
+			// Setup xScale domain range
+			context.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
+			// Setup yScale domain range
+			var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
+			context.yScale.domain([ 0, maxY ]);
+		}
+
+		d3.chart('Axis').extend('MyAxis', {
+			onData: function(chart){
+				var chart = chart || this;
+				domain(chart);
+				chart.yAxis.tickFormat(d3.format(',.1f'));
+			}
+		});
+
 		d3.chart("FinalChart", {
 			initialize: function() {
 
@@ -51,26 +67,12 @@
 				// var clip =  this.mixin("Clip",  this.base);
 				// clip.box(600, 500).xy(400, 50);
 
-				var axis =  this.mixin("Axis",  this.base.append("g").classed('axisgroup', true), {
+				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
 					x: 'ordinal',
 					width: this.base.attr('width'),
 					height: this.base.attr('height'),
 					guide: true
 				});
-
-				function domain(context) {
-					// Setup xScale domain range
-					context.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
-					// Setup yScale domain range
-					var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
-					context.yScale.domain([ 0, maxY ]);
-				}
-
-				axis.onData = function(chart){
-					var chart = chart || axis;
-					domain(chart);
-					chart.yAxis.tickFormat(d3.format(',.1f'));
-				};
 
 				var bars = this.mixin("Bars", this.base.append('g').classed('bars', true), {
 					x: 'ordinal',
