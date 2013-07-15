@@ -4,10 +4,6 @@ d3.chart('Base').extend('Bars', {
 	initialize: function(options) {
 		options = options || {};
 
-		var color = d3.scale.category10();
-
-		//this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
-		//
 		this.layer('bars', this.base, {
 
 			dataBind: function(data) {
@@ -43,7 +39,7 @@ d3.chart('Base').extend('Bars', {
 					// d3maMouseover and d3maMouseout events
 
 					// E.G
-						// bars.onMouseover = function(d, i, chart) {
+						// onMouseover: function(d, i, chart) {
 						// 	var chart = chart || bars;
 						// 	var obj = {
 						// 		'value': d.value,
@@ -62,8 +58,8 @@ d3.chart('Base').extend('Bars', {
 						// bars.dispatch.on('d3maMouseover', function(e){
 						// 	e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 						// 	var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
-						// 	//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
-						// 	tooltip.show([e.pos[0], e.pos[1]], html);
+						// 	//d3.ma.tooltip().show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));  // no arg
+						// 	d3.ma.tooltip(this.base).show([e.pos[0], e.pos[1]], html);  // with arg  this.base
 						// });
 
 					this.on('mouseover', function(d, i){

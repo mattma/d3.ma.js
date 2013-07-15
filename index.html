@@ -34,8 +34,44 @@
 	<div id="vis"></div>
 
 	<script>
-		// http://jsbin.com/isawar/4/edit
+		var data = [
+			{
+				"label" : "A" ,
+				"value" : 29.765957771107
+			} ,
+			{
+				"label" : "B" ,
+				"value" : 0
+			} ,
+			{
+				"label" : "C" ,
+				"value" : 32.807804682612
+			} ,
+			{
+				"label" : "D" ,
+				"value" : 196.45946739256
+			} ,
+			{
+				"label" : "E" ,
+				"value" : 0.19434030906893
+			} ,
+			{
+				"label" : "F" ,
+				"value" : 98.079782601442
+			} ,
+			{
+				"label" : "G" ,
+				"value" : 13.925743130903
+			} ,
+			{
+				"label" : "H" ,
+				"value" : 5.1387322875705
+			}
+		];
+	</script>
 
+	<script>
+		// http://jsbin.com/isawar/4/edit
 
 		// TODO: Move the onData, onInsert, onEnter, etc
 		// to the prototype level, so do not need to defined in each one
@@ -119,9 +155,8 @@
 					height: this.base.attr('height')
 				});
 
-				var tooltip = d3.ma.tooltip(this.base);
-
 				// Tooltip section
+				var tooltip = d3.ma.tooltip(this.base);
 				bars.dispatch.on('d3maMouseover', function(e){
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
@@ -136,97 +171,11 @@
 
 		});
 
-
-
-	// // render() won't call by default, developer has to call it manually in each instance.
-	// // The reason for that, it will avoid multiple rendering when switch the scale context
-	// render: function() {
-	// 	// As long as you define, onData, onInsert, onEnter, it would be called in the
-	// 	// appropriate section, and auto render the fn for you. You just need to define the fn
-	// 	// Need to include the custom behavior to those fn block
-	// 	// axis.onData = function() { }
-	// 	// axis.onInsert = function() { }
-	// 	// axis.onEnter = function() { }
-
-
-	// 	// create a labels layer
-	// 	// this.layer('guidline', this.base, {
-	// 	// 	dataBind: function(data) {
-	// 	// 		var chart = this.chart();
-
-	// 	// 		// Used onData to override any default behavior for
-	// 	// 		// xScale, yScale, xAxis, yAxis etc.
-	// 	// 		if(chart.onData) { chart.onData(); }
-
-	// 	// 		return this.select('.guides').selectAll('g').data(data);
-	// 	// 	},
-
-	// 	// 	insert: function(){
-	// 	// 		var chart = this.chart();
-	// 	// 		if(chart.onInsert) { chart.onInsert(); }
-
-	// 	// 		return this.append('g').style('display', 'none');
-	// 	// 	},
-
-	// 	// 	events: {
-	// 	// 		'enter': function() {
-	// 	// 			var chart = this.chart();
-
-	// 	// 			//Acutally draw the xAxis, yAxis on the screen
-	// 	// 			chart.xAxisG.call( chart.xAxis);
-	// 	// 			chart.yAxisG.call( chart.yAxis);
-
-	// 	// 			// Any additional onEnter behavior
-	// 	// 			// would add here,
-	// 	// 			// E.G, draw guides fn could be called here
-	// 	// 			if(chart.onEnter) { chart.onEnter(); }
-	// 	// 		}
-	// 	// 	}
-	// 	// });
-	// },
-
-
-
 		var container = d3.ma.container('#vis');
 
 		container.resize().box(1400, 600);
 
 		var canvas = container.canvas().chart("FinalChart");
-
-		var data = [
-			{
-				"label" : "A" ,
-				"value" : 29.765957771107
-			} ,
-			{
-				"label" : "B" ,
-				"value" : 0
-			} ,
-			{
-				"label" : "C" ,
-				"value" : 32.807804682612
-			} ,
-			{
-				"label" : "D" ,
-				"value" : 196.45946739256
-			} ,
-			{
-				"label" : "E" ,
-				"value" : 0.19434030906893
-			} ,
-			{
-				"label" : "F" ,
-				"value" : 98.079782601442
-			} ,
-			{
-				"label" : "G" ,
-				"value" : 13.925743130903
-			} ,
-			{
-				"label" : "H" ,
-				"value" : 5.1387322875705
-			}
-		];
 
 		//render it with some data
 		canvas.draw(data);
