@@ -21,11 +21,6 @@
 			width, height,  ( # axis container width and height values. from scale.js )
 			xScale, yScale (# scale fn on the x & y axis. from scale.js)
 
-			xAxis, yAxis   ( # could use to override its default value, like defined ticks(), orient(), etc. )
-			xAxisG, yAxisG ( # could use to defined custom element attributes )
-
-		Note:  currently, xGuide, yGuide is remaining as private object, if needed, it could expose out to the api
-
 	APIs:  ( defined in the constructor level )
 		bars.box(_width, _height)
 			# setter/getter container width value and height values
@@ -129,6 +124,7 @@ d3.chart('Base').extend('Bars', {
 
 		this.layer('bars', this.base, {
 
+			// select the elements we wish to bind to and bind the data to them.
 			dataBind: function(data) {
 				var chart = this.chart();
 				if(chart.onDataBind) { chart.onDataBind(chart); }

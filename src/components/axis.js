@@ -10,7 +10,7 @@
 			guide: true
 		});
 
-		// Passing options object as a third argument.
+		// Passing options object as a third argument. Options is required.
 
 	Arguments:
 		private atrribute:

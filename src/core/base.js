@@ -1,24 +1,44 @@
 /*
-	Base is extended from Scale, it is used for the basic/ section
+	Base is extended from Scale, it is used for the basic/ section. All mixin or extended modules will have all its behavior. Where you define your absolutely needed methods for the APIs. Internal use only, never use it for displaying a chart.
 
-	it will auto gain the four variables: this.xScale, this.yScale, this.width, this.height
-
-	That means, when create an instance of base, or other basic charts or complext charts.
-
-	It all have options object need to be defined in the initialization phrase.
-
-	e.g.  var chart =  this.mixin('Base',  axisG, {
+	Initalization:
+		var chart =  this.mixin('Base',  axisG, {
 			x: 'ordinal',
 			y: 'log',
 			width: this.base.attr('width'),
 			height: this.base.attr('height')
 		});
 
-	By default, API provides three methods:
+		// Passing options object as a third argument. Options is required.
 
-	this.box() to set/get the container width value and height value
-	this.w()  to set/get the container width value
-	this.h()  to set/get the container height value
+	Arguments:
+		private atrribute:
+			x & y:  scale representation for the x axis and y axis. take x or y as a key, value should be a string representation of scale value, default value is linear, everything will override the default
+
+			Note: x, y could only be set by the initialization fn, option objects.
+
+		public attributes:
+			width, height,  ( # axis container width and height values. from scale.js )
+			xScale, yScale (# scale fn on the x & y axis. from scale.js)
+
+	APIs:  ( defined in the constructor level )
+	# THOSE APIs EXIST IN ALL EXTENDED MODULES
+		constructor.box(_width, _height)
+			# setter/getter container width value and height values
+
+		constructor.w(_width)
+			# setter/getter container width value  // always recommend to use constructor.box() instead
+
+		constructor.h(_height)
+			# setter/getter container height value  // always recommend to use constructor.box() instead
+
+	Events:  ( defined in the instance level )
+		# Used for constructor.dispatch.on trigger events  E.G: Custom mouseover and mouseout events
+		# syntax: constructor.dispatch.on('d3maMouseover', function(e){ });
+
+		# Currently support:
+			d3maMouseover
+			d3maMouseout
  */
 d3.chart('Scale').extend('Base', {
 
@@ -28,77 +48,7 @@ d3.chart('Scale').extend('Base', {
 
 		this.box(this.width, this.height);
 
-		// Used for constructor.dispatch.on trigger events
-		// Custom mouseover and mouseout events
 		this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
-
-		// this.layer('base', this.base, {
-
-		// 	// select the elements we wish to bind to and
-		// 	// bind the data to them.
-		// 	dataBind: function(data) {
-		// 		var chart = this.chart();
-		// 		if(chart.onData) { chart.onData(); }
-		// 		return this.selectAll("g").data(data);
-		// 	},
-
-		// 	// insert actual bars
-		// 	insert: function() {
-		// 		var chart = this.chart();
-		// 		if(chart.onInsert) { chart.onInsert(); }
-		// 		return this.append('g');
-		// 	},
-
-		// 	// define lifecycle events
-		// 	events: {
-		// 		'enter': function() {
-		// 			var chart = this.chart();
-
-		// 			if(chart.onEnter) { chart.onEnter(); }
-
-		// 			this.on('mouseover', function(d, i){
-		// 				d3.select(this).classed('hover', true);
-		// 				var obj = {
-		// 					'value': d.value,
-		// 					'pointIndex': i,
-		// 					'd': d,
-		// 					'event': d3.event,
-		// 					'pos': [
-		// 						chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
-		// 						chart.yScale(d.value)
-		// 					]
-		// 				};
-
-		// 				chart.dispatch.d3maMouseover(obj);
-		// 			});
-
-		// 			this.on('mouseout', function(d, i){
-		// 				d3.select(this).classed('hover', false);
-		// 				var obj = {
-		// 					'value': d.value,
-		// 					'pointIndex': i,
-		// 					'd': d,
-		// 					'event': d3.event,
-		// 					'pos': [
-		// 						chart.xScale(d.label) + chart.xScale.rangeBand() / 2,
-		// 						chart.yScale(d.value)
-		// 					]
-		// 				};
-
-		// 				chart.dispatch.d3maMouseout(obj);
-		// 			});
-		// 		},
-
-		// 		'enter:transition': function() {
-		// 			var chart = this.chart();
-		// 			return this
-		// 				.duration(1000)
-		// 				.attr({
-		// 					'fill-opacity': 0.8
-		// 				})
-		// 		}
-		// 	}
-		// });
 	},
 
 	w: function(_width) {
