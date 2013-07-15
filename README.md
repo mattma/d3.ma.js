@@ -15,4 +15,7 @@ utils.js   # Utilities toolbelt. this library is growing pretty quickly. Current
 	* d3.ma.tooltip(context)  # works like a constructor to init the tooltip obj, then have methods available like show(), close()
 	* d3.ma.zoom   #TODO
 
+container.js
+
+clippath.js   # reusable componment
 

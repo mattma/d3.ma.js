@@ -69,12 +69,12 @@ module.exports = function( grunt ) {
 					'src/common/core.js',
 					'src/common/utils.js',
 					'src/common/container.js',
-					'src/common/clippath.js',
 
 					'src/core/scale.js',
 					'src/core/base.js',
 
 					'src/components/axis.js',
+					'src/components/clippath.js',
 
 					'src/basic/bars.js',
 
