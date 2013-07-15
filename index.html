@@ -53,20 +53,19 @@
 		}
 
 		d3.chart('Axis').extend('MyAxis', {
-			onData: function(chart){
+			onDataBind: function(chart){
 				var chart = chart || this;
 				domain(chart);
 				chart.yAxis.tickFormat(d3.format(',.1f'));
 			}
 		});
 
-
 		d3.chart('Bars').extend('MyBars', {
 			initialize: function(){
 
 			},
 
-			onData: function(chart) {
+			onDataBind: function(chart) {
 				var chart = chart || this;
 				domain(chart);
 			},
@@ -82,6 +81,21 @@
 					'height': function(d) { return chart.height - chart.yScale(d.value); },
 					'fill': function(d) { return color(d.value); }
 				});
+			},
+
+			onDataMouseover: function(d, i, chart) {
+				var chart = chart || this;
+				var obj = {
+					'value': d.value,
+					'pointIndex': i,
+					'd': d,
+					'event': d3.event,
+					'pos': [
+						chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
+						chart.yScale(d.value)
+					]
+				};
+				return obj;
 			}
 		});
 
@@ -106,21 +120,6 @@
 				});
 
 				var tooltip = d3.ma.tooltip(this.base);
-
-				bars.onMouseover = function(d, i, chart) {
-					var chart = chart || bars;
-					var obj = {
-						'value': d.value,
-						'pointIndex': i,
-						'd': d,
-						'event': d3.event,
-						'pos': [
-							chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
-							chart.yScale(d.value)
-						]
-					};
-					return obj;
-				};
 
 				// Tooltip section
 				bars.dispatch.on('d3maMouseover', function(e){

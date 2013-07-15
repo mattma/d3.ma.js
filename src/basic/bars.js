@@ -12,7 +12,7 @@ d3.chart('Base').extend('Bars', {
 
 			dataBind: function(data) {
 				var chart = this.chart();
-				if(chart.onData) { chart.onData(); }
+				if(chart.onDataBind) { chart.onDataBind(); }
 				return this.selectAll('.group').data(data);
 			},
 
@@ -69,8 +69,8 @@ d3.chart('Base').extend('Bars', {
 					this.on('mouseover', function(d, i){
 						d3.select(this).classed('hover', true);
 						var obj = {};
-						if(chart.onMouseover) {
-							obj = chart.onMouseover(d, i, chart);
+						if(chart.onDataMouseover) {
+							obj = chart.onDataMouseover(d, i, chart);
 						}
 						chart.dispatch.d3maMouseover(obj);
 					});
@@ -81,8 +81,8 @@ d3.chart('Base').extend('Bars', {
 					this.on('mouseout', function(d, i){
 						d3.select(this).classed('hover', false);
 						var obj = {};
-						if(chart.onMouseout) {
-							obj = chart.onMouseout(d, i, chart);
+						if(chart.onDataMouseout) {
+							obj = chart.onDataMouseout(d, i, chart);
 						}
 						chart.dispatch.d3maMouseout(obj);
 					});

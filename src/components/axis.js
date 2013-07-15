@@ -13,6 +13,8 @@
 
 		guide key, is a boolean value, default to false. If you want to draw the guides, just need to setup
 		guide key to true.
+
+		onDataBind fn is actually handling the custom dataBind value to each individual group
  */
 d3.chart('Scale').extend("Axis", {
 
@@ -37,7 +39,7 @@ d3.chart('Scale').extend("Axis", {
 
 	transform: function(data) {
 		//Acutally draw the xAxis, yAxis on the screen
-		if(this.onData) { this.onData(); }
+		if(this.onDataBind) { this.onDataBind(); }
 
 		this.xAxisG.call( this.xAxis);
 		this.yAxisG.call( this.yAxis);
