@@ -12,4 +12,7 @@ utils.js   # Utilities toolbelt. this library is growing pretty quickly. Current
 	* d3.ma.onResize(function)   # easy way to bind multiple fns to window.onresize
 	* d3.ma.$(selector)        # kind of like jquery selector, optimized for id, class, tagname. Always return an Array of dom objects
 	* d3.ma.$$(selector)      # Always return the first index of the array. Work best with id selection, only return 1 dom objects
-	* d3.ma.tooltip
+	* d3.ma.tooltip(context)  # works like a constructor to init the tooltip obj, then have methods available like show(), close()
+	* d3.ma.zoom   #TODO
+
+

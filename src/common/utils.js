@@ -1,6 +1,6 @@
-/*
-	Pull Straight out of nvd3 library
- */
+// Pull Straight out of nvd3 library
+// get the current windowSize() out of the DOM
+// return and object has width value and height value
 d3.ma.windowSize = function() {
 	// Sane defaults
 	var size = {width: 640, height: 480};
@@ -27,7 +27,7 @@ d3.ma.windowSize = function() {
 	return (size);
 };
 
-
+// Pull Straight out of nvd3 library
 // Easy way to bind multiple functions to window.onresize
 // TODO: give a way to remove a function after its bound, other than removing all of them
 d3.ma.onResize = function(fun){
@@ -40,9 +40,10 @@ d3.ma.onResize = function(fun){
 };
 
 
-// by default, element is going to  document
-// selector could be any string
 // modified implementation from zepto.js library
+// In general, you do not need to apply 2nd arg. by default, element is document
+// selector could be any string, it is required. e.g:  id, class, tagName, any css selector
+// return  an array representation of DOM objects.
 d3.ma.$ = function(selector, element) {
 
 	var found,
@@ -66,9 +67,9 @@ d3.ma.$ = function(selector, element) {
 		);
 };
 
-// Always return the first index of the array
-// for example, if using id selection, the element would be returned.
-// so it is usefully when dealing with d3.ma.tooltip(), 3rd arg would expect to have a DOM element
+// variation of d3.ma.$(selector). return a single DOM object, the first index of the array
+// Works best with id selection. selector could be any string, it is required. e.g:  id, class, tagName, any css selector
+// Use case:  when dealing with d3.ma.tooltip(), 3rd arg would expect to have a DOM element e.g:  d3.ma.$$('#vis')
 d3.ma.$$ = function(selector, element) {
 	var ret = d3.ma.$(selector, element);
 	return ret[0];
@@ -76,12 +77,18 @@ d3.ma.$$ = function(selector, element) {
 
 
 /*
-	if init the tooltip, pass the this.base context,
-	when call show(), do not need to pass parentContainer, cause it will set itself
-	E.G  var tooltip = d3.ma.tooltip(this.base);
+	Works like a constructor, initialize the tooltip object. e.g var tooltip = d3.ma.tooltip()
+	Argument:  context.  optional, by passing the current context of my function to detemine which DOM element should be append the tooltip HTML markup. In general, d3.ma.tooltip(this.base). Tooltip block should be the siblings of the svg element
 
-	otherwise, when call show(), it will need to pass at least 3 args to set up the tooltips
-	E.G  tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+	tooltip.show()  # show tooltip markup like switch the display property on.
+		pos: Array, required. expect [x, y] to detemine tooltip position left, and top pixel value. The value should be set without tooltip obj to figure out where it should be positioned to.
+		content: required. HTML markup contains optional javascript variable data. content to show
+		parentContainer: optional. single DOM object, the element which need to contain the tooltip block. By default, it will add to the body element
+		classes: optional, by default, tooltip has d3maTooltip class, add more classes if needed
+
+		E.G  tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'))
+
+	tooltip.close()   # suppress the current tooltip block. turn the visiblity of tooltip off. can have 'd3maTooltip-pending-removal' class to show something interesting before it is being removed.
  */
 
 d3.ma.tooltip = function(context) {
