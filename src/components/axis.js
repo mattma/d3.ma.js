@@ -1,5 +1,7 @@
 /*
-	E.G.
+	it will draw the x axis and y axis for the chart. optionally, it could draw the grid guides along the x and y axis.
+
+	Initalization:
 		var axis =  this.mixin("Axis",  guideLineG, {
 			x: 'ordinal',
 			y: 'log',
@@ -8,13 +10,26 @@
 			guide: true
 		});
 
-		Passing options object as a third argument. take x or y as a key, value should be
-		a string representation of scale value, default value is linear, everything will override the default
+		// Passing options object as a third argument.
 
-		guide key, is a boolean value, default to false. If you want to draw the guides, just need to setup
-		guide key to true.
+	Arguments:
+		private atrribute:
+			x & y:  scale representation for the x axis and y axis. take x or y as a key, value should be a string representation of scale value, default value is linear, everything will override the default
 
-		onDataBind fn is actually handling the custom dataBind value to each individual group
+			Note: x, y could only be set by the initialization fn, option objects.
+
+		public attributes:
+			width, height,  ( # axis container width and height values. from scale.js )
+			xScale, yScale (# scale fn on the x & y axis. from scale.js)
+			guide: Boolean. Optional,  default to false. Draw the grid guides along x, y axis when guide is true
+			xAxis, yAxis   ( # could use to override its default value, like defined ticks(), orient(), etc. )
+			xAxisG, yAxisG ( # could use to defined custom element attributes )
+
+		Note:  currently, xGuide, yGuide is remaining as private object, if needed, it could expose out to the api
+
+	APIs:
+		onDataBind: function() { }
+		# fn is actually handling the custom dataBind value to each individual group
  */
 d3.chart('Scale').extend("Axis", {
 

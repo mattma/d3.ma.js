@@ -2,11 +2,11 @@
 
 1.  common folder
 
-It could be used in all cases, or all general use cases including clipPath or setup base container with margin values
+It could be used in all cases, or all general use cases including setup base container with margin values
 
-core.js   # simply setup the d3.ma namespace
+# core.js   # simply setup the d3.ma namespace
 
-utils.js   # Utilities toolbelt. this library is growing pretty quickly. Currently includes,
+# utils.js   # Utilities toolbelt. this library is growing pretty quickly. Currently includes,
 
 	* d3.ma.windowSize()    # get the current window width and height value
 	* d3.ma.onResize(function)   # easy way to bind multiple fns to window.onresize
@@ -15,7 +15,28 @@ utils.js   # Utilities toolbelt. this library is growing pretty quickly. Current
 	* d3.ma.tooltip(context)  # works like a constructor to init the tooltip obj, then have methods available like show(), close()
 	* d3.ma.zoom   #TODO
 
-container.js
+# container.js
 
-clippath.js   # reusable componment
 
+2. core folder
+
+Every modules here are kind of private. It is not designed for direct chart display. It is served as an internal usage. It could be mixin and extend by other modules inside the d3.ma libraries. Remember, No direct usage, ONLY for common behaviors, common events, common methods setup, would be mixin and extend by basic modules or complex modoles.
+
+3. components folder
+
+it could be used inside chart minin or extend methods. It could be reused in many different situation. Plugin play components in different places of the app.
+
+# axis.js
+
+it will draw the x axis and y axis for the chart. optionally, it could draw the grid guides along the x and y axis.
+
+TODO: label, legend
+
+# clippath.js
+
+reusable componment. it could be mixed into any chart modules. quickly mask out a portion of the view. by its own API, it could could quick get/set its width, height, x, y values. and retrieve its random url attribute for working with clip-path property.
+
+
+4. basic folder
+
+It contains all the basic chart modules which could be mixin and extend. For example, bar chart, circle chart, line chart, area chart etc.

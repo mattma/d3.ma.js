@@ -1,14 +1,17 @@
 /*
-For reusable components:
+For reusable components. it could be mixed into any chart modules. quickly mask out a portion of the view.
+
+Generated Markup:
 	<defs>
 		<clipPath id='clip-342'>
 			<rect width="0" height="0" x='0' y='0' />
 		</clipPath>
 	</defs>
 
-	usage:  <g clip-path="url(#clip-342)">
+Usage:
+	<g clip-path="url(#clip-342)">
 
-E.G
+Initalization:
 	var clip =  this.mixin("Clip",  this.base);
 	clip.box(600, 500).xy(400, 50);
 
@@ -19,12 +22,19 @@ E.G
 	});
 
 APIs:
+	public attributes:   width, height, x, y, clipPath(current clipPath element), rect (current rect element), cid ( clipPath element id attribute)
 
-	id() will set/get the custom clip id attribute
-	url() is ONLY a getting, quickly return a url(clip-342) clip-path attribute ready format e.g  clip.url()
+	clippath.id()
+	# setter/getter clipPath element id attribute
 
-	box() will set/get rect width and height
-	xy() will set/get rect x and y coordinates
+	clippath.url()
+	# getter  quickly return 'url(clip-342)' type of vlaue to use in clip-path attribute ready format e.g  clippath.url()
+
+	clippath.box()
+	# setter/getter rect element width value and height value
+
+	clippath.xy()
+	# setter/getter rect element x and y coordinates attribute
 
  */
 
