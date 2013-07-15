@@ -32,7 +32,7 @@ svg {
 .d3maTooltip {
 	position: absolute;
 	background-color: rgba(255,255,255,0.75);
-	padding: 1px;
+	padding: 3px 5px;
 	text-align: center;
 	border: 1px solid rgba(0,0,0,.2);
 	z-index: 10000;
@@ -55,6 +55,11 @@ svg {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+rect {
+	-moz-transition: fill-opacity .5s linear;
+	-webkit-transition: fill-opacity .5s linear;
+	transition: fill-opacity .5s linear;
 }
 rect:hover {
 	fill-opacity: 1;
