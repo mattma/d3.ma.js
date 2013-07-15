@@ -1,5 +1,6 @@
 /*
-	Base is extended from Scale
+	Base is extended from Scale, it is used for the basic/ section
+
 	it will auto gain the four variables: this.xScale, this.yScale, this.width, this.height
 
 	That means, when create an instance of base, or other basic charts or complext charts.

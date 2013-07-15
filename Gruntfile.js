@@ -71,7 +71,13 @@ module.exports = function( grunt ) {
 					'src/common/container.js',
 					'src/common/clippath.js',
 
+					'src/core/scale.js',
+					'src/core/base.js',
+
 					'src/components/axis.js',
+
+					'src/basic/bars.js',
+
 					'src/outro.js'
 				],
 				dest: '<%= CONFIGS.BUILD %>/d3.ma.js'
@@ -83,8 +89,9 @@ module.exports = function( grunt ) {
 		// Currently is being used by requirejs task, ONLY manual usage
 		uglify: {
 			options: {
-				banner: '<%= BANNER %>'
-				// sourceMap: 'path/to/source-map.js'
+				banner: '<%= BANNER %>',
+				report: 'gzip',
+				preserveComments: 'false'
 			},
 			minify: {
 				files: [{
