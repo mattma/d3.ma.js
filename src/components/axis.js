@@ -30,7 +30,7 @@
 	APIs:
 		onDataBind: function() { }
 		# fn is actually handling the custom dataBind value to each individual group
- */
+*/
 d3.chart('Scale').extend("Axis", {
 
 	initialize: function(options) {

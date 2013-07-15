@@ -1,4 +1,7 @@
-
+TODO:
+1. axis label
+2. refactor container with d3.ma.$
+3. legend
 
 1.  common folder
 
@@ -16,7 +19,7 @@ It could be used in all cases, or all general use cases including setup base con
 	* d3.ma.zoom   #TODO
 
 # container.js
-
+	select the container object by defining a css selector. then append the svg element to this container. by tweaking its own attributes, it will also append the g.canvas element inside the svg element to be the canvas of the chart. It will auto setup the margin top, left map to transform value of the canvas.
 
 2. core folder
 

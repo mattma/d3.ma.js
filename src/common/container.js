@@ -1,24 +1,54 @@
 /*
 	return element: Most of methods return svg canvas object for easy chaining
-	E.G: d3.ma.container('body').margin({top: 80, left: 80}).box(600, 500)
 
+	Initalization:
+		d3.ma.container('body').margin({top: 80, left: 80}).box(600, 500);
+		// or
 		var container = d3.ma.container('#vis'),
 			canvas = container.canvas().chart("LabeledCirclesChart");
 
-	d3.ma.container(selector) is absolutely required, others are optional.
+	Syntax:
+		d3.ma.container(selector)    // is absolutely required, others are optional.
+		# container(selector) will take a css selector, which will be the container to append the svg element
 
-	container() will take a css selector, which will be the container to contain the svg element
+	Arguments:
+		private atrribute:
+			x & y:  scale representation for the x axis and y axis. take x or y as a key, value should be a string representation of scale value, default value is linear, everything will override the default
 
-	margin()  is optional, to set/get margin object, must take an object as value, e.g. {top: 80}, normally come before box()
+			Note: x, y could only be set by the initialization fn, option objects.
 
-	box() is optional, by default, it will take the container width and height. to set/get/retrieve the svg/container width and height, if  only one value provide, width and height would be the same
+		public attributes:
+			width, height,  ( # axis container width and height values. from scale.js )
+			xScale, yScale (# scale fn on the x & y axis. from scale.js)
+			guide: Boolean. Optional,  default to false. Draw the grid guides along x, y axis when guide is true
+			xAxis, yAxis   ( # could use to override its default value, like defined ticks(), orient(), etc. )
+			xAxisG, yAxisG ( # could use to defined custom element attributes )
 
-	canvasW() and canvasH() is optional, will set/get the canvas width and height. Normally, do not need to set explicitly, Use box() will auto set the canvas width and height as properly
+		Note:  currently, xGuide, yGuide is remaining as private object, if needed, it could expose out to the api
 
-	 resize(), is optional, no args, by default, the graph would not resize when window resize, by calling container.resize() will enable
-	 the graph resize when window size changes.
- */
+	APIs:
+		container.margin(_margin)
+			# Optional, setter/getter  margin object, must take an object as value, e.g. {top: 80}, normally come before box()
 
+		container.box()
+			# Optional, by default, it will take the container width and height.
+			setter/getter retrieve the svg/container width and height, if only one value provide, width and height would be the same
+
+		container.canvasW()
+			# Optional, setter/getter  canvas width. Normally, do not need to set explicitly, Use container.box() will auto set the canvas width and height as properly
+
+		container.canvasH()
+			# Optional, setter/getter  canvas height. Normally, do not need to set explicitly, Use container.box() will auto set the canvas width and height as properly
+
+		container.resize()
+			# Optional. Take no args, by default, the graph would not resize when window resize, by calling container.resize() will enable the graph resize when window size changes. It is chainable, could be chained at anywhere after you initialized container object.
+
+		container.ratio(_ratio)
+			#Optional. setter/getter  update canvas attribute preserveAspectRatio for resize() purpose. aspectRatio variable in this case.
+
+		container.canvas()
+			# getter. Return the canvas object for easy chaining
+*/
 d3.ma.container = function(selector) {
 
 	var selection = d3.select(selector);
@@ -36,14 +66,6 @@ d3.ma.container = function(selector) {
 		// http://www.w3.org/TR/SVGTiny12/coords.html#PreserveAspectRatioAttribute
 		aspectRatio = 'xMidYMid',
 		scaleRatio = containerW / containerH;
-
-	// var aspect = 1400 / 600;
-	// // TODO: working on the window resize and resize the graph
-	// d3.ma.onResize( function() {
-	// 	var targetWidth = d3.ma.windowSize().width;
-	// 	container.attr("width", targetWidth);
-	// 	container.attr("height", targetWidth / aspect);
-	// });
 
 	var canvasW = container.canvasW = function(_width, boxCalled) {
 		if (!arguments.length) { return g.attr('width'); }
@@ -91,12 +113,12 @@ d3.ma.container = function(selector) {
 		return container;
 	};
 
-	container.margin = function(_) {
+	container.margin = function(_margin) {
 		if (!arguments.length) { return margin; }
-		margin.top  = typeof _.top  !== 'undefined' ? _.top  : margin.top;
-		margin.right  = typeof _.right  !== 'undefined' ? _.right  : margin.right;
-		margin.bottom = typeof _.bottom !== 'undefined' ? _.bottom : margin.bottom;
-		margin.left   = typeof _.left   !== 'undefined' ? _.left   : margin.left;
+		margin.top  = typeof _margin.top  !== 'undefined' ? _margin.top  : margin.top;
+		margin.right  = typeof _margin.right  !== 'undefined' ? _margin.right  : margin.right;
+		margin.bottom = typeof _margin.bottom !== 'undefined' ? _margin.bottom : margin.bottom;
+		margin.left   = typeof _margin.left   !== 'undefined' ? _margin.left   : margin.left;
 
 		// After set the new margin, and maintain svg container width and height, container width and height ratio
 		container.box(containerW, containerH);
