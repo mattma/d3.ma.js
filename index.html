@@ -97,10 +97,6 @@
 		});
 
 		d3.chart('Bars').extend('MyBars', {
-			initialize: function(){
-
-			},
-
 			onDataBind: function(chart) {
 				var chart = chart || this;
 				domain(chart);
@@ -137,7 +133,6 @@
 
 		d3.chart("FinalChart", {
 			initialize: function() {
-
 				// Used for the clipPath object
 				// var clip =  this.mixin("Clip",  this.base);
 				// clip.box(600, 500).xy(400, 50);
