@@ -13,7 +13,7 @@
 	<script src="src/common/core.js"></script>
 	<script src="src/common/utils.js"></script>
 	<script src="src/common/container.js"></script>
-	<script src="src/common/clippath.js"></script>
+	<script src="src/components/clippath.js"></script>
 
 
 	<script src="src/core/scale.js"></script>
@@ -135,7 +135,7 @@
 			initialize: function() {
 				// Used for the clipPath object
 				// var clip =  this.mixin("Clip",  this.base);
-				// clip.box(600, 500).xy(400, 50);
+				// clip.box(300, 600).xy(0, 50);
 
 				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
 					x: 'ordinal',
@@ -145,9 +145,10 @@
 				});
 
 				var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
-					x: 'ordinal',
-					width: this.base.attr('width'),
-					height: this.base.attr('height')
+					'x': 'ordinal',
+					'width': this.base.attr('width'),
+					'height': this.base.attr('height'),
+
 				});
 
 				// Tooltip section
