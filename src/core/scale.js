@@ -13,6 +13,9 @@
 		public attributes:
 			width, height,  (# container width and height values.)
 			xScale, yScale (# scale fn on the x & y axis. )
+			info  (# graph info about the details of this graph include width and height)
+
+		Note: by default, you do not need to specified width, height value in the third args, it will use the info options for the value, if you want to override the default, you could definied the width and height to override the info value
 
 	APIs:  ( defined in the constructor level )
 		private api:
@@ -31,8 +34,9 @@ d3.chart('Scale', {
 		var x = options.x || 'linear';
 		var y = options.y || 'linear';
 
-		this.width = options.width || this.base.attr('width') || 1;
-		this.height = options.height || this.base.attr('height') || 1;
+		this.width = options.width || options.info.canvasW || this.base.attr('width') || 1;
+		this.height = options.height || options.info.canvasH || this.base.attr('height') || 1;
+		this.info = options.info;
 
 		// init the scale
 		this.xScale = this._scale(x);

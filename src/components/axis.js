@@ -19,14 +19,17 @@
 			Note: x, y could only be set by the initialization fn, option objects.
 
 		public attributes:
-			width, height,  ( # axis container width and height values. from scale.js )
-			xScale, yScale (# scale fn on the x & y axis. from scale.js)
+			width, height,  (# container width and height values.)
+			xScale, yScale (# scale fn on the x & y axis. )
+			info  (# graph info about the details of this graph include width and height)
+
 			guide: Boolean. Optional,  default to false. Draw the grid guides along x, y axis when guide is true
 			xAxis, yAxis   ( # could use to override its default value, like defined ticks(), orient(), etc. )
 			xAxisG, yAxisG ( # could use to defined custom element attributes )
 
 		Note:  currently, xGuide, yGuide is remaining as private object, if needed, it could expose out to the api
 
+		Note: by default, you do not need to specified width, height value in the third args, it will use the info options for the value, if you want to override the default, you could definied the width and height to override the info value
 	APIs:
 		onDataBind: function() { }
 		# fn is actually handling the custom dataBind value to each individual group
@@ -35,8 +38,6 @@ d3.chart('Scale').extend("Axis", {
 
 	initialize: function(options) {
 		options = options || {};
-
-		console.log('options: ', options);
 
 		this.guide = options.guide || false;
 

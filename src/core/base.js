@@ -20,6 +20,9 @@
 		public attributes:
 			width, height,  (# container width and height values.)
 			xScale, yScale (# scale fn on the x & y axis. )
+			info  (# graph info about the details of this graph include width and height)
+
+		Note: by default, you do not need to specified width, height value in the third args, it will use the info options for the value, if you want to override the default, you could definied the width and height to override the info value
 
 	APIs:  ( defined in the constructor level )
 	# THOSE APIs EXIST IN ALL EXTENDED MODULES
