@@ -32,7 +32,6 @@
 </head>
 <body>
 	<div id="vis"></div>
-	<div class="test"></div>
 
 	<script>
 		var data = [
@@ -133,22 +132,27 @@
 		});
 
 		d3.chart("FinalChart", {
-			initialize: function() {
+			// margin:  access container margin info  top, right, bottom, left
+			initialize: function(containerInfo) {
 				// Used for the clipPath object
 				// var clip =  this.mixin("Clip",  this.base);
 				// clip.box(300, 600).xy(0, 50);
 
 				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
+					info: containerInfo,
 					x: 'ordinal',
 					width: this.base.attr('width'),
 					height: this.base.attr('height'),
 					guide: true
 				});
 
+				axis.xLabel('matt ma').yLabel('yes, sir');
+
 				var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
-					'x': 'ordinal',
-					'width': this.base.attr('width'),
-					'height': this.base.attr('height'),
+					info: containerInfo,
+					x: 'ordinal',
+					width: this.base.attr('width'),
+					height: this.base.attr('height'),
 
 				});
 
@@ -172,7 +176,7 @@
 
 		container.resize().box(1400, 600);
 
-		var canvas = container.canvas().chart("FinalChart");
+		var canvas = container.canvas().chart("FinalChart", container.info() );
 
 		//render it with some data
 		canvas.draw(data);

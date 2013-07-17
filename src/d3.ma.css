@@ -4,12 +4,19 @@ svg {
 .line {
 	fill: none; stroke: #000; stroke-width: 1.5px;
 }
-.axis path, .axis line {
-	fill: none; stroke: #000; shape-rendering: crispEdges;
-}
+
 #vis {
 	width: 1400px;
 	height: 600px;
+}
+
+/*
+	Axis Styles
+ */
+.axis path, .axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
 }
 
 .guide .tick {
@@ -18,6 +25,13 @@ svg {
 }
 .guide path {
 	stroke-width: 0;
+}
+
+.x label {
+	text-anchor: middle;
+}
+.y label {
+	text-anchor: middle;
 }
 
 /********************

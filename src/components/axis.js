@@ -36,6 +36,8 @@ d3.chart('Scale').extend("Axis", {
 	initialize: function(options) {
 		options = options || {};
 
+		console.log('options: ', options);
+
 		this.guide = options.guide || false;
 
 		this.xAxis = d3.svg.axis().scale(this.xScale).orient('bottom');
@@ -91,6 +93,24 @@ d3.chart('Scale').extend("Axis", {
 				.tickSize(-this.width, 0, 0)
 				.tickFormat('')
 		);
+
+		return this;
+	},
+
+	xLabel: function(_label) {
+		this.xAxisG.append('text').classed('label', true).attr({
+			// 'x':
+			// 'y':
+		}).text(_label);
+
+		return this;
+	},
+
+	yLabel: function(_label) {
+		this.yAxisG.append('text').classed('label', true).attr({
+			// 'x':
+			// 'y':
+		}).text(_label);
 
 		return this;
 	}

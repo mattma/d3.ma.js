@@ -51,6 +51,9 @@
 
 		container.canvas()
 			# getter. Return the canvas object for easy chaining
+
+		container.info()
+			# getter. Return all the infomation about this container. expose all the data to the world
 */
 d3.ma.container = function(selector) {
 
@@ -71,14 +74,14 @@ d3.ma.container = function(selector) {
 		scaleRatio = containerW / containerH;
 
 	var canvasW = container.canvasW = function(_width, boxCalled) {
-		if (!arguments.length) { return g.attr('width'); }
+		if (!arguments.length) { return +(g.attr('width')); }
 		if(boxCalled) { _width = parseInt(_width) - margin.left - margin.right; }
 		g.attr('width', _width);
 		return container;
 	};
 
 	var canvasH = container.canvasH = function(_height, boxCalled) {
-		if(!arguments.length) { return g.attr('height'); }
+		if(!arguments.length) { return +(g.attr('height')); }
 		if(boxCalled) { _height = parseInt(_height) - margin.top - margin.bottom; }
 		g.attr('height', _height);
 		return container;
@@ -139,6 +142,23 @@ d3.ma.container = function(selector) {
 	// Return the canvas object for easy chaining
 	container.canvas = function(){
 		return container.select('g');
+	};
+
+	// Return all the infomation about this container
+	// expose all the data to the world
+	container.info = function(){
+		var margin = container.margin(),
+			box = container.box();
+		return {
+			'marginTop': margin.top,
+			'marginRight': margin.right,
+			'marginBottom': margin.bottom,
+			'marginLeft': margin.left,
+			'containerW': box.containerWidth,
+			'containerH': box.containerHeight,
+			'canvasW': canvasW(),
+			'canvasH': canvasH()
+		};
 	};
 
 	// Set the canvas transform attr, call it when needed
