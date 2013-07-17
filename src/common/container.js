@@ -27,6 +27,9 @@
 		Note:  currently, xGuide, yGuide is remaining as private object, if needed, it could expose out to the api
 
 	APIs:
+		container(selector)
+			# in general, selector is a single dom element, id in most of the case.
+
 		container.margin(_margin)
 			# Optional, setter/getter  margin object, must take an object as value, e.g. {top: 80}, normally come before box()
 
@@ -54,8 +57,8 @@ d3.ma.container = function(selector) {
 	var selection = d3.select(selector);
 
 	var margin = { top: 30, right: 10, bottom: 20, left: 40 },
-		containerW = selection[0][0].clientWidth || document.body.clientWidth || 960,
-		containerH = selection[0][0].clientHeight || document.body.clientHeight || 540,
+		containerW = d3.ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
+		containerH = d3.ma.$$(selector).clientHeight || selection[0][0].clientHeight || document.body.clientHeight || 540,
 		canvasW,
 		canvasH,
 		container = selection.append('svg'),  // Create container, append svg element to the selection

@@ -95,3 +95,22 @@ d3.chart('Scale').extend("Axis", {
 		return this;
 	}
 });
+
+
+// var rotateYLabel = true;
+// var axisLabel = g.selectAll('text').data([axisLabelText || null]);
+
+// axisLabel.exit().remove();
+
+// axisLabel.enter().append('text');
+
+// axisLabel.attr({
+// 	'text-anchor': 'middle',
+// 	'transform': 'rotate(-90)',
+// 	'x': (-scale.range()[0] / 2),
+// 	'y': (-Math.max(margin.left,width) + 12)
+// });
+
+// axisLabel.text(function(d) { return d });
+
+//<text class="nv-axislabel" text-anchor="middle" transform="rotate(-90)" y="-63" x="-276">Voltage (v) ma</text>
