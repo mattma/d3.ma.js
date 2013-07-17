@@ -125,6 +125,8 @@ d3.chart('Base').extend('Bars', {
 	initialize: function(options) {
 		options = options || {};
 
+		console.log('this.width: ', this.width);
+
 		this.layer('bars', this.base, {
 
 			// select the elements we wish to bind to and bind the data to them.

@@ -17,6 +17,33 @@
 
 		Note: by default, you do not need to specified width, height value in the third args, it will use the info options for the value, if you want to override the default, you could definied the width and height to override the info value
 
+		info arg is absolutely required the param. it is used to figure out the width and height stuffs.
+
+	Example:
+		var container = d3.ma.container('#vis');
+		container.resize().box(1400, 600);
+
+		// Important, to pass the container.info() as a 2nd param
+		var canvas = container.canvas().chart("FinalChart", container.info() ); // <= this is the ABSOLUTELY required setup
+		canvas.draw(data);
+
+		d3.chart("FinalChart", {
+
+			//important, to pass the option of containerInfo as an obj options
+			initialize: function(containerInfo) {  // <= this is the ABSOLUTELY required setup
+				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
+					info: containerInfo,   // <= this is the ABSOLUTELY required setup
+					x: 'ordinal',
+					guide: true
+				});
+
+				var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
+					info: containerInfo,  // <= this is the ABSOLUTELY required setup
+					x: 'ordinal'
+				});
+			}
+		});
+
 	APIs:  ( defined in the constructor level )
 		private api:
 			_scale(scale)   # simply just return a new instance of d3.scale

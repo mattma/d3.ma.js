@@ -132,7 +132,6 @@
 		});
 
 		d3.chart("FinalChart", {
-			// margin:  access container margin info  top, right, bottom, left
 			initialize: function(containerInfo) {
 				// Used for the clipPath object
 				// var clip =  this.mixin("Clip",  this.base);
@@ -141,8 +140,6 @@
 				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
 					info: containerInfo,
 					x: 'ordinal',
-					width: this.base.attr('width'),
-					height: this.base.attr('height'),
 					guide: true
 				});
 
@@ -150,10 +147,7 @@
 
 				var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
 					info: containerInfo,
-					x: 'ordinal',
-					width: this.base.attr('width'),
-					height: this.base.attr('height'),
-
+					x: 'ordinal'
 				});
 
 				// Tooltip section
