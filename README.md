@@ -1,7 +1,6 @@
 TODO:
-1. axis label
-2. refactor container with d3.ma.$
-3. legend
+1. refactor container with handle multiple data
+2. legend
 
 1.  common folder
 
