@@ -154,7 +154,7 @@
 
 				// Tooltip section
 				var tooltip = d3.ma.tooltip(this.base);
-				bars.dispatch.on('d3maMouseover', function(e){
+				bars.dispatch.on('d3maMouseenter', function(e){
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
 					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));

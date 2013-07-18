@@ -79,9 +79,9 @@
 			# arg, i: same like d3 option i
 			# arg, chart: represent this.chart() inside the this.layer() fn. context for this graph, the whole object
 
-			Optional. If defined, it must have a return object. It used to pass the customized data to the d3maMouseover event. So that it could build your customized HTML to the hover effect.
+			Optional. If defined, it must have a return object. It used to pass the customized data to the d3maMouseenter event. So that it could build your customized HTML to the hover effect.
 
-			By default, it would do two things. 1, it will add the 'hover' class to the element that you are hovering. 2, it will trigger internal d3maMouseover event. Well, look at the Events section below, you need to defined the correspond handler to handle the (empty or full)data which passed in.
+			By default, it would do two things. 1, it will add the 'hover' class to the element that you are hovering. 2, it will trigger internal d3maMouseenter event. Well, look at the Events section below, you need to defined the correspond handler to handle the (empty or full)data which passed in.
 
 			E.G
 				onDataMouseover: function(d, i, chart) {
@@ -103,12 +103,12 @@
 			Exact same above. Except, it is triggering the d3maMouseout event and its correspond handler. Normally, does not need to define this fn because you just need to close the tooltip.
 
 	Events:  ( defined in the instance level )
-		d3maMouseover:
-			# syntax: bars.dispatch.on('d3maMouseover', function(e){ });
+		d3maMouseenter:
+			# syntax: bars.dispatch.on('d3maMouseenter', function(e){ });
 			# arg, e: it should be the return data obj which you defined in the constrcutor level fn, onDataMouseover()
 			E.G
 				var tooltip = d3.ma.tooltip(this.base);
-				bars.dispatch.on('d3maMouseover', function(e){
+				bars.dispatch.on('d3maMouseenter', function(e){
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
 					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));

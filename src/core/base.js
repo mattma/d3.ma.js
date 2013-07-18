@@ -44,11 +44,11 @@
 			For example, quick internal binding to reduce duplicated code in modules like circle.js, bars.js etc
 
 	Events:  ( defined in the instance level )
-		# Used for constructor.dispatch.on trigger events  E.G: Custom mouseover and mouseout events
-		# syntax: constructor.dispatch.on('d3maMouseover', function(e){ });
+		# Used for constructor.dispatch.on trigger events  E.G: Custom d3maMouseenter and mouseout events
+		# syntax: constructor.dispatch.on('d3maMouseenter', function(e){ });
 
 		# Currently support:
-			d3maMouseover
+			d3maMouseenter
 			d3maMouseout
  */
 d3.chart('Scale').extend('Base', {
@@ -59,7 +59,7 @@ d3.chart('Scale').extend('Base', {
 
 		this.box(this.width, this.height);
 
-		this.dispatch = d3.dispatch('d3maMouseover', 'd3maMouseout');
+		this.dispatch = d3.dispatch('d3maMouseenter', 'd3maMouseout');
 	},
 
 	w: function(_width) {
@@ -105,7 +105,7 @@ d3.chart('Scale').extend('Base', {
 			if(chart.onDataMouseover) {
 				obj = chart.onDataMouseover(d, i, chart);
 			}
-			chart.dispatch.d3maMouseover(obj);
+			chart.dispatch.d3maMouseenter(obj);
 		});
 
 		single.on('mouseout', function(d, i){

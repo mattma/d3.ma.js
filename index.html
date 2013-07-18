@@ -123,7 +123,7 @@
 
 				//Tooltip section
 				var tooltip = d3.ma.tooltip(this.base);
-				circles.dispatch.on('d3maMouseover', function(e){
+				circles.dispatch.on('d3maMouseenter', function(e){
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.x + "<br><strong>" + e.d.y + "</strong>" + "</div>"
 					tooltip.show([e.pos[0], e.pos[1]], html);
