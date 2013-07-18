@@ -35,7 +35,23 @@
 		Note: by default, you do not need to specified width, height value in the third args, it will use the info options for the value, if you want to override the default, you could definied the width and height to override the info value
 	APIs:
 		onDataBind: function() { }
-		# fn is actually handling the custom dataBind value to each individual group
+			# fn is actually handling the custom dataBind value to each individual group
+
+		axis.xLabel(_label, leftRightPosition, upDownPosition)
+			# _label:  Required, text will be shown in the label section
+			# leftRightPosition: Optional, it will be positive number. move the text on the left and right position
+			# upDownPosition: Optional, it will be positive number. move the text on the up and down position
+
+			By default, the text will be translated to margin.left and margin.bottom
+			Use  .x .label  selector to style the label
+
+		axis.yLabel(_label, upDownPosition, leftRightPosition) {
+			# _label:  Required, text will be shown in the label section
+			# upDownPosition: Optional, it will be positive number. move the text on the up and down position
+			# leftRightPosition: Optional, it will be positive number. move the text on the left and right position
+
+			By default, the text will be translated to margin.left and margin.top, rotate -90 degrees
+			Use  .y .label  selector to style the label
 */
 d3.chart('Scale').extend("Axis", {
 
@@ -101,40 +117,23 @@ d3.chart('Scale').extend("Axis", {
 		return this;
 	},
 
-	xLabel: function(_label) {
+	xLabel: function(_label, leftRightPosition, upDownPosition) {
 		this.xAxisG.append('text').classed('label', true).attr({
-			// 'x':
-			// 'y':
+			'x': leftRightPosition || 0, // control left and right of the label
+			'y': (-upDownPosition) || 0, // control up and down of the label
+			'transform': 'translate(' + this.info.marginLeft+ ',' + this.info.marginBottom + ')'
 		}).text(_label);
 
 		return this;
 	},
 
-	yLabel: function(_label) {
+	yLabel: function(_label, upDownPosition, leftRightPosition) {
 		this.yAxisG.append('text').classed('label', true).attr({
-			// 'x':
-			// 'y':
+			'x':  (-upDownPosition) || 0, // control up and down of the label
+			'y': leftRightPosition || 10,  // control left and right of the label
+			'transform':  'rotate(-90) translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
 		}).text(_label);
 
 		return this;
 	}
 });
-
-
-// var rotateYLabel = true;
-// var axisLabel = g.selectAll('text').data([axisLabelText || null]);
-
-// axisLabel.exit().remove();
-
-// axisLabel.enter().append('text');
-
-// axisLabel.attr({
-// 	'text-anchor': 'middle',
-// 	'transform': 'rotate(-90)',
-// 	'x': (-scale.range()[0] / 2),
-// 	'y': (-Math.max(margin.left,width) + 12)
-// });
-
-// axisLabel.text(function(d) { return d });
-
-//<text class="nv-axislabel" text-anchor="middle" transform="rotate(-90)" y="-63" x="-276">Voltage (v) ma</text>

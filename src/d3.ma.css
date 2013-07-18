@@ -27,11 +27,12 @@ svg {
 	stroke-width: 0;
 }
 
-.x label {
+.label {
 	text-anchor: middle;
-}
-.y label {
-	text-anchor: middle;
+	font-size: 14px;
+	fill: black;
+	font-family: arial, helvetica, sans-serif;
+	text-transform: capitalize;
 }
 
 /********************

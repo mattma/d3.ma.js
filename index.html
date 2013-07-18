@@ -143,7 +143,9 @@
 					guide: true
 				});
 
-				axis.xLabel('matt ma').yLabel('yes, sir');
+				axis
+					.xLabel('X Labels', (containerInfo.canvasW - containerInfo.marginLeft - containerInfo.marginRight) )
+					.yLabel('Y Labels', 15);
 
 				var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
 					info: containerInfo,
@@ -166,7 +168,7 @@
 
 		});
 
-		var container = d3.ma.container('#vis');
+		var container = d3.ma.container('#vis').margin({left: 50});
 
 		container.resize().box(1400, 600);
 
