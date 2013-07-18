@@ -24,6 +24,7 @@
 
 
 	<script src="src/basic/bars.js"></script>
+	<script src="src/basic/line.js"></script>
 
 <!--
 	<script src="build/d3.ma.min.js"></script>
@@ -34,40 +35,9 @@
 	<div id="vis"></div>
 
 	<script>
-		var data = [
-			{
-				"label" : "A" ,
-				"value" : 29.765957771107
-			} ,
-			{
-				"label" : "B" ,
-				"value" : 0
-			} ,
-			{
-				"label" : "C" ,
-				"value" : 32.807804682612
-			} ,
-			{
-				"label" : "D" ,
-				"value" : 196.45946739256
-			} ,
-			{
-				"label" : "E" ,
-				"value" : 0.19434030906893
-			} ,
-			{
-				"label" : "F" ,
-				"value" : 98.079782601442
-			} ,
-			{
-				"label" : "G" ,
-				"value" : 13.925743130903
-			} ,
-			{
-				"label" : "H" ,
-				"value" : 5.1387322875705
-			}
-		];
+		var data = d3.range(40).map(function(i) {
+			return {x: i / 39, y: (Math.sin(i / 3) + 2) / 4};
+		});
 	</script>
 
 	<script>
@@ -82,54 +52,18 @@
 
 		function domain(context) {
 			// Setup xScale domain range
-			context.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
-			// Setup yScale domain range
-			var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
-			context.yScale.domain([ 0, maxY ]);
+			context.xScale.domain( [ 0, d3.max(data, function(d, i){ return d.x }) ]);
+
+			context.yScale.domain([ 0, d3.max(data, function(d, i){ return d.y }) ]);
 		}
 
 		d3.chart('Axis').extend('MyAxis', {
 			onDataBind: function(chart){
 				var chart = chart || this;
 				domain(chart);
-				chart.yAxis.tickFormat(d3.format(',.1f'));
 			}
 		});
 
-		d3.chart('Bars').extend('MyBars', {
-			onDataBind: function(chart) {
-				var chart = chart || this;
-				domain(chart);
-			},
-
-			onEnter: function(chart, single) {
-				var chart = chart || this,
-					color = d3.scale.category10();
-
-				single.attr({
-					'x': function(d, i) { return chart.xScale(d.label); },
-					'y': function(d) { return chart.yScale(d.value); },
-					'width': function(d) { return chart.xScale.rangeBand() ; },
-					'height': function(d) { return chart.height - chart.yScale(d.value); },
-					'fill': function(d) { return color(d.value); }
-				});
-			},
-
-			onDataMouseover: function(d, i, chart) {
-				var chart = chart || this;
-				var obj = {
-					'value': d.value,
-					'pointIndex': i,
-					'd': d,
-					'event': d3.event,
-					'pos': [
-						chart.xScale(d.label) + (chart.xScale.rangeBand() / 2),
-						chart.yScale(d.value)
-					]
-				};
-				return obj;
-			}
-		});
 
 		d3.chart("FinalChart", {
 			initialize: function(containerInfo) {
@@ -139,34 +73,36 @@
 
 				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
 					info: containerInfo,
-					x: 'ordinal',
 					guide: true
 				});
 
 				axis
-					.xLabel('X Labels', (containerInfo.canvasW - containerInfo.marginLeft - containerInfo.marginRight) )
-					.yLabel('Y Labels', 15);
+					.xLabel('Line Chart X' )
+					.yLabel('Y Labels', 15, 20);
 
-				var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
-					info: containerInfo,
-					x: 'ordinal'
+				var line = this.mixin("Line", this.base.append('g').classed('lines', true), {
+					info: containerInfo
 				});
+
+
 
 				// Tooltip section
-				var tooltip = d3.ma.tooltip(this.base);
-				bars.dispatch.on('d3maMouseover', function(e){
-					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
-					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
-					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
-					tooltip.show([e.pos[0], e.pos[1]], html);
-				});
+				// var tooltip = d3.ma.tooltip(this.base);
+				// bars.dispatch.on('d3maMouseover', function(e){
+				// 	e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
+				// 	var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
+				// 	//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+				// 	tooltip.show([e.pos[0], e.pos[1]], html);
+				// });
 
-				bars.dispatch.on('d3maMouseout', function(e){
-					tooltip.close();
-				});
+				// bars.dispatch.on('d3maMouseout', function(e){
+				// 	tooltip.close();
+				// });
 			}
 
 		});
+
+		//console.log('data: ', data);
 
 		var container = d3.ma.container('#vis').margin({left: 50});
 
