@@ -88,6 +88,10 @@ svg {
 	-ms-user-select: none;
 	user-select: none;
 }
+
+/* ================= */
+/* = General Shape = */
+/* ================= */
 rect {
 	-moz-transition: fill-opacity .5s linear;
 	-webkit-transition: fill-opacity .5s linear;
