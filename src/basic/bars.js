@@ -74,7 +74,7 @@
 					});
 				},
 
-		onDataMouseover: function(d, i, chart) { }
+		onDataMouseenter: function(d, i, chart) { }
 			# arg, d: same like d3 option d
 			# arg, i: same like d3 option i
 			# arg, chart: represent this.chart() inside the this.layer() fn. context for this graph, the whole object
@@ -84,7 +84,7 @@
 			By default, it would do two things. 1, it will add the 'hover' class to the element that you are hovering. 2, it will trigger internal d3maMouseenter event. Well, look at the Events section below, you need to defined the correspond handler to handle the (empty or full)data which passed in.
 
 			E.G
-				onDataMouseover: function(d, i, chart) {
+				onDataMouseenter: function(d, i, chart) {
 					var chart = chart || bars;
 					var obj = {
 						'value': d.value,
@@ -105,7 +105,7 @@
 	Events:  ( defined in the instance level )
 		d3maMouseenter:
 			# syntax: bars.dispatch.on('d3maMouseenter', function(e){ });
-			# arg, e: it should be the return data obj which you defined in the constrcutor level fn, onDataMouseover()
+			# arg, e: it should be the return data obj which you defined in the constrcutor level fn, onDataMouseenter()
 			E.G
 				var tooltip = d3.ma.tooltip(this.base);
 				bars.dispatch.on('d3maMouseenter', function(e){

@@ -40,7 +40,7 @@
 
 	PRIVATE APIs:
 		_bindMouseEnterOutEvents(chart, single)
-			# when it is entering, binding datum with each element, single element will bind 'mouseenter' event with our custom 'd3maMouseover', bind 'mouseout' with our custom event 'd3maMouseout'.
+			# when it is entering, binding datum with each element, single element will bind 'mouseenter' event with our custom 'd3maMouseenter', bind 'mouseout' with our custom event 'd3maMouseout'.
 			For example, quick internal binding to reduce duplicated code in modules like circle.js, bars.js etc
 
 	Events:  ( defined in the instance level )
@@ -102,8 +102,8 @@ d3.chart('Scale').extend('Base', {
 		single.on('mouseenter', function(d, i){
 			d3.select(this).classed('hover', true);
 			var obj = {};
-			if(chart.onDataMouseover) {
-				obj = chart.onDataMouseover(d, i, chart);
+			if(chart.onDataMouseenter) {
+				obj = chart.onDataMouseenter(d, i, chart);
 			}
 			chart.dispatch.d3maMouseenter(obj);
 		});
