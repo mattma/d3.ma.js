@@ -6,6 +6,8 @@ d3.chart('Base').extend('Circle', {
 	initialize: function(options) {
 		options = options || {};
 
+		var self = this;
+
 		this.layer('circle', this.base, {
 			// select the elements we wish to bind to and bind the data to them.
 			dataBind: function(data) {
@@ -31,23 +33,7 @@ d3.chart('Base').extend('Circle', {
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
 
-					this.on('mouseover', function(d, i){
-						d3.select(this).classed('hover', true);
-						var obj = {};
-						if(chart.onDataMouseover) {
-							obj = chart.onDataMouseover(d, i, chart);
-						}
-						chart.dispatch.d3maMouseover(obj);
-					});
-
-					this.on('mouseout', function(d, i){
-						d3.select(this).classed('hover', false);
-						var obj = {};
-						if(chart.onDataMouseout) {
-							obj = chart.onDataMouseout(d, i, chart);
-						}
-						chart.dispatch.d3maMouseout(obj);
-					});
+					self._bindMouseEnterOutEvents(chart, this);
 				}
 			}
 		});

@@ -38,6 +38,11 @@
 		constructor.h(_height)
 			# setter/getter container height value  // always recommend to use constructor.box() instead
 
+	PRIVATE APIs:
+		_bindMouseEnterOutEvents(chart, single)
+			# when it is entering, binding datum with each element, single element will bind 'mouseenter' event with our custom 'd3maMouseover', bind 'mouseout' with our custom event 'd3maMouseout'.
+			For example, quick internal binding to reduce duplicated code in modules like circle.js, bars.js etc
+
 	Events:  ( defined in the instance level )
 		# Used for constructor.dispatch.on trigger events  E.G: Custom mouseover and mouseout events
 		# syntax: constructor.dispatch.on('d3maMouseover', function(e){ });
@@ -87,5 +92,30 @@ d3.chart('Scale').extend('Base', {
 		this.h((_height) ? _height : _width);
 
 		return this;
+	},
+
+	// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
+	// this    # refer to each individual group just appended by insert command
+	_bindMouseEnterOutEvents: function(chart, single) {
+		var chart = chart || this;
+
+		single.on('mouseenter', function(d, i){
+			d3.select(this).classed('hover', true);
+			var obj = {};
+			if(chart.onDataMouseover) {
+				obj = chart.onDataMouseover(d, i, chart);
+			}
+			chart.dispatch.d3maMouseover(obj);
+		});
+
+		single.on('mouseout', function(d, i){
+			d3.select(this).classed('hover', false);
+			var obj = {};
+			if(chart.onDataMouseout) {
+				obj = chart.onDataMouseout(d, i, chart);
+			}
+			chart.dispatch.d3maMouseout(obj);
+		});
 	}
+
 });
