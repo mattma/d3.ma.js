@@ -2,12 +2,15 @@
 	Base is extended from Scale, it is used for the basic/ section. All mixin or extended modules will have all its behavior. Where you define your absolutely needed methods for the APIs. Internal use only, never use it for displaying a chart.
 
 	Initalization:
-		var chart =  this.mixin('Base',  axisG, {
-			x: 'ordinal',
-			y: 'log',
-			width: this.base.attr('width'),
-			height: this.base.attr('height')
-		});
+		initialize: function(containerInfo) {
+			var chart =  this.mixin('Base',  axisG, {
+				info: containerInfo,
+				x: 'ordinal',
+				y: 'log',
+				width: this.base.attr('width'),  // optional
+				height: this.base.attr('height')   // optional
+			});
+		}
 
 		// Passing options object as a third argument. Options is required.
 

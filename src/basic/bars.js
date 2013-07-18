@@ -3,11 +3,14 @@
 	It is used for displaying the bar chart
 
 	Initalization:
-		var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
-			x: 'ordinal',
-			width: this.base.attr('width'),
-			height: this.base.attr('height')
-		});
+		initialize: function(containerInfo) {
+			var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
+				info: containerInfo,
+				x: 'ordinal',
+				width: this.base.attr('width'),  // optional
+				height: this.base.attr('height')  // optional
+			});
+		}
 
 		// Passing options object as a third argument.
 

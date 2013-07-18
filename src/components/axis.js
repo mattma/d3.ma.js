@@ -2,13 +2,16 @@
 	it will draw the x axis and y axis for the chart. optionally, it could draw the grid guides along the x and y axis.
 
 	Initalization:
-		var axis =  this.mixin("Axis",  guideLineG, {
-			x: 'ordinal',
-			y: 'log',
-			width: this.base.attr('width'),
-			height: this.base.attr('height'),
-			guide: true
-		});
+		initialize: function(containerInfo) {
+			var axis =  this.mixin("Axis",  guideLineG, {
+				info: containerInfo,
+				x: 'ordinal',
+				y: 'log',
+				width: this.base.attr('width'),  // optional
+				height: this.base.attr('height'),  // optional
+				guide: true
+			});
+		}
 
 		// Passing options object as a third argument. Options is required.
 

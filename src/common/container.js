@@ -61,7 +61,7 @@ d3.ma.container = function(selector) {
 
 	var margin = { top: 30, right: 10, bottom: 20, left: 40 },
 		containerW = d3.ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
-		containerH = d3.ma.$$(selector).clientHeight || selection[0][0].clientHeight || document.body.clientHeight || 540,
+		containerH = d3.ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
 		canvasW,
 		canvasH,
 		container = selection.append('svg'),  // Create container, append svg element to the selection
