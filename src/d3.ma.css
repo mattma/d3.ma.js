@@ -1,13 +1,30 @@
+/* =========== */
+/* = NOT API = */
+/* =========== */
+#vis {
+	width: 1400px;
+	height: 600px;
+}
+
+/* ======================= */
+/* = API Start from here = */
+/* ======================= */
 svg {
 	font: 10px sans-serif;
 }
 .line {
-	fill: none; stroke: #000; stroke-width: 1.5px;
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+}
+.area {
+  fill: lightsteelblue;
 }
 
-#vis {
-	width: 1400px;
-	height: 600px;
+.dot {
+  fill: white;
+  stroke: steelblue;
+  stroke-width: 1.5px;
 }
 
 /*
