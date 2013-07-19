@@ -36,8 +36,6 @@ d3.chart('Base').extend('Line', {
 
 	transform: function(data) {
 
-		var self = this;
-
 		this.linePath = this.base.append('path').attr({
 			'class': 'line',
 		});
@@ -46,13 +44,9 @@ d3.chart('Base').extend('Line', {
 
 		this.linePath.datum(data).attr('d', this.line);
 
-		this.dispatch.on('d3maOnWindowResize', function(e){
-			self._redraw(e);
-		});
-
-		this.dispatch.on('d3maOffWindowResize', function(e){
-			self._unbind(e);
-		});
+		// Define this fn where the data is manipulated
+		// after all the data var has the correct value, then call it on Window resize
+		this._onWindowResize();
 
 		return data;
 	},
@@ -65,21 +59,5 @@ d3.chart('Base').extend('Line', {
 		this.linePath.attr({
 			'd': this.line
 		});
-	},
-
-	_redraw: function(e) {
-		var _width = e.width - this.info.marginLeft - this.info.marginRight,
-			_height = e.height - this.info.marginTop - this.info.marginBottom;
-		this._update( _width, _height );
-	},
-
-	_unbind: function(e) {
-		// find out the current width & height of line g container. convert it to number
-		var currentWidth = +(this.base.attr('width')),
-			currentHeight = +(this.base.attr('height'));
-
-		if( currentWidth !== this.info.canvasW || currentHeight !== this.info.canvasH)  {
-			this._update(this.info.canvasW, this.info.canvasH);
-		}
 	}
 });

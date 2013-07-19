@@ -140,6 +140,41 @@ d3.chart('Scale').extend('Base', {
 			};
 			this.dispatch.d3maOffWindowResize(offObj);
 		}
+	},
+
+	// it is the handler for the internal _resize() which definied above this one
+	_onWindowResize: function(){
+		var self = this;
+
+		this.dispatch.on('d3maOnWindowResize', function(e){
+			self._redraw(e);
+		});
+
+		this.dispatch.on('d3maOffWindowResize', function(e){
+			self._unbind(e);
+		});
+	},
+
+	// this will trigger the _update internal fn
+	// look at the line.js _update fn for details
+	_redraw: function(e) {
+		var containerInfo = this.info,
+			_width = e.width - containerInfo.marginLeft - containerInfo.marginRight,
+			_height = e.height - containerInfo.marginTop - containerInfo.marginBottom;
+		this._update( _width, _height );
+	},
+
+	// this will trigger the _update internal fn
+	// look at the line.js _update fn for details
+	_unbind: function(e) {
+		// find out the current width & height of line g container. convert it to number
+		var containerInfo = this.info,
+			currentWidth = +(this.base.attr('width')),
+			currentHeight = +(this.base.attr('height'));
+
+		if( currentWidth !== containerInfo.canvasW || currentHeight !== containerInfo.canvasH)  {
+			this._update(containerInfo.canvasW, containerInfo.canvasH);
+		}
 	}
 
 });
