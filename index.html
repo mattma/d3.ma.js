@@ -115,25 +115,13 @@
 					var windowWidth = d3.ma.windowSize().width,
 						windowHeight = d3.ma.windowSize().height;
 
-					if( windowWidth < containerInfo.containerW ) {
+					if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
 						line.dispatch.d3maOnWindowResize({
-							width: windowWidth,
+							width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
 							height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
 						});
 					} else {
-						line.dispatch.d3maOffWidthResize({
-							width: containerInfo.canvasW,
-							height: containerInfo.canvasH
-						});
-					}
-
-					if( windowHeight < containerInfo.containerH ) {
-						line.dispatch.d3maOnWindowResize({
-							width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
-							height: windowHeight
-						});
-					} else {
-						line.dispatch.d3maOffHeightResize({
+						line.dispatch.d3maOffWindowResize({
 							width: containerInfo.canvasW,
 							height: containerInfo.canvasH
 						});

@@ -50,12 +50,8 @@ d3.chart('Base').extend('Line', {
 			self._redraw(e);
 		});
 
-		this.dispatch.on('d3maOffWidthResize', function(e){
-			self._unbindWidth(e);
-		});
-
-		this.dispatch.on('d3maOffHeightResize', function(e){
-			self._unbindHeight(e);
+		this.dispatch.on('d3maOffWindowResize', function(e){
+			self._unbind(e);
 		});
 
 		return data;
@@ -77,20 +73,12 @@ d3.chart('Base').extend('Line', {
 		this._update( _width, _height );
 	},
 
-	_unbindWidth: function(e) {
+	_unbind: function(e) {
 		// find out the current width of line g container. convert it to number
-		var currentWidth = +(this.base.attr('width'));
+		var currentWidth = +(this.base.attr('width')),
+			currentHeight = +(this.base.attr('height'));
 
-		if( currentWidth !== this.info.canvasW)  {
-			this._update(this.info.canvasW, this.info.canvasH);
-		}
-	},
-
-	_unbindHeight: function(e) {
-		// find out the current height of line g container. convert it to number
-		var currentHeight = +(this.base.attr('height'));
-
-		if( currentHeight !== this.info.canvasH)  {
+		if( currentWidth !== this.info.canvasW || currentHeight !== this.info.canvasH)  {
 			this._update(this.info.canvasW, this.info.canvasH);
 		}
 	}
