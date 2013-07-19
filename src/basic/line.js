@@ -46,6 +46,7 @@ d3.chart('Base').extend('Line', {
 
 		// Define this fn where the data is manipulated
 		// after all the data var has the correct value, then call it on Window resize
+		// Normally, after calling this fn, need to define the _update to handle the Scale change, box size changes, attr updates
 		this._onWindowResize();
 
 		return data;
