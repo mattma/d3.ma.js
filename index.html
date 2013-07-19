@@ -107,43 +107,54 @@
 					info: containerInfo
 				});
 
-				var area = this.mixin("Area", this.base.append('g').classed('area', true), {
-					info: containerInfo
-				});
+				// var area = this.mixin("Area", this.base.append('g').classed('area', true), {
+				// 	info: containerInfo
+				// });
 
-				var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
-					info: containerInfo
-				});
+				function foo() {
+					var windowWidth = d3.ma.windowSize().width;
+					var windowHeight = d3.ma.windowSize().height;
+					if( windowWidth < containerInfo.canvasW ) {
+						console.log('width updates');
+						//line.redraw(windowWidth, windowHeight);
+					}
+				}
 
-				circles.layer('circle').on('enter', function(chart){
-					var chart = this.chart();
+				d3.ma.onResize(foo);
 
-					this.attr({
-						'class': 'dot',
-						'cx': area.line.x(),
-						'cy': area.line.y(),
-						'r': 4
-					})
-				});
+				// var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
+				// 	info: containerInfo
+				// });
 
-				//Tooltip section
-				var tooltip = d3.ma.tooltip(this.base);
-				circles.dispatch.on('d3maMouseenter', function(e){
-					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
-					var html = "<div class='tips'>" + e.d.x + "<br><strong>" + e.d.y + "</strong>" + "</div>"
-					tooltip.show([e.pos[0], e.pos[1]], html);
-				});
+				// circles.layer('circle').on('enter', function(chart){
+				// 	var chart = this.chart();
 
-				circles.dispatch.on('d3maMouseout', function(e){
-					tooltip.close();
-				});
+				// 	this.attr({
+				// 		'class': 'dot',
+				// 		'cx': area.line.x(),
+				// 		'cy': area.line.y(),
+				// 		'r': 4
+				// 	})
+				// });
+
+				// //Tooltip section
+				// var tooltip = d3.ma.tooltip(this.base);
+				// circles.dispatch.on('d3maMouseenter', function(e){
+				// 	e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
+				// 	var html = "<div class='tips'>" + e.d.x + "<br><strong>" + e.d.y + "</strong>" + "</div>"
+				// 	tooltip.show([e.pos[0], e.pos[1]], html);
+				// });
+
+				// circles.dispatch.on('d3maMouseout', function(e){
+				// 	tooltip.close();
+				// });
 			}
 
 		});
 
 		var container = d3.ma.container('#vis').margin({left: 50});
 
-		container.resize().box(1400, 600);
+		container.box(1400, 600); // .resize();
 
 		var canvas = container.canvas().chart("FinalChart", container.info() );
 
