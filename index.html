@@ -107,28 +107,11 @@
 					info: containerInfo
 				});
 
+				d3.ma.onResize(line._resize, line);
+
 				// var area = this.mixin("Area", this.base.append('g').classed('area', true), {
 				// 	info: containerInfo
 				// });
-
-				function foo() {
-					var windowWidth = d3.ma.windowSize().width,
-						windowHeight = d3.ma.windowSize().height;
-
-					if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
-						line.dispatch.d3maOnWindowResize({
-							width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
-							height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
-						});
-					} else {
-						line.dispatch.d3maOffWindowResize({
-							width: containerInfo.canvasW,
-							height: containerInfo.canvasH
-						});
-					}
-				}
-
-				d3.ma.onResize(foo);
 
 				// var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
 				// 	info: containerInfo

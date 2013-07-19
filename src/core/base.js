@@ -116,6 +116,30 @@ d3.chart('Scale').extend('Base', {
 			}
 			chart.dispatch.d3maMouseout(obj);
 		});
+	},
+
+	_resize: function() {
+		// NOTE: this here is the context where you definied in the 2nd param when initialized
+		// ex: d3.ma.onResize(line._resize, line);
+		// in this case, the context here is  line
+
+		var windowWidth = d3.ma.windowSize().width,
+			windowHeight = d3.ma.windowSize().height,
+			containerInfo = this.info;
+
+		if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
+			var onObj = {
+				width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
+				height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
+			};
+			this.dispatch.d3maOnWindowResize(onObj);
+		} else {
+			var offObj = {
+				width: containerInfo.canvasW,
+				height: containerInfo.canvasH
+			};
+			this.dispatch.d3maOffWindowResize(offObj);
+		}
 	}
 
 });

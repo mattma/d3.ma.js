@@ -30,12 +30,12 @@ d3.ma.windowSize = function() {
 // Pull Straight out of nvd3 library
 // Easy way to bind multiple functions to window.onresize
 // TODO: give a way to remove a function after its bound, other than removing all of them
-d3.ma.onResize = function(fun){
+d3.ma.onResize = function(fun, context){
 	var oldresize = window.onresize;
 
 	window.onresize = function(e) {
-		if (typeof oldresize === 'function') oldresize(e);
-		fun(e);
+		if (typeof oldresize === 'function') oldresize.call(context, e);
+		fun.call(context, e);
 	}
 };
 
