@@ -107,9 +107,9 @@
 					info: containerInfo
 				});
 
-				// var area = this.mixin("Area", this.base.append('g').classed('area', true), {
-				// 	info: containerInfo
-				// });
+				var area = this.mixin("Area", this.base.append('g').classed('area', true), {
+					info: containerInfo
+				});
 
 				var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
 					info: containerInfo
@@ -120,8 +120,8 @@
 
 					this.attr({
 						'class': 'dot',
-						'cx': line.line.x(),
-						'cy': line.line.y(),
+						'cx': area.line.x(),
+						'cy': area.line.y(),
 						'r': 4
 					})
 				});

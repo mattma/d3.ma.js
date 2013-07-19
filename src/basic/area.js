@@ -12,10 +12,10 @@ d3.chart('Line').extend('Area', {
 			'class': 'area',
 		});
 
-		this.line
+		this.area
 			.x(this.line.x())
 			.y1(this.line.y())
-			.y0(y(0));
+			.y0(this.yScale(0));
 
 		return this;
 	},
