@@ -52,12 +52,14 @@ d3.chart('Base').extend('Line', {
 		return data;
 	},
 
+	// Update Scale, Box Size
 	_updateScale: function(_width, _height) {
 		this.xScale.range([0, _width]);
 		this.yScale.range([_height, 0]);
 		this.box(_width, _height);
 	},
 
+	// Update Scale, Box Size, and attr values
 	_update: function(_width, _height) {
 		this._updateScale(_width, _height);
 
