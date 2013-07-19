@@ -46,12 +46,20 @@ d3.chart('Base').extend('Line', {
 
 		this.linePath.datum(data).attr('d', this.line);
 
-		this.dispatch.on('d3maOnWindowResize', function(e){
+		this.dispatch.on('d3maOnWidthResize', function(e){
 			self._redraw(e);
 		});
 
-		this.dispatch.on('d3maOffWindowResize', function(e){
-			self._unbind(e);
+		this.dispatch.on('d3maOnHeightResize', function(e){
+			self._redraw(e);
+		});
+
+		this.dispatch.on('d3maOffWidthResize', function(e){
+			self._unbindWidth(e);
+		});
+
+		this.dispatch.on('d3maOffHeightResize', function(e){
+			self._unbindHeight(e);
 		});
 
 		return data;
@@ -68,15 +76,25 @@ d3.chart('Base').extend('Line', {
 	},
 
 	_redraw: function(e) {
-		var _width = e.width - this.info.marginLeft - this.info.marginRight;
-		this._update(_width, e.height);
+		var _width = e.width - this.info.marginLeft - this.info.marginRight,
+			_height = e.height - this.info.marginTop - this.info.marginBottom;
+		this._update( _width, _height );
 	},
 
-	_unbind: function(e) {
+	_unbindWidth: function(e) {
 		// find out the current width of line g container. convert it to number
 		var currentWidth = +(this.base.attr('width'));
+
 		if( currentWidth !== this.info.canvasW)  {
-			console.log('fire once');
+			this._update(this.info.canvasW, this.info.canvasH);
+		}
+	},
+
+	_unbindHeight: function(e) {
+		// find out the current height of line g container. convert it to number
+		var currentHeight = +(this.base.attr('height'));
+
+		if( currentHeight !== this.info.canvasH)  {
 			this._update(this.info.canvasW, this.info.canvasH);
 		}
 	}
