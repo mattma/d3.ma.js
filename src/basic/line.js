@@ -46,11 +46,7 @@ d3.chart('Base').extend('Line', {
 
 		this.linePath.datum(data).attr('d', this.line);
 
-		this.dispatch.on('d3maOnWidthResize', function(e){
-			self._redraw(e);
-		});
-
-		this.dispatch.on('d3maOnHeightResize', function(e){
+		this.dispatch.on('d3maOnWindowResize', function(e){
 			self._redraw(e);
 		});
 

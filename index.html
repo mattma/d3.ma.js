@@ -116,7 +116,7 @@
 						windowHeight = d3.ma.windowSize().height;
 
 					if( windowWidth < containerInfo.containerW ) {
-						line.dispatch.d3maOnWidthResize({
+						line.dispatch.d3maOnWindowResize({
 							width: windowWidth,
 							height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
 						});
@@ -128,7 +128,7 @@
 					}
 
 					if( windowHeight < containerInfo.containerH ) {
-						line.dispatch.d3maOnHeightResize({
+						line.dispatch.d3maOnWindowResize({
 							width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
 							height: windowHeight
 						});
