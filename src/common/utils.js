@@ -27,6 +27,27 @@ d3.ma.windowSize = function() {
 	return (size);
 };
 
+// pull from underscore.js
+d3.ma.each = function(obj, iterator, context) {
+
+	if (obj == null) return;
+
+	var nativeForEach = Array.prototype.forEach;
+	if (nativeForEach && obj.forEach === nativeForEach) {
+		obj.forEach(iterator, context);
+	} else if (obj.length === +obj.length) {
+		for (var i = 0, l = obj.length; i < l; i++) {
+			if (iterator.call(context, obj[i], i, obj) === breaker) return;
+		}
+	} else {
+		for (var key in obj) {
+			if (Object.prototype.hasOwnProperty.call(obj, key)) {
+				if (iterator.call(context, obj[key], key, obj) === breaker) return;
+			}
+		}
+	}
+};
+
 // Pull Straight out of nvd3 library
 // Easy way to bind multiple functions to window.onresize
 // TODO: give a way to remove a function after its bound, other than removing all of them
@@ -36,6 +57,21 @@ d3.ma.onResize = function(fun, context){
 	window.onresize = function(e) {
 		if (typeof oldresize === 'function') oldresize.call(context || this, e);
 		fun.call(context || this, e);
+	}
+};
+
+// Convinient methods to call multiple fn below
+// d3.ma.onResize(line._resize, line);
+// d3.ma.onResize(area._resize, area);
+//
+// now can call this.   d3.ma.resize(line, area);
+d3.ma.resize = function(array)  {
+	array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
+
+	if( array.length ){
+		d3.ma.each(array, function(context, index){
+			d3.ma.onResize(context._resize, context);
+		});
 	}
 };
 
