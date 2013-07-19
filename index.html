@@ -107,11 +107,12 @@
 					info: containerInfo
 				});
 
-				d3.ma.onResize(line._resize, line);
+				var area = this.mixin("Area", this.base.append('g').classed('area', true), {
+					info: containerInfo
+				});
 
-				// var area = this.mixin("Area", this.base.append('g').classed('area', true), {
-				// 	info: containerInfo
-				// });
+				d3.ma.onResize(line._resize, line);
+				d3.ma.onResize(area._resize, area);
 
 				// var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
 				// 	info: containerInfo

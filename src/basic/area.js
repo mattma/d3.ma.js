@@ -26,6 +26,17 @@ d3.chart('Line').extend('Area', {
 
 		this.areaPath.datum(data).attr('d', this.area);
 
+		this._onWindowResize();
+
 		return data;
+	},
+
+	// Update Scale, Box Size, and attr values
+	_update: function(_width, _height) {
+		this._updateScale(_width, _height);
+
+		this.areaPath.attr({
+			'd': this.area
+		});
 	}
 });

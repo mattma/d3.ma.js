@@ -175,6 +175,13 @@ d3.chart('Scale').extend('Base', {
 		if( currentWidth !== containerInfo.canvasW || currentHeight !== containerInfo.canvasH)  {
 			this._update(containerInfo.canvasW, containerInfo.canvasH);
 		}
+	},
+
+	// Update Scale, Box Size
+	_updateScale: function(_width, _height) {
+		this.xScale.range([0, _width]);
+		this.yScale.range([_height, 0]);
+		this.box(_width, _height);
 	}
 
 });
