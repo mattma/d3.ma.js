@@ -34,8 +34,8 @@ d3.ma.onResize = function(fun, context){
 	var oldresize = window.onresize;
 
 	window.onresize = function(e) {
-		if (typeof oldresize === 'function') oldresize.call(context, e);
-		fun.call(context, e);
+		if (typeof oldresize === 'function') oldresize.call(context || this, e);
+		fun.call(context || this, e);
 	}
 };
 
