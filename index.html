@@ -112,18 +112,18 @@
 				// });
 
 				function foo() {
-					var windowWidth = d3.ma.windowSize().width;
-					var windowHeight = d3.ma.windowSize().height;
+					var windowWidth = d3.ma.windowSize().width,
+						windowHeight = d3.ma.windowSize().height;
 
-					if( windowWidth < containerInfo.containerW ) {
+					if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
 						line.dispatch.d3maOnWindowResize({
 							width: windowWidth,
-							height: 550
+							height: containerInfo.canvasH
 						});
 					} else {
 						line.dispatch.d3maOffWindowResize({
-							width: 1340,
-							height: 550
+							width: containerInfo.canvasW,
+							height: containerInfo.canvasH
 						});
 					}
 				}
