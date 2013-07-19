@@ -114,9 +114,17 @@
 				function foo() {
 					var windowWidth = d3.ma.windowSize().width;
 					var windowHeight = d3.ma.windowSize().height;
-					if( windowWidth < containerInfo.canvasW ) {
-						console.log('width updates');
-						//line.redraw(windowWidth, windowHeight);
+
+					if( windowWidth < containerInfo.containerW ) {
+						line.dispatch.d3maOnWindowResize({
+							width: windowWidth,
+							height: 550
+						});
+					} else {
+						line.dispatch.d3maOffWindowResize({
+							width: 1340,
+							height: 550
+						});
 					}
 				}
 

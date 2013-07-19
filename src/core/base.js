@@ -59,7 +59,7 @@ d3.chart('Scale').extend('Base', {
 
 		this.box(this.width, this.height);
 
-		this.dispatch = d3.dispatch('d3maMouseenter', 'd3maMouseout');
+		this.dispatch = d3.dispatch('d3maMouseenter', 'd3maMouseout', 'd3maOnWindowResize', 'd3maOffWindowResize');
 	},
 
 	w: function(_width) {
