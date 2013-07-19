@@ -74,7 +74,7 @@ d3.chart('Base').extend('Line', {
 	},
 
 	_unbind: function(e) {
-		// find out the current width of line g container. convert it to number
+		// find out the current width & height of line g container. convert it to number
 		var currentWidth = +(this.base.attr('width')),
 			currentHeight = +(this.base.attr('height'));
 
