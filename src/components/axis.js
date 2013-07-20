@@ -61,8 +61,10 @@ d3.chart('Base').extend("Axis", {
 		this.guide = options.guide || false;
 
 		this.xAxis = d3.svg.axis().scale(this.xScale).orient('bottom');
+		this._xGuideLine = d3.svg.axis().scale(this.xScale).orient('bottom');
 
 		this.yAxis = d3.svg.axis().scale(this.yScale).orient('left');
+		this._yGuideLine = d3.svg.axis().scale(this.yScale).orient('left');
 
 		this.xAxisG =  this.base.append('g').attr({
 			'class': 'x axis',
@@ -92,8 +94,30 @@ d3.chart('Base').extend("Axis", {
 	_update: function(_width, _height) {
 		this._updateScale(_width, _height);
 
+		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
+
 		this.xAxisG.call( this.xAxis);
 		this.yAxisG.call( this.yAxis);
+
+		if(this.guide) {
+			this._xGuide.attr('transform', 'translate(0,' + _height + ')');
+			this._drawingGuides(_width, _height);
+		}
+	},
+
+	_drawingGuides: function(_width, _height) {
+		this._xGuide.call(
+			this._xGuideLine
+				.tickSize(-_height, 0, 0)
+				.tickFormat('')
+		);
+		//axis.tickSize([major[​[, minor], end]])
+
+		this._yGuide.call(
+			this._yGuideLine
+				.tickSize(-_width, 0, 0)
+				.tickFormat('')
+		);
 	},
 
 	// _drawGuides() is internal fn, will draw the guide lines on the
@@ -102,27 +126,16 @@ d3.chart('Base').extend("Axis", {
 	_drawGuides: function() {
 
 		var 	guides = this.base.append('g')
-						.attr('class', 'guides'),
+						.attr('class', 'guides');
 
-			xGuide = d3.select('.guides').append('g')
+		this._xGuide = d3.select('.guides').append('g')
 						.attr('class', 'x guide')
-						.attr('transform', 'translate(0,' + this.height + ')'),
+						.attr('transform', 'translate(0,' + this.height + ')');
 
-			yGuide = d3.select('.guides').append('g')
+		this._yGuide = d3.select('.guides').append('g')
 						.attr('class', 'y guide');
 
-		xGuide.call(
-			this.xAxis
-				.tickSize(-this.height, 0, 0)
-				.tickFormat('')
-		);
-		//axis.tickSize([major[​[, minor], end]])
-
-		yGuide.call(
-			this.yAxis
-				.tickSize(-this.width, 0, 0)
-				.tickFormat('')
-		);
+		this._drawingGuides(this.width, this.height);
 
 		return this;
 	},

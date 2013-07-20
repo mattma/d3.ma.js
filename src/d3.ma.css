@@ -44,6 +44,11 @@ svg {
 	stroke-width: 0;
 }
 
+.guides text {
+	fill: none;
+	stroke: none;
+}
+
 .label {
 	text-anchor: middle;
 	font-size: 14px;
