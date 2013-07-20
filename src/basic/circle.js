@@ -12,7 +12,9 @@ d3.chart('Base').extend('Circle', {
 			// select the elements we wish to bind to and bind the data to them.
 			dataBind: function(data) {
 				var chart = this.chart();
+
 				if(chart.onDataBind) { chart.onDataBind(chart); }
+
 				return this.selectAll('circle').data(data);
 			},
 
@@ -33,9 +35,18 @@ d3.chart('Base').extend('Circle', {
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
 
+					chart._onWindowResize(chart, this);
+
 					self._bindMouseEnterOutEvents(chart, this);
 				}
 			}
 		});
+	},
+
+	// Update Scale, Box Size, and attr values
+	_update: function(_width, _height, chart, single) {
+		this._updateScale(_width, _height);
+		// When dealing with the single element, trigger 'd3maSingleWindowResize'
+		this.dispatch.d3maSingleWindowResize(chart, single);
 	}
 });

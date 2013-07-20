@@ -111,34 +111,46 @@
 					info: containerInfo
 				});
 
-				d3.ma.resize(line, area);
 
-				// var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
-				// 	info: containerInfo
-				// });
+				var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
+					info: containerInfo
+				});
 
-				// circles.layer('circle').on('enter', function(chart){
-				// 	var chart = this.chart();
+				circles.layer('circle').on('enter', function(chart){
+					var chart = this.chart();
 
-				// 	this.attr({
-				// 		'class': 'dot',
-				// 		'cx': area.line.x(),
-				// 		'cy': area.line.y(),
-				// 		'r': 4
-				// 	})
-				// });
+					this.attr({
+						'class': 'dot',
+						'cx': area.line.x(),
+						'cy': area.line.y(),
+						'r': 4
+					})
+				});
 
-				// //Tooltip section
-				// var tooltip = d3.ma.tooltip(this.base);
-				// circles.dispatch.on('d3maMouseenter', function(e){
-				// 	e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
-				// 	var html = "<div class='tips'>" + e.d.x + "<br><strong>" + e.d.y + "</strong>" + "</div>"
-				// 	tooltip.show([e.pos[0], e.pos[1]], html);
-				// });
+				circles.dispatch.on('d3maSingleWindowResize', function(chart, single){
+					var chart = chart || this;
 
-				// circles.dispatch.on('d3maMouseout', function(e){
-				// 	tooltip.close();
-				// });
+					single.attr({
+						'cx': area.line.x(),
+						'cy': area.line.y()
+					});
+				});
+
+				// Handle resize in utils.js
+				// convininent methods to recall onResize()
+				d3.ma.resize(line, area, circles);
+
+				//Tooltip section
+				var tooltip = d3.ma.tooltip(this.base);
+				circles.dispatch.on('d3maMouseenter', function(e){
+					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
+					var html = "<div class='tips'>" + e.d.x + "<br><strong>" + e.d.y + "</strong>" + "</div>"
+					tooltip.show([e.pos[0], e.pos[1]], html);
+				});
+
+				circles.dispatch.on('d3maMouseout', function(e){
+					tooltip.close();
+				});
 			}
 
 		});
