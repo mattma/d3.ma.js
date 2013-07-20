@@ -96,7 +96,7 @@
 
 				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
 					info: containerInfo,
-					guide: true
+					guide: false
 				});
 
 				axis
@@ -138,7 +138,7 @@
 
 				// Handle resize in utils.js
 				// convininent methods to recall onResize()
-				d3.ma.resize(line, area, circles);
+				d3.ma.resize(axis, line, area, circles);
 
 				//Tooltip section
 				var tooltip = d3.ma.tooltip(this.base);

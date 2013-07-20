@@ -53,7 +53,7 @@
 			By default, the text will be translated to margin.left and margin.top, rotate -90 degrees
 			Use  .y .label  selector to style the label
 */
-d3.chart('Scale').extend("Axis", {
+d3.chart('Base').extend("Axis", {
 
 	initialize: function(options) {
 		options = options || {};
@@ -83,7 +83,17 @@ d3.chart('Scale').extend("Axis", {
 
 		if(this.guide) { this._drawGuides(); }
 
+		this._onWindowResize();
+
 		return data;
+	},
+
+	// Update Scale, Box Size, and attr values
+	_update: function(_width, _height) {
+		this._updateScale(_width, _height);
+
+		this.xAxisG.call( this.xAxis);
+		this.yAxisG.call( this.yAxis);
 	},
 
 	// _drawGuides() is internal fn, will draw the guide lines on the
