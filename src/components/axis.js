@@ -109,8 +109,15 @@ d3.chart('Base').extend("Axis", {
 	},
 
 	_redrawTicksOnResize: function() {
-		this.xAxis.ticks(Math.abs(this.xScale.range()[1] - this.xScale.range()[0]) / 100);
-		this.yAxis.ticks(Math.abs(this.yScale.range()[1] - this.yScale.range()[0]) / 100);
+		var xScaleRange = this.xScale.range(),
+			yScaleRange = this.yScale.range();
+		console.log('this._x: ', this._x);
+		if( this._x !== 'ordinal' ) {
+			this.xAxis.ticks(Math.abs(xScaleRange[1] - xScaleRange[0]) / 100);
+		}
+		if( this._y !== 'ordinal' ) {
+			this.yAxis.ticks(Math.abs(yScaleRange[1] - yScaleRange[0]) / 100);
+		}
 	},
 
 	xLabel: function(_label, leftRightPosition, upDownPosition) {
