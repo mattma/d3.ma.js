@@ -170,7 +170,7 @@
 
 		var container = d3.ma.container('#vis').margin({left: 50});
 
-		container.resize().box(1400, 600);
+		container.box(1400, 600);  //.resize()
 
 		var canvas = container.canvas().chart("FinalChart", container.info() );
 
