@@ -69,23 +69,39 @@ d3.chart('Scale', {
 		this.xScale = this._scale(x);
 		this.yScale = this._scale(y);
 
+		// switch(x) {
+		// 	case 'linear' :
+		// 		this.xScale.range([0, this.width]);
+		// 	break;
+
+		// 	case 'ordinal' :
+		// 		this.xScale.rangeRoundBands([0, this.width], 0.1);
+		// 	break;
+		// }
+		this._switchXScale(x, this.width);
+		this._switchYScale(y, this.height);
+	},
+
+	_switchXScale: function(x, _width) {
 		switch(x) {
 			case 'linear' :
-				this.xScale.range([0, this.width]);
+				this.xScale.range([0, _width]);
 			break;
 
 			case 'ordinal' :
-				this.xScale.rangeRoundBands([0, this.width], 0.1);
+				this.xScale.rangeRoundBands([0, _width], 0.1);
 			break;
 		}
+	},
 
+	_switchYScale: function(y, _height) {
 		switch(y) {
 			case 'linear' :
-				this.yScale.range([this.height, 0]);
+				this.yScale.range([_height, 0]);
 			break;
 
 			case 'ordinal' :
-				this.yScale.rangeRoundBands([this.height, 0], 0.1);
+				this.yScale.rangeRoundBands([_height, 0], 0.1);
 			break;
 		}
 	},
