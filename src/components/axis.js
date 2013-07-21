@@ -61,10 +61,18 @@ d3.chart('Base').extend("Axis", {
 		this.guide = options.guide || false;
 
 		this.xAxis = d3.svg.axis().scale(this.xScale).orient('bottom');
-		this._xGuideLine = d3.svg.axis().scale(this.xScale).orient('bottom');
 
 		this.yAxis = d3.svg.axis().scale(this.yScale).orient('left');
-		this._yGuideLine = d3.svg.axis().scale(this.yScale).orient('left');
+
+		if(this.guide) {
+			this.xAxis
+				.tickPadding(5)
+				.tickSize(-this.height, 0, 6); //axis.tickSize([major[​[, minor], end]])
+
+			this.yAxis
+				.tickPadding(5)
+				.tickSize(-this.width, 0, 6);
+		}
 
 		this.xAxisG =  this.base.append('g').attr({
 			'class': 'x axis',
@@ -83,8 +91,6 @@ d3.chart('Base').extend("Axis", {
 		this.xAxisG.call( this.xAxis);
 		this.yAxisG.call( this.yAxis);
 
-		if(this.guide) { this._drawGuides(); }
-
 		this._onWindowResize();
 
 		return data;
@@ -98,46 +104,6 @@ d3.chart('Base').extend("Axis", {
 
 		this.xAxisG.call( this.xAxis);
 		this.yAxisG.call( this.yAxis);
-
-		if(this.guide) {
-			this._xGuide.attr('transform', 'translate(0,' + _height + ')');
-			this._drawingGuides(_width, _height);
-		}
-	},
-
-	_drawingGuides: function(_width, _height) {
-		this._xGuide.call(
-			this._xGuideLine
-				.tickSize(-_height, 0, 0)
-				.tickFormat('')
-		);
-		//axis.tickSize([major[​[, minor], end]])
-
-		this._yGuide.call(
-			this._yGuideLine
-				.tickSize(-_width, 0, 0)
-				.tickFormat('')
-		);
-	},
-
-	// _drawGuides() is internal fn, will draw the guide lines on the
-	// x and y axis. it will be determined by the intialization options
-	// operator { guide: true }
-	_drawGuides: function() {
-
-		var 	guides = this.base.append('g')
-						.attr('class', 'guides');
-
-		this._xGuide = d3.select('.guides').append('g')
-						.attr('class', 'x guide')
-						.attr('transform', 'translate(0,' + this.height + ')');
-
-		this._yGuide = d3.select('.guides').append('g')
-						.attr('class', 'y guide');
-
-		this._drawingGuides(this.width, this.height);
-
-		return this;
 	},
 
 	xLabel: function(_label, leftRightPosition, upDownPosition) {

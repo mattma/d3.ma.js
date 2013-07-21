@@ -32,21 +32,22 @@ svg {
  */
 .axis path, .axis line {
 	fill: none;
-	stroke: #000;
 	shape-rendering: crispEdges;
 }
 
-.guide .tick {
+/* Axis Guides */
+.axis .tick line {
 	stroke: lightgrey;
-	opacity: 0.5;
+	opacity: 0.8;
 }
-.guide path {
+/* Axis itself on x and y */
+.axis path {
+	stroke: rgb(51, 51, 51);
+	stroke-width: 1px;
+}
+/* When guides show, Y-Axis 0 position guide override X-Axis itself, so hide it */
+.y.axis text+g line {
 	stroke-width: 0;
-}
-
-.guides text {
-	fill: none;
-	stroke: none;
 }
 
 .label {
