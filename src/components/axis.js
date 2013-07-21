@@ -27,6 +27,7 @@
 			info  (# graph info about the details of this graph include width and height)
 
 			guide: Boolean. Optional,  default to false. Draw the grid guides along x, y axis when guide is true
+			ticksOnResize: Boolean, Optional, default to false. Redraw the ticks when resize the window
 			xAxis, yAxis   ( # could use to override its default value, like defined ticks(), orient(), etc. )
 			xAxisG, yAxisG ( # could use to defined custom element attributes )
 
@@ -59,10 +60,11 @@ d3.chart('Base').extend("Axis", {
 		options = options || {};
 
 		this.guide = options.guide || false;
+		this.ticksOnResize = options.ticksOnResize || false;
 
 		this.xAxis = d3.svg.axis().scale(this.xScale).orient('bottom');
 
-		this.yAxis = d3.svg.axis().scale(this.yScale).orient('left');
+		this.yAxis = d3.svg.axis().scale(this.yScale).orient('left').ticks(10);
 
 		if(this.guide) {
 			this.xAxis
@@ -102,8 +104,15 @@ d3.chart('Base').extend("Axis", {
 
 		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
 
+		if(this.ticksOnResize) this._redrawTicksOnResize();
+
 		this.xAxisG.call( this.xAxis);
 		this.yAxisG.call( this.yAxis);
+	},
+
+	_redrawTicksOnResize: function() {
+		this.xAxis.ticks(Math.abs(this.xScale.range()[1] - this.xScale.range()[0]) / 100);
+		this.yAxis.ticks(Math.abs(this.yScale.range()[1] - this.yScale.range()[0]) / 100);
 	},
 
 	xLabel: function(_label, leftRightPosition, upDownPosition) {
