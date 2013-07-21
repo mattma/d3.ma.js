@@ -184,8 +184,10 @@ d3.chart('Scale').extend('Base', {
 
 	// Update Scale, Box Size
 	_updateScale: function(_width, _height) {
-		this.xScale.range([0, _width]);
-		this.yScale.range([_height, 0]);
+		// trigger the Scale in scale.js
+		this._switchXScale(this._x, _width);
+		this._switchYScale(this._y, _height);
+
 		this.box(_width, _height);
 	}
 

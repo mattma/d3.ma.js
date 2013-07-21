@@ -61,6 +61,9 @@ d3.chart('Scale', {
 		var x = options.x || 'linear';
 		var y = options.y || 'linear';
 
+		this._x = x;
+		this._y = y;
+
 		this.width = options.width || options.info.canvasW || this.base.attr('width') || 1;
 		this.height = options.height || options.info.canvasH || this.base.attr('height') || 1;
 		this.info = options.info;
@@ -69,15 +72,6 @@ d3.chart('Scale', {
 		this.xScale = this._scale(x);
 		this.yScale = this._scale(y);
 
-		// switch(x) {
-		// 	case 'linear' :
-		// 		this.xScale.range([0, this.width]);
-		// 	break;
-
-		// 	case 'ordinal' :
-		// 		this.xScale.rangeRoundBands([0, this.width], 0.1);
-		// 	break;
-		// }
 		this._switchXScale(x, this.width);
 		this._switchYScale(y, this.height);
 	},
