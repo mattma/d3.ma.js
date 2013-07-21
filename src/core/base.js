@@ -172,11 +172,13 @@ d3.chart('Scale').extend('Base', {
 		// find out the current width & height of line g container. convert it to number
 		var containerInfo = this.info,
 			currentWidth = +(this.base.attr('width')),
-			currentHeight = +(this.base.attr('height'));
+			currentHeight = +(this.base.attr('height')),
+			_canvasW = containerInfo.canvasW,
+			_canvasH = containerInfo.canvasH;
 
-		if( currentWidth !== containerInfo.canvasW || currentHeight !== containerInfo.canvasH)  {
-			this._updateScale(_width, _height);
-			this._update(containerInfo.canvasW, containerInfo.canvasH, chart, single);
+		if( currentWidth !== _canvasW || currentHeight !== _canvasH)  {
+			this._updateScale(_canvasW, _canvasH);
+			this._update(_canvasW, _canvasH, chart, single);
 		}
 	},
 
