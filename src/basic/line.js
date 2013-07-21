@@ -54,7 +54,6 @@ d3.chart('Base').extend('Line', {
 
 	// Update Scale, Box Size, and attr values
 	_update: function(_width, _height) {
-		this._updateScale(_width, _height);
 
 		this.linePath.attr({
 			'd': this.line

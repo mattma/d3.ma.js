@@ -33,7 +33,6 @@ d3.chart('Line').extend('Area', {
 
 	// Update Scale, Box Size, and attr values
 	_update: function(_width, _height) {
-		this._updateScale(_width, _height);
 
 		this.areaPath.attr({
 			'd': this.area

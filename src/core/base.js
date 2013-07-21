@@ -161,6 +161,8 @@ d3.chart('Scale').extend('Base', {
 		var containerInfo = this.info,
 			_width = e.width - containerInfo.marginLeft - containerInfo.marginRight,
 			_height = e.height - containerInfo.marginTop - containerInfo.marginBottom;
+
+		this._updateScale(_width, _height);
 		this._update( _width, _height, chart, single );
 	},
 
@@ -173,6 +175,7 @@ d3.chart('Scale').extend('Base', {
 			currentHeight = +(this.base.attr('height'));
 
 		if( currentWidth !== containerInfo.canvasW || currentHeight !== containerInfo.canvasH)  {
+			this._updateScale(_width, _height);
 			this._update(containerInfo.canvasW, containerInfo.canvasH, chart, single);
 		}
 	},
