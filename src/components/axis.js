@@ -64,7 +64,7 @@ d3.chart('Base').extend("Axis", {
 
 		this.xAxis = d3.svg.axis().scale(this.xScale).orient('bottom');
 
-		this.yAxis = d3.svg.axis().scale(this.yScale).orient('left').ticks(10);
+		this.yAxis = d3.svg.axis().scale(this.yScale).orient('left');
 
 		if(this.guide) {
 			this.xAxis

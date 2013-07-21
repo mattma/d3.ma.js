@@ -140,7 +140,8 @@
 				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
 					info: containerInfo,
 					x: 'ordinal',
-					guide: true
+					guide: true,
+					ticksOnResize: true
 				});
 
 				axis
@@ -151,6 +152,10 @@
 					info: containerInfo,
 					x: 'ordinal'
 				});
+
+				// Handle resize in utils.js
+				// convininent methods to recall onResize()
+				d3.ma.resize(axis);
 
 				// Tooltip section
 				var tooltip = d3.ma.tooltip(this.base);
