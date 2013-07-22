@@ -6,7 +6,8 @@ d3.chart('Base').extend('Circle', {
 	initialize: function(options) {
 		options = options || {};
 
-		var self = this;
+		var self = this,
+			showOnHover = options.showOnHover || false;
 
 		this.layer('circle', this.base, {
 			// select the elements we wish to bind to and bind the data to them.
@@ -15,7 +16,7 @@ d3.chart('Base').extend('Circle', {
 
 				if(chart.onDataBind) { chart.onDataBind(chart); }
 
-				return this.selectAll('circle').data(data);
+				return this.classed('dotHover', (showOnHover) ? true : false).selectAll('circle').data(data);
 			},
 
 			// insert actual bars, defined its own attrs
@@ -42,10 +43,4 @@ d3.chart('Base').extend('Circle', {
 			}
 		});
 	}
-
-	// // Update Scale, Box Size, and attr values
-	// _update: function(_width, _height, chart, single) {
-	// 	// When dealing with the single element, trigger 'd3maSingleWindowResize'
-	// 	this.dispatch.d3maSingleWindowResize(chart, single);
-	// }
 });

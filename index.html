@@ -114,7 +114,8 @@
 
 
 				var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
-					info: containerInfo
+					info: containerInfo,
+					showOnHover: true
 				});
 
 				circles.layer('circle').on('enter', function(chart){
