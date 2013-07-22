@@ -41,11 +41,11 @@ d3.chart('Base').extend('Circle', {
 				}
 			}
 		});
-	},
-
-	// Update Scale, Box Size, and attr values
-	_update: function(_width, _height, chart, single) {
-		// When dealing with the single element, trigger 'd3maSingleWindowResize'
-		this.dispatch.d3maSingleWindowResize(chart, single);
 	}
+
+	// // Update Scale, Box Size, and attr values
+	// _update: function(_width, _height, chart, single) {
+	// 	// When dealing with the single element, trigger 'd3maSingleWindowResize'
+	// 	this.dispatch.d3maSingleWindowResize(chart, single);
+	// }
 });

@@ -162,8 +162,19 @@ d3.chart('Scale').extend('Base', {
 			_width = e.width - containerInfo.marginLeft - containerInfo.marginRight,
 			_height = e.height - containerInfo.marginTop - containerInfo.marginBottom;
 
-		this._updateScale(_width, _height); //handle this in base.js below this fn
-		this._update( _width, _height, chart, single ); // handle this in individual modules
+		//handle this in base.js below this fn. dealing with Scale updates
+		this._updateScale(_width, _height);
+
+		//dealing with the single element, trigger 'd3maSingleWindowResize'
+		//handle event in the each instance for details updates.
+		//usage on rects, circles, like multiple repeated elements.
+		this.dispatch.d3maSingleWindowResize(chart, single);
+
+		// handle this in individual modules
+		// Optional step, if defined in each module, could
+		// setup the global default in this module, or setup global attrs
+		if (this._update)
+			this._update( _width, _height, chart, single );
 	},
 
 	// this will trigger the _update internal fn
@@ -177,8 +188,11 @@ d3.chart('Scale').extend('Base', {
 			_canvasH = containerInfo.canvasH;
 
 		if( currentWidth !== _canvasW || currentHeight !== _canvasH)  {
+			// same usage like _redraw fn for  _updateScale  &  _update
 			this._updateScale(_canvasW, _canvasH);
-			this._update(_canvasW, _canvasH, chart, single);
+
+			if (this._update)
+				this._update(_canvasW, _canvasH, chart, single);
 		}
 	},
 
