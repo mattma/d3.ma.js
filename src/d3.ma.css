@@ -27,9 +27,11 @@ svg {
 	stroke-width: 1.5px;
 }
 
-/*
-	Axis Styles
- */
+
+/* ================ */
+/* = Axis & Label Section = */
+/* ================ */
+
 .axis path, .axis line {
 	fill: none;
 	shape-rendering: crispEdges;
@@ -52,11 +54,37 @@ svg {
 
 .label {
 	text-anchor: middle;
-	font-size: 14px;
+	font-size: 1.4em;
 	fill: black;
 	font-family: arial, helvetica, sans-serif;
 	text-transform: capitalize;
 }
+
+/* ================ */
+/* = Hover Intent = */
+/* ================ */
+
+.dotHover circle {
+	fill-opacity: 0;
+	stroke-opacity: 0;
+
+	transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
+	-moz-transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
+	-webkit-transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
+
+	/* This need to be set by the color of the line or area, couid set color on the dot too for animation */
+	stroke: steelblue;
+	/* fill: purple; */
+}
+
+.dotHover circle.hover {
+	stroke-width: 20px;
+	fill-opacity: .5 !important;
+	stroke-opacity: .5 !important;
+}
+
+
+
 
 /********************
  * TOOLTIP CSS
@@ -107,25 +135,3 @@ rect:hover {
 	fill-opacity: 1;
 }
 
-/* ================ */
-/* = Hover Intent = */
-/* ================ */
-
-.dotHover circle {
-	fill-opacity: 0;
-	stroke-opacity: 0;
-
-	transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
-	-moz-transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
-	-webkit-transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
-
-	/* This need to be set by the color of the line or area, couid set color on the dot too for animation */
-	stroke: steelblue;
-	/* fill: purple; */
-}
-
-.dotHover circle.hover {
-	stroke-width: 20px;
-	fill-opacity: .5 !important;
-	stroke-opacity: .5 !important;
-}
