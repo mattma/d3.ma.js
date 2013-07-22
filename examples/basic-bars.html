@@ -146,16 +146,28 @@
 
 				axis
 					.xLabel('X Labels', (containerInfo.canvasW - containerInfo.marginLeft - containerInfo.marginRight) )
-					.yLabel('Y Labels', 15);
+					.yLabel('Y Labels', 15, 15);
 
 				var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
 					info: containerInfo,
 					x: 'ordinal'
 				});
 
+
+				bars.dispatch.on('d3maSingleWindowResize', function(chart, single){
+					var chart = chart || this;
+
+					single.attr({
+						'x': function(d, i) { return chart.xScale(d.label); },
+						'y': function(d) { return chart.yScale(d.value); },
+						'width': function(d) { return chart.xScale.rangeBand() ; },
+						'height': function(d) { return chart.height - chart.yScale(d.value); }
+					});
+				});
+
 				// Handle resize in utils.js
 				// convininent methods to recall onResize()
-				d3.ma.resize(axis);
+				d3.ma.resize(axis, bars);
 
 				// Tooltip section
 				var tooltip = d3.ma.tooltip(this.base);

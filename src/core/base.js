@@ -162,8 +162,8 @@ d3.chart('Scale').extend('Base', {
 			_width = e.width - containerInfo.marginLeft - containerInfo.marginRight,
 			_height = e.height - containerInfo.marginTop - containerInfo.marginBottom;
 
-		this._updateScale(_width, _height);
-		this._update( _width, _height, chart, single );
+		this._updateScale(_width, _height); //handle this in base.js below this fn
+		this._update( _width, _height, chart, single ); // handle this in individual modules
 	},
 
 	// this will trigger the _update internal fn

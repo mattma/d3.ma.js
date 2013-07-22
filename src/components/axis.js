@@ -111,7 +111,7 @@ d3.chart('Base').extend("Axis", {
 	_redrawTicksOnResize: function() {
 		var xScaleRange = this.xScale.range(),
 			yScaleRange = this.yScale.range();
-		console.log('this._x: ', this._x);
+
 		if( this._x !== 'ordinal' ) {
 			this.xAxis.ticks(Math.abs(xScaleRange[1] - xScaleRange[0]) / 100);
 		}

@@ -156,6 +156,8 @@ d3.chart('Base').extend('Bars', {
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
 
+					chart._onWindowResize(chart, this);
+
 					self._bindMouseEnterOutEvents(chart, this);
 
 					// Used for animation the fill opacity property, work with enter:transition
@@ -174,5 +176,11 @@ d3.chart('Base').extend('Bars', {
 				}
 			}
 		});
+	},
+
+	// Update Scale, Box Size, and attr values
+	_update: function(_width, _height, chart, single) {
+		// When dealing with the single element, trigger 'd3maSingleWindowResize'
+		this.dispatch.d3maSingleWindowResize(chart, single);
 	}
 });
