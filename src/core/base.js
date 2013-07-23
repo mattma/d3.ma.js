@@ -36,7 +36,7 @@
 			For example, quick internal binding to reduce duplicated code in modules like circle.js, bars.js etc
 
 		1. _resize()  # called from d3.ma.onResize() or d3.ma.resize()
-		2. _onWindowResize(chart, single)  # called from each individual module
+		2. _onWindowResize(chart, single)  # called from each individual module. It has to defined in each module basis. Since it has to pass the chart, single info in this.layer lifeevent enter event. No way to know its context in base.js level.
 		3. _redraw(e, chart, single)  # called from each individual module
 		4. _unbind(e, chart, single) # called from each individual module
 		5. _updateScale(_width, _height) # called from each individual module
