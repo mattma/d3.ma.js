@@ -65,13 +65,26 @@ d3.ma.container = function(selector) {
 		canvasW,
 		canvasH,
 		container = selection.append('svg'),  // Create container, append svg element to the selection
+		random = Math.floor(Math.random() * 1000),
+
+		// Setup the clipPath to hide the content out of the canvas
+		defs = container.append('defs'),
+		cid = 'clip-' + random,
+		clipPath = defs.append('clipPath').attr('id', cid),
+		rect = clipPath.append('rect'),
+
 		// Create a new group element append to svg
 		// Set the canvas layout with a good amount of offset, has canvas class for easy targeting
-		g = container.append('g').classed('canvas', true),
+		id = 'd3ma-' + random,
+		g = container.append('g').classed('canvas', true).attr({
+			'class': 'canvas',
+			'id': id
+		}),
 
 		// http://www.w3.org/TR/SVGTiny12/coords.html#PreserveAspectRatioAttribute
 		aspectRatio = 'xMidYMid',
 		scaleRatio = containerW / containerH;
+
 
 	var canvasW = container.canvasW = function(_width, boxCalled) {
 		if (!arguments.length) { return +(g.attr('width')); }
@@ -88,8 +101,8 @@ d3.ma.container = function(selector) {
 	};
 
 	container.box = function(_width, _height) {
+		var m = container.margin();
 		if(!arguments.length) {
-			var m = container.margin();
 			return {
 				'containerWidth': +canvasW() + (+m.left) + (+m.right),
 				'containerHeight': +canvasH() + (+m.top) + (+m.bottom)
@@ -114,7 +127,8 @@ d3.ma.container = function(selector) {
 		containerW = _width;
 		containerH = h;
 
-		gTransform();
+		_gTransform(m.left, m.top);
+		_initClipPath(_width, h, m.left);
 
 		return container;
 	};
@@ -157,13 +171,26 @@ d3.ma.container = function(selector) {
 			'containerW': box.containerWidth,
 			'containerH': box.containerHeight,
 			'canvasW': canvasW(),
-			'canvasH': canvasH()
+			'canvasH': canvasH(),
+			'id': '#'+id,
+			'cid': '#'+cid
 		};
 	};
 
 	// Set the canvas transform attr, call it when needed
-	function gTransform () {
-		g.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+	function _gTransform (_marginLeft, _marginTop) {
+		g.attr('transform', 'translate(' + _marginLeft + ',' + _marginTop + ')');
+	}
+
+	function _initClipPath(_width, _height, _marginLeft) {
+		rect.attr({
+			width: _width,
+			height: _height,
+			x: -(_marginLeft),
+			y: -1  // Static, -1 to show the y-axis top tick
+		});
+
+		g.attr('clip-path', 'url(#'+cid+')' );
 	}
 
 	// e.g container.resize().box(1400, 600);
@@ -197,6 +224,7 @@ d3.ma.container = function(selector) {
 	// Set the svg container width and height
 	// Set the container width and height, and its transform values
 	container.box(containerW, containerH);
+
 	return container;
 };
 

@@ -27,6 +27,10 @@ svg {
 	stroke-width: 1.5px;
 }
 
+.circles {
+	stroke: steelblue;
+}
+
 
 /* ================ */
 /* = Axis & Label Section = */
@@ -73,7 +77,8 @@ svg {
 	-webkit-transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
 
 	/* This need to be set by the color of the line or area, couid set color on the dot too for animation */
-	stroke: steelblue;
+	/* Based on the parents, if parents has stroke color defined, it will use that color for circle */
+	stroke: inherit;
 	/* fill: purple; */
 }
 

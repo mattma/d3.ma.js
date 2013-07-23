@@ -12,8 +12,8 @@
 
 	<script src="src/common/core.js"></script>
 	<script src="src/common/utils.js"></script>
-	<script src="src/common/container.js"></script>
 	<script src="src/components/clippath.js"></script>
+	<script src="src/common/container.js"></script>
 
 
 	<script src="src/core/scale.js"></script>
@@ -125,7 +125,7 @@
 						'class': 'dot',
 						'cx': area.line.x(),
 						'cy': area.line.y(),
-						'r': 4
+						'r': 2.5
 					})
 				});
 
@@ -157,7 +157,7 @@
 
 		});
 
-		var container = d3.ma.container('#vis').margin({left: 50});
+		var container = d3.ma.container('#vis').margin({left: 100});
 
 		container.box(1400, 600); // .resize();
 
