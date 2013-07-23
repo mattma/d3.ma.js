@@ -12,8 +12,8 @@
 
 	<script src="src/common/core.js"></script>
 	<script src="src/common/utils.js"></script>
-	<script src="src/components/clippath.js"></script>
 	<script src="src/common/container.js"></script>
+	<script src="src/components/clippath.js"></script>
 
 
 	<script src="src/core/scale.js"></script>
@@ -105,7 +105,7 @@
 					.yLabel('Y Labels', 15, 20);
 
 				var line = this.mixin("Line", this.base.append('g').classed('lines', true), {
-					info: containerInfo
+					//info: containerInfo
 				});
 
 				var area = this.mixin("Area", this.base.append('g').classed('area', true), {

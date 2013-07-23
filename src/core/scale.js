@@ -58,6 +58,10 @@ d3.chart('Scale', {
 
 		options = options || {};
 
+		if(!options.info){
+			throw new Error('Container Info {info: containerInfo} is absolultely required when an instance is created');
+		}
+
 		var x = options.x || 'linear';
 		var y = options.y || 'linear';
 
