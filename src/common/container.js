@@ -2,14 +2,18 @@
 	return element: Most of methods return svg canvas object for easy chaining
 
 	Initalization:
-		d3.ma.container('body').margin({top: 80, left: 80}).box(600, 500);
-		// or
-		var container = d3.ma.container('#vis'),
-			canvas = container.canvas().chart("LabeledCirclesChart");
+		var container = d3.ma.container('#vis').margin({top: 80, left: 80}).box(1400, 600);
+		var canvas = container.canvas().chart("FinalChart", container.info() );
+		canvas.draw(data);
+
+		Note: container.info() as 2nd parameter is absolutely the core required. It allows each individual layer to know what is the context of the current canvas, passing an object of dataset like container width, height, canvas info including its id, clippath id, width, height, and other info
 
 	Syntax:
 		d3.ma.container(selector)    // is absolutely required, others are optional.
 		# container(selector) will take a css selector, which will be the container to append the svg element
+
+	Note:
+		by default, when the svg element initialized, it will create a canvas g element and a defs element contain the clip-path info, random generated cid for clip-path id and id for canvas id attribute.
 
 	Arguments:
 		private atrribute:
@@ -44,7 +48,8 @@
 			# Optional, setter/getter  canvas height. Normally, do not need to set explicitly, Use container.box() will auto set the canvas width and height as properly
 
 		container.resize()
-			# Optional. Take no args, by default, the graph would not resize when window resize, by calling container.resize() will enable the graph resize when window size changes. It is chainable, could be chained at anywhere after you initialized container object.
+			# Optional. It should always handle the resize using onResize() or resize() for each instance
+			Take no args, by default, the graph would not resize when window resize, by calling container.resize() will enable the graph resize when window size changes. It is chainable, could be chained at anywhere after you initialized container object.
 
 		container.ratio(_ratio)
 			#Optional. setter/getter  update canvas attribute preserveAspectRatio for resize() purpose. aspectRatio variable in this case.
@@ -54,6 +59,7 @@
 
 		container.info()
 			# getter. Return all the infomation about this container. expose all the data to the world
+			include value of   marginTop, marginRight, marginBottom, marginLeft, containerW, containerH, canvasW, canvasH, id, cid
 */
 d3.ma.container = function(selector) {
 
@@ -177,11 +183,15 @@ d3.ma.container = function(selector) {
 		};
 	};
 
-	// Set the canvas transform attr, call it when needed
+	// Set the canvas element transform attribute, call it when needed
 	function _gTransform (_marginLeft, _marginTop) {
 		g.attr('transform', 'translate(' + _marginLeft + ',' + _marginTop + ')');
 	}
 
+	// setup the defs>clip>rect element width and height, x and y attrs
+	// width and height should equal to the containerW and containerH
+	// x equal to the -marginLeft, so it starts where the origin of the canvas before the transform
+	// y equal to the 0 value of the origin, remain static, here use -1 because to show the y-axis tick top
 	function _initClipPath(_width, _height, _marginLeft) {
 		rect.attr({
 			width: _width,
@@ -194,7 +204,8 @@ d3.ma.container = function(selector) {
 	}
 
 	// e.g container.resize().box(1400, 600);
-	// resize() fn could be called from anywhere, it is chainable
+	// container.resize() fn could be called from container object, it is chainable
+	// d3.ma.resize() should be used all the time. This resize() is the old implementation
 	container.resize = function() {
 		//The Graph will auto scale itself when resize
 		d3.ma.onResize( function() {
