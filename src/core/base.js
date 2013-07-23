@@ -1,5 +1,5 @@
 /*
-	Base is extended from Scale, it is used for the basic/ section. All mixin or extended modules will have all its behavior. Where you define your absolutely needed methods for the APIs. Internal use only, never use it for displaying a chart.
+	Base is extended from Scale, it is used for the basic/ folder section. All mixined or extended modules will have all its behavior. Where you define your absolutely needed methods for the APIs. Internal use only, never use it for displaying a chart.
 
 	Initalization:
 		initialize: function(containerInfo) {
@@ -15,17 +15,9 @@
 		// Passing options object as a third argument. Options is required.
 
 	Arguments:
-		private atrribute:
-			x & y:  scale representation for the x axis and y axis. take x or y as a key, value should be a string representation of scale value, default value is linear, everything will override the default
+		Attributes
+			since it inherit from scale.js, it will have all its private & public attr. Read core/scale.js Arguments section for details
 
-			Note: x, y could only be set by the initialization fn, option objects.
-
-		public attributes:
-			width, height,  (# container width and height values.)
-			xScale, yScale (# scale fn on the x & y axis. )
-			info  (# graph info about the details of this graph include width and height)
-
-		Note: by default, you do not need to specified width, height value in the third args, it will use the info options for the value, if you want to override the default, you could definied the width and height to override the info value
 
 	APIs:  ( defined in the constructor level )
 	# THOSE APIs EXIST IN ALL EXTENDED MODULES
