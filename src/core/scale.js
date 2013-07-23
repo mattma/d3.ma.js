@@ -22,9 +22,9 @@
 			Note: x, y could only be set by the initialization fn, option objects.
 
 		public attributes:
-			width, height,  (# container width and height values.)
-			xScale, yScale (# scale fn on the x & y axis. )
-			info  (# graph info about the details of this graph include width and height)
+			width, height,  (# canvas width and height values.)
+			info  (# graph info about the details of this graph, canvas related info, svg info)
+			xScale, yScale (# scale fn on the x & y axis. it should always be used when dealing with xScale and yScale. cause it only init the scale on x and y once, it won't be changed. The behavoir could be overrided by each individual fn)
 
 		Note: by default, you do not need to specified width, height value in the third args, it will use the info options for the value, if you want to override the default, you could definied the width and height to override the info value
 
@@ -39,7 +39,6 @@
 		canvas.draw(data);
 
 		d3.chart("FinalChart", {
-
 			//important, to pass the option of containerInfo as an obj options
 			initialize: function(containerInfo) {  // <= this is the ABSOLUTELY required setup
 				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
@@ -47,7 +46,6 @@
 					x: 'ordinal',
 					guide: true
 				});
-
 				var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
 					info: containerInfo,  // <= this is the ABSOLUTELY required setup
 					x: 'ordinal'
@@ -57,11 +55,14 @@
 
 	APIs:  ( defined in the constructor level )
 		private api:
-			_scale(scale)   # simply just return a new instance of d3.scale
+			_x, _y (# contain the string representation of scale value. used in base.js _updateScale() )
+			_switchXScale(xScaleString, widthValue), _switchYScale(yScaleString, heightValue) (#update the range array when window resize or any time scale updates)
+			_scale(scaleString)   (# simply just return a new instance of d3.scale # initialize the scale for this graph, always use it internally, do not override )
 
 	Options
 		x & y for scale on x axis and y axis, available scale attribute is
 		linear, ordinal, log, pow, sqrt, identity, quantile, quantize, threshold
+
  */
 d3.chart('Scale', {
 
