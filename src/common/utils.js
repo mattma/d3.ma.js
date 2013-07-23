@@ -27,7 +27,7 @@ d3.ma.windowSize = function() {
 	return (size);
 };
 
-// pull from underscore.js
+// Work the same way how underscore.js signiture each method
 d3.ma.each = function(obj, iterator, context) {
 
 	if (obj == null) return;
@@ -60,11 +60,10 @@ d3.ma.onResize = function(fun, context){
 	}
 };
 
-// Convinient methods to call multiple fn below
-// d3.ma.onResize(line._resize, line);
-// d3.ma.onResize(area._resize, area);
-//
-// now can call this.   d3.ma.resize(line, area);
+// Convinient method to call onResize() bind to the right context
+// E.G  d3.ma.onResize(line._resize, line);
+// E.G  d3.ma.onResize(area._resize, area);
+// New Approach:  d3.ma.resize(line, area);  //actually, bind the right context to execute the onResize()
 d3.ma.resize = function(array)  {
 	array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
 
