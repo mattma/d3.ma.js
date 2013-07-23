@@ -77,6 +77,9 @@ module.exports = function( grunt ) {
 					'src/components/axis.js',
 
 					'src/basic/bars.js',
+					'src/basic/line.js',
+					'src/basic/area.js',
+					'src/basic/circle.js',
 
 					'src/outro.js'
 				],
