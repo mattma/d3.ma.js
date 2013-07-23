@@ -101,7 +101,7 @@
 				});
 
 				axis
-					.xLabel('Line Chart X' )
+					.xLabel('Line Chart X', 0, 20 )
 					.yLabel('Y Labels', 15, 20);
 
 				var line = this.mixin("Line", this.base.append('g').classed('lines', true), {
@@ -157,7 +157,7 @@
 
 		});
 
-		var container = d3.ma.container('#vis').margin({left: 100});
+		var container = d3.ma.container('#vis');
 
 		container.box(1400, 600); // .resize();
 

@@ -121,9 +121,13 @@ d3.chart('Base').extend("Axis", {
 	},
 
 	xLabel: function(_label, leftRightPosition, upDownPosition) {
+		var containerInfo = this.info,
+			xValue = leftRightPosition + containerInfo.marginLeft,
+			yValue = upDownPosition - containerInfo.marginBottom;
+
 		this.xAxisG.append('text').classed('label', true).attr({
-			'x': leftRightPosition || 0, // control left and right of the label
-			'y': (-upDownPosition) || 0, // control up and down of the label
+			'x': xValue || containerInfo.marginLeft - 15, // control left and right of the label
+			'y': yValue || 0, // control up and down of the label
 			'transform': 'translate(' + this.info.marginLeft+ ',' + this.info.marginBottom + ')'
 		}).text(_label);
 
@@ -131,9 +135,13 @@ d3.chart('Base').extend("Axis", {
 	},
 
 	yLabel: function(_label, upDownPosition, leftRightPosition) {
+		var containerInfo = this.info,
+			xValue = (-upDownPosition) + containerInfo.marginTop - 15,
+			yValue = Math.abs(leftRightPosition - containerInfo.marginLeft) - 5;
+
 		this.yAxisG.append('text').classed('label', true).attr({
-			'x':  (-upDownPosition) || 0, // control up and down of the label
-			'y': leftRightPosition || 10,  // control left and right of the label
+			'x':  xValue || -15, // control up and down of the label
+			'y':  yValue || 15,  // control left and right of the label
 			'transform':  'rotate(-90) translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
 		}).text(_label);
 
