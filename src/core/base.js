@@ -22,7 +22,7 @@
 	APIs:  ( defined in the constructor level )
 	# THOSE APIs EXIST IN ALL EXTENDED MODULES
 		constructor.box(_width, _height)
-			# setter/getter container width value and height values
+			# setter/getter container width value and height values, when only one value, height is the same as width
 
 		constructor.w(_width)
 			# setter/getter container width value  // always recommend to use constructor.box() instead
@@ -35,13 +35,45 @@
 			# when it is entering, binding datum with each element, single element will bind 'mouseenter' event with our custom 'd3maMouseenter', bind 'mouseout' with our custom event 'd3maMouseout'.
 			For example, quick internal binding to reduce duplicated code in modules like circle.js, bars.js etc
 
+		1. _resize()  # called from d3.ma.onResize() or d3.ma.resize()
+		2. _onWindowResize(chart, single)  # called from each individual module
+		3. _redraw(e, chart, single)  # called from each individual module
+		4. _unbind(e, chart, single) # called from each individual module
+		5. _updateScale(_width, _height) # called from each individual module
+		6. _update(_width, _height, chart, single)  # this methods should be handled by each module, normally defined for special cases
+
+		Here is the logic on those private methods above.
+		When each instance attach an function of resize(context, context ...), E.G. d3.ma.onResize(line._resize, line); `1. _resize()` is called automatically, it will figure it out current width and height, dispatch 'd3maOnWindowResize' or 'd3maOffWindowResize' accordingly, passing the correct data object to the handlers.
+
+		Each module ( like line, bar, circle etc ) will handle it to trigger `2. _onWindowResize()` this._onWindowResize() like Line, Axis or chart._onWindowResize(chart, this) inside this.layer enter lifeevent. _onWindowResize defined the global handler on 'd3maOnWindowResize' or 'd3maOffWindowResize', passing three arguments (e, chart, single).
+		e is the object received from 'd3maOnWindowResize' or 'd3maOffWindowResize'.
+		chart refer to this context, used it to access xScale, yScale, width, height, etc. chart property.
+		single refer to each individual group just appended by insert command.
+
+		`3. _redraw(e, chart, single)` will be triggered on 'd3maOnWindowResize'. First, it will trigger `5. _updateScale(_width, _height)`, based on the current xScale string value, yScale string value, update the xScale, yScale range array. ( defined in scale.js ) and update the module box width and height attribute.  Second, it will dispatch another global d3.ma event. 'd3maSingleWindowResize', passing (chart, single) as its arguments.  Third, defined a recommended method called `6. _update()`. E.G. this._update( _width, _height, chart, single ).  so any module could hook into this method and attach its own custom updates based on current context and its useful values like width, height, chart info and single info
+
+		`4. _unbind(e, chart, single)` will be triggered on 'd3maOffWindowResize'. It will auto trigger `5. _updateScale(_width, _height)` and `6. _update( _width, _height, chart, single )` for modifying the scale range and domain
+
+		'd3maSingleWindowResize': `3. _redraw(e, chart, single)` dispatch an event of `d3maSingleWindowResize`, each instance of the module should handle it separately based on its settings. (like in index.html).
+			E.G.
+				circles.dispatch.on('d3maSingleWindowResize', function(chart, single){
+					var chart = chart || this;
+					single.attr({
+						'cx': area.line.x(),
+						'cy': area.line.y()
+					});
+				});
+
 	Events:  ( defined in the instance level )
 		# Used for constructor.dispatch.on trigger events  E.G: Custom d3maMouseenter and mouseout events
 		# syntax: constructor.dispatch.on('d3maMouseenter', function(e){ });
 
 		# Currently support:
-			d3maMouseenter
-			d3maMouseout
+			d3maMouseenter   # each individual element mouse enter event
+			d3maMouseout	# each individual element mouse out event
+			d3maSingleWindowResize   # each individual element window resize event, normally, update scale domain, individual attrs
+			d3maOnWindowResize		# window resize event, elements need to update its scales, and other attrs
+			d3maOffWindowResize		# window resize event, elements do not update its scale, attrs, reset to original
  */
 d3.chart('Scale').extend('Base', {
 
