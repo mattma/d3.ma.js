@@ -30,6 +30,16 @@
 
 		info arg is absolutely required the param. it is used to figure out the width and height stuffs.
 
+	APIs:  ( defined in the constructor level )
+		private api:
+			_x, _y (# contain the string representation of scale value. used in base.js _updateScale() )
+			_switchXScale(xScaleString, widthValue), _switchYScale(yScaleString, heightValue) (#update the range array when window resize or any time scale updates)
+			_scale(scaleString)   (# simply just return a new instance of d3.scale # initialize the scale for this graph, always use it internally, do not override )
+
+	Options
+		x & y for scale on x axis and y axis, available scale attribute is
+		linear, ordinal, log, pow, sqrt, identity, quantile, quantize, threshold
+
 	Example:
 		var container = d3.ma.container('#vis');
 		container.resize().box(1400, 600);
@@ -52,16 +62,6 @@
 				});
 			}
 		});
-
-	APIs:  ( defined in the constructor level )
-		private api:
-			_x, _y (# contain the string representation of scale value. used in base.js _updateScale() )
-			_switchXScale(xScaleString, widthValue), _switchYScale(yScaleString, heightValue) (#update the range array when window resize or any time scale updates)
-			_scale(scaleString)   (# simply just return a new instance of d3.scale # initialize the scale for this graph, always use it internally, do not override )
-
-	Options
-		x & y for scale on x axis and y axis, available scale attribute is
-		linear, ordinal, log, pow, sqrt, identity, quantile, quantize, threshold
 
  */
 d3.chart('Scale', {
