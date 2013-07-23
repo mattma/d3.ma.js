@@ -2,7 +2,18 @@
 	Internal use only, never use it for displaying a chart.
 	Scale.js is designed to be extended by other file like axis.js and other charts.
 
-	Note: Anywhere elses in the app, should not defined any scale fn or init the scale fn, all others should be extended from this file to keep it dry
+	Note:
+		Anywhere elses in the app, should not defined any scale fn or init the scale fn, all others should be extended from this file to keep it dry
+
+		options.info is an absolutely required parameter. If it is not present, it will throw an error. To set this option, follow this pattern. E.G.
+			d3.chart("FinalChart", {
+				initialize: function(containerInfo) {  <= defined containerInfo option obj here.
+					var area = this.mixin("Area", this.base.append('g').classed('area', true), {
+						info: containerInfo  <= defined containerInfo option obj in the instance level. Required
+					});
+				}
+			});
+			var canvas = container.canvas().chart("FinalChart", container.info() ); <= passing obj as 2nd arg when init the canvas
 
 	Arguments:
 		private atrribute:

@@ -15,21 +15,6 @@
 	Note:
 		by default, when the svg element initialized, it will create a canvas g element and a defs element contain the clip-path info, random generated cid for clip-path id and id for canvas id attribute.
 
-	Arguments:
-		private atrribute:
-			x & y:  scale representation for the x axis and y axis. take x or y as a key, value should be a string representation of scale value, default value is linear, everything will override the default
-
-			Note: x, y could only be set by the initialization fn, option objects.
-
-		public attributes:
-			width, height,  ( # axis container width and height values. from scale.js )
-			xScale, yScale (# scale fn on the x & y axis. from scale.js)
-			guide: Boolean. Optional,  default to false. Draw the grid guides along x, y axis when guide is true
-			xAxis, yAxis   ( # could use to override its default value, like defined ticks(), orient(), etc. )
-			xAxisG, yAxisG ( # could use to defined custom element attributes )
-
-		Note:  currently, xGuide, yGuide is remaining as private object, if needed, it could expose out to the api
-
 	APIs:
 		container(selector)
 			# in general, selector is a single dom element, id in most of the case.
