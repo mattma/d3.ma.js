@@ -63,7 +63,9 @@
 		d3.chart("FinalChart", {
 			initialize: function(containerInfo) {
 
-				var legend = this.mixin('Legend', this.base.append('g'));
+				var legend = this.mixin('Legend', this.base.append('g'), {
+					info: containerInfo
+				});
 
 				legend.dispatch.on('d3maLegendMouseenter', function(d,i){
 					console.log(d);
@@ -83,7 +85,7 @@
 
 		var container = d3.ma.container('#vis').margin({left: 50});
 
-		container.box(1400, 600);  //.resize()
+		container.box(500, 300);  //.resize()
 
 		var canvas = container.canvas().chart("FinalChart", container.info() );
 

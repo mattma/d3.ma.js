@@ -1,9 +1,12 @@
 /*
-
+	options.align  decide the legend text should be aligned or not
  */
 
 d3.chart('Legend', {
-	initialize: function() {
+	initialize: function(options) {
+
+		options = options || {};
+		var info = options.info;
 
 		var color = d3.ma.Color();
 
@@ -42,11 +45,12 @@ d3.chart('Legend', {
 							chart.dispatch.d3maLegendClick(d, i, chart, this);
 						});
 
-					this.classed('disabled', function(d) { return d.disabled }).attr({
-						'transform': function(d, i) {
-							return  'translate( 20, ' + (i * 20 + 10) + ' )'
-						}
-					});
+					this.classed('disabled', function(d) { return d.disabled });
+					// .attr({
+					// 	'transform': function(d, i) {
+					// 		return  'translate( 20, ' + (i * 20 + 10) + ' )'
+					// 	}
+					// });
 
 					this.append('circle').attr({
 						'stroke-width': 2,
@@ -60,6 +64,63 @@ d3.chart('Legend', {
 						'dy': '.32em',
 						'dx': 12
 					}).text(function(d,i){ return d.key });
+
+
+					var align = true;
+
+					if (align) {
+
+						var eachLegendWidthArray = [];
+
+						this.each(function(d,i) {
+							var legendText = d3.select(this).select('text'),
+								svgComputedTextLength = legendText.node().getComputedTextLength()
+																	|| d3.ma.calcTextWidth(legendText);
+
+							// 28 is ~ the width of the circle plus some padding
+							eachLegendWidthArray.push(svgComputedTextLength + 28);
+						});
+
+						var legendPerRow = 0,
+							legendWidth = 0,
+							columnWidths = [];
+
+						while ( legendWidth < info.canvasW && legendPerRow < eachLegendWidthArray.length) {
+							columnWidths[legendPerRow] = eachLegendWidthArray[legendPerRow];
+							legendWidth += eachLegendWidthArray[legendPerRow++];
+						}
+
+						while ( legendWidth > info.canvasW && legendPerRow > 1 ) {
+							columnWidths = [];
+							legendPerRow--;
+
+							for (k = 0; k < eachLegendWidthArray.length; k++) {
+								if (eachLegendWidthArray[k] > (columnWidths[k % legendPerRow] || 0) )
+									columnWidths[k % legendPerRow] = eachLegendWidthArray[k];
+							}
+
+							legendWidth = columnWidths.reduce(function(prev, cur, index, array) {
+								return prev + cur;
+							});
+						}
+
+						//console.log(columnWidths, legendWidth, legendPerRow);
+
+						var xPositions = [];
+
+						for (var i = 0, curX = 0; i < legendPerRow; i++) {
+							xPositions[i] = curX;
+							curX += columnWidths[i];
+						}
+
+						this
+							.attr('transform', function(d, i) {
+								return 'translate(' + xPositions[i % legendPerRow] + ',' + (5 + Math.floor(i / legendPerRow) * 20) + ')';
+							});
+
+						//position legend as far right as possible within the total width
+						chart.base.attr('transform', 'translate(' + (info.containerW - info.marginRight - legendWidth) + ',' + info.marginTop + ')');
+					}
 
 
 					// onEnter fn will take two args

@@ -27,11 +27,28 @@ d3.ma.windowSize = function() {
 	return (size);
 };
 
+
 // Default color chooser uses the index of an object as before.
 d3.ma.Color = function() {
-    var colors = d3.scale.category20().range();
-    return function(d, i) { return d.color || colors[i % colors.length] };
+	var colors = d3.scale.category20().range();
+	return function(d, i) { return d.color || colors[i % colors.length] };
 };
+
+
+/* For situations where we want to approximate the width in pixels for an SVG:text element.
+Most common instance is when the element is in a display:none; container.
+Forumla is : text.length * font-size * constant_factor
+*/
+d3.ma.calcTextWidth = function (svgTextElem) {
+	if (svgTextElem instanceof d3.selection) {
+		var fontSize = parseInt(svgTextElem.style('font-size').replace('px',''));
+		var textLength = svgTextElem.text().length;
+
+		return textLength * fontSize * 0.5;
+	}
+	return 0;
+};
+
 
 // Work the same way how underscore.js signiture each method
 d3.ma.each = function(obj, iterator, context) {
