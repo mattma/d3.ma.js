@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>D3 Test</title>
+
+	<link rel="stylesheet" type="text/css" href="../src/d3.ma.css">
+
+	<script src="../libs/d3.v3.js"></script>
+	<script src="../libs/d3.chart.js"></script>
+
+
+	<script src="../src/common/core.js"></script>
+	<script src="../src/common/utils.js"></script>
+	<script src="../src/common/container.js"></script>
+	<script src="../src/components/clippath.js"></script>
+
+
+	<script src="../src/core/scale.js"></script>
+	<script src="../src/core/base.js"></script>
+
+
+	<script src="../src/components/axis.js"></script>
+	<script src="../src/components/legend.js"></script>
+
+
+	<script src="../src/basic/bars.js"></script>
+
+<!--
+	<script src="../build/d3.ma.min.js"></script>
+-->
+
+</head>
+<body>
+	<div id="vis"></div>
+
+	<script>
+		var data = [
+			{
+				key: "Sine Wave",
+				disabled: true
+			},
+			{
+				key: "A Very Long Series Label"
+			},
+			{
+				key: "A Very Long Series Label"
+			},
+			{
+				key: "A Very Long Series Label"
+			},
+			{
+				key: "Cosine Wave"
+			},
+			{
+				key: "Another test label"
+			}
+		];
+	</script>
+
+	<script>
+
+		d3.chart("FinalChart", {
+			initialize: function(containerInfo) {
+
+				var legend = this.mixin('Legend', this.base.append('g'));
+
+				legend.dispatch.on('d3maLegendMouseenter', function(d,i){
+					console.log(d);
+				});
+				legend.dispatch.on('d3maLegendMouseout', function(d,i){
+					console.log(i);
+				});
+				legend.dispatch.on('d3maLegendClick', function(d,i, chart, single){
+					console.log('d: ', d);
+					console.log('i: ', i);
+					console.log('chart: ', chart);
+					console.log('single: ', single);
+				});
+			}
+
+		});
+
+		var container = d3.ma.container('#vis').margin({left: 50});
+
+		container.box(1400, 600);  //.resize()
+
+		var canvas = container.canvas().chart("FinalChart", container.info() );
+
+		//render it with some data
+		canvas.draw(data);
+
+	</script>
+
+	<!-- livereload snippet  -->
+	<script src="http://localhost:35729/livereload.js?snipver=1"></script>
+</body>
+</html>
