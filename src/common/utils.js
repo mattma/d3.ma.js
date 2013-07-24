@@ -27,6 +27,12 @@ d3.ma.windowSize = function() {
 	return (size);
 };
 
+// Default color chooser uses the index of an object as before.
+d3.ma.Color = function() {
+    var colors = d3.scale.category20().range();
+    return function(d, i) { return d.color || colors[i % colors.length] };
+};
+
 // Work the same way how underscore.js signiture each method
 d3.ma.each = function(obj, iterator, context) {
 
