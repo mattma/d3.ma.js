@@ -1,3 +1,15 @@
-1. write line, or circle, whatever example
+d3.chart('FinalChart', {
+	initialize: function(containerInfo) {
 
-2. throw new error in base.js to check the this.info param
+		var axis =  this.mixin('Axis',  guideLineG, {
+			info: containerInfo, // required
+			x: 'ordinal',
+			y: 'log',
+			width: this.base.attr('width'),  // optional
+			height: this.base.attr('height'),  // optional
+			guide: true,
+			ticksOnResize: true
+		});
+
+	}
+});

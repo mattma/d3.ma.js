@@ -9,31 +9,25 @@
 				y: 'log',
 				width: this.base.attr('width'),  // optional
 				height: this.base.attr('height'),  // optional
-				guide: true
+				guide: true,
+				ticksOnResize: true
 			});
 		}
 
 		// Passing options object as a third argument. Options is required.
 
 	Arguments:
-		private atrribute:
-			x & y:  scale representation for the x axis and y axis. take x or y as a key, value should be a string representation of scale value, default value is linear, everything will override the default
-
-			Note: x, y could only be set by the initialization fn, option objects.
+		Attributes
+			since it inherit from scale.js, it will have all its private & public attr. Read core/scale.js Arguments section for details
 
 		public attributes:
-			width, height,  (# container width and height values.)
-			xScale, yScale (# scale fn on the x & y axis. )
-			info  (# graph info about the details of this graph include width and height)
-
 			guide: Boolean. Optional,  default to false. Draw the grid guides along x, y axis when guide is true
-			ticksOnResize: Boolean, Optional, default to false. Redraw the ticks when resize the window
+			ticksOnResize: Boolean, Optional, default to false. Redraw the ticks when resize the window based on different ratio
 			xAxis, yAxis   ( # could use to override its default value, like defined ticks(), orient(), etc. )
 			xAxisG, yAxisG ( # could use to defined custom element attributes )
 
 		Note:  currently, xGuide, yGuide is remaining as private object, if needed, it could expose out to the api
 
-		Note: by default, you do not need to specified width, height value in the third args, it will use the info options for the value, if you want to override the default, you could definied the width and height to override the info value
 	APIs:
 		onDataBind: function() { }
 			# fn is actually handling the custom dataBind value to each individual group
