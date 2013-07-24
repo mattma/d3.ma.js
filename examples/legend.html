@@ -64,7 +64,8 @@
 			initialize: function(containerInfo) {
 
 				var legend = this.mixin('Legend', this.base.append('g'), {
-					info: containerInfo
+					info: containerInfo,
+					align: true
 				});
 
 				legend.dispatch.on('d3maLegendMouseenter', function(d,i){

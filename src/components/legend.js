@@ -1,5 +1,6 @@
 /*
-	options.align  decide the legend text should be aligned or not
+	options.align  decide the legend text should be aligned or not. dynamic update the each legend group x and y position, and update the this.base translate attribute as well.
+
  */
 
 d3.chart('Legend', {
@@ -65,10 +66,8 @@ d3.chart('Legend', {
 						'dx': 12
 					}).text(function(d,i){ return d.key });
 
-
-					var align = true;
-
-					if (align) {
+					// Based on the user input, align the legend text or not align text
+					if (options.align) {
 
 						var eachLegendWidthArray = [];
 
@@ -120,8 +119,33 @@ d3.chart('Legend', {
 
 						//position legend as far right as possible within the total width
 						chart.base.attr('transform', 'translate(' + (info.containerW - info.marginRight - legendWidth) + ',' + info.marginTop + ')');
-					}
+					} else {
 
+						var ypos = 5,
+							newxpos = 5,
+							maxwidth = 0,
+							xpos;
+
+						this.attr(
+							'transform', function(d, i) {
+								var length = d3.select(this).select('text').node().getComputedTextLength() + 28;
+								xpos = newxpos,
+								compareValue = info.marginLeft + info.marginRight + xpos + length;
+
+								if (info.containerW < compareValue) {
+									newxpos = xpos = 5;
+									ypos += 20;
+								}
+
+								newxpos += length;
+								if (newxpos > maxwidth) maxwidth = newxpos;
+
+								return 'translate(' + xpos + ',' + ypos + ')';
+							});
+
+						//position legend as far right as possible within the total width
+						chart.base.attr('transform', 'translate(' + (width - margin.right - maxwidth) + ',' + margin.top + ')');
+					}
 
 					// onEnter fn will take two args
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
