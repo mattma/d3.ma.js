@@ -144,7 +144,7 @@ d3.chart('Legend', {
 							});
 
 						//position legend as far right as possible within the total width
-						chart.base.attr('transform', 'translate(' + (width - margin.right - maxwidth) + ',' + margin.top + ')');
+						chart.base.attr('transform', 'translate(' + (info.containerW  - info.marginLeft - info.marginRight - maxwidth) + ',' + info.marginTop + ')');
 					}
 
 					// onEnter fn will take two args
