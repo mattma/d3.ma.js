@@ -27,9 +27,13 @@ d3.chart('Base').extend('Line', {
 
 		this.line = d3.svg.line();
 
-		this.line
-			.x(function(d) { return self.xScale(d.x); })
-			.y(function(d) { return self.yScale(d.y);  });
+		if(this.onBuildLine) {
+			this.onBuildLine(this);
+		} else {
+			this.line
+				.x(function(d) { return self.xScale(d.x); })
+				.y(function(d) { return self.yScale(d.y);  });
+		}
 
 		return this;
 	},

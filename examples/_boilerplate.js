@@ -13,3 +13,13 @@ d3.chart('FinalChart', {
 
 	}
 });
+
+//Snippet to rebuild the data
+cleanupData: function(data) {
+	return data.map(function(d) {
+		return {
+			x: d.x,
+			y: d.y
+		};
+	});
+}

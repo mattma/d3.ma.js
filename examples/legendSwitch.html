@@ -25,6 +25,9 @@
 
 
 	<script src="../src/basic/bars.js"></script>
+	<script src="../src/basic/line.js"></script>
+	<script src="../src/basic/circle.js"></script>
+	<script src="../src/basic/area.js"></script>
 
 <!--
 	<script src="../build/d3.ma.min.js"></script>
@@ -63,6 +66,59 @@
 	</script>
 
 	<script>
+		d3.chart('Line').extend('MyLine', {
+			initialize: function(options) {
+
+			},
+
+			onDataBind: function(chart) {
+				var chart = chart || this;
+				domain(chart);
+			}
+
+			// onBuildLine: function(chart) {
+			// 	var chart = chart || this;
+			// 	chart.line
+			// 		.x(function(d) {
+			// 			var xInfo = (d.values).map(function(val, ind){
+			// 				return val
+			// 			chart.xScale(val.x);
+			// 			})						})
+			// 			xInfo.forEach(function(val, ind){
+
+			// 		})
+			// 		.y(function(d) {
+			// 			var xInfo = (d.values).map(function(val, ind){
+			// 				return val
+			// 			})
+			// 			xInfo.forEach(function(val, ind){
+			// 				chart.yScale(val.y);
+			// 			})
+			// 		});
+			// }
+		});
+
+		function domain(context) {
+			var xMax = d3.max(
+				d3.max(data, function(d, i){
+					return (d.values).map(function(val, ind){
+						return val.x
+					})
+				})
+			);
+			var yMax = d3.max(
+				d3.max(data, function(d, i){
+					return (d.values).map(function(val, ind){
+						return val.y
+					})
+				})
+			);
+			console.log('xMax: ', xMax);
+			console.log('yMax: ', yMax);
+			// Setup xScale & yScale domain range
+			context.xScale.domain([ 0, xMax ]);
+			context.yScale.domain([ 0, yMax ]);
+		}
 
 		d3.chart("FinalChart", {
 			initialize: function(containerInfo) {
@@ -72,9 +128,11 @@
 					align: false
 				});
 
-				// var line = this.mixin('Line', this.base.append('g'), {
-				// 	info:containerInfo
-				// });
+				var line = this.mixin('MyLine', this.base.append('g'), {
+					info:containerInfo
+				});
+
+
 
 				// legend.dispatch.on('d3maLegendMouseenter', function(d,i){
 				// 	console.log(d);
@@ -100,6 +158,8 @@
 
 		//render it with some data
 		canvas.draw(data);
+
+		//console.log('data: ', data);
 
 	</script>
 
