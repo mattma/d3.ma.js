@@ -75,7 +75,7 @@
 		d3.chart('Line').extend('MyLine', {
 			onDataBind: function(chart) {
 				var chart = chart || this;
-				domain(chart);
+				//domain(chart);
 			}
 		});
 
@@ -108,27 +108,38 @@
 				// 	info: containerInfo,
 				// 	data: 'values'
 				// });
+				var self = this;
 
 				this.layer('layers', this.base, {
 					dataBind: function(data) {
 						var chart = this.chart();
-						console.log('data: ', data);
-						return this.selectAll('g').data(data);
+						//console.log('data: ', data);
+						return this.selectAll('.enter').data(data);
 					},
 
 					insert: function(){
 						var chart = this.chart();
-						return this.append('g');
+						return this.append('g').classed('enter', true);
 					},
 
 					events: {
 						'enter': function() {
 							var chart = this.chart();
 
-							var line = chart.mixin('MyLine', chart.base.append('g'), {
-								info: containerInfo,
-								data: 'values'
-							});
+							// two elements have two set of data
+							console.log('this: ', this);
+
+
+							// var line = chart.mixin('MyLine', this.append('g').classed('matt', true), {
+							// 	info: containerInfo,
+							// 	data: 'values'
+							// });
+
+							// this.append('rect').attr({
+							// 	'fill': function(d, i) {
+							// 		console.log('d: ', d);
+							// 	}
+							// });
 						}
 					}
 				});
