@@ -47,25 +47,25 @@
 				cos.push({x: i, y: .5 * Math.cos(i/10)});
 			}
 
-			return 	{
-				values: cos,
-				key: "Cosine Wave",
-				color: "#2ca02c"
-			};
+			// return 	{
+			// 	values: cos,
+			// 	key: "Cosine Wave",
+			// 	color: "#2ca02c"
+			// };
 
-			// return [
-			// 	{
-			// 		area: true,
-			// 		values: sin,
-			// 		key: "Sine Wave",
-			// 		color: "#ff7f0e"
-			// 	},
-			// 	{
-			// 		values: cos,
-			// 		key: "Cosine Wave",
-			// 		color: "#2ca02c"
-			// 	}
-			// ];
+			return [
+				{
+					area: true,
+					values: sin,
+					key: "Sine Wave",
+					color: "#ff7f0e"
+				},
+				{
+					values: cos,
+					key: "Cosine Wave",
+					color: "#2ca02c"
+				}
+			];
 		}
 
 		var data = sinAndCos();
@@ -104,11 +104,34 @@
 					align: false
 				});
 
-				var line = this.mixin('MyLine', this.base.append('g'), {
-					info: containerInfo,
-					data: 'values'
-				});
+				// var line = this.mixin('MyLine', this.base.append('g'), {
+				// 	info: containerInfo,
+				// 	data: 'values'
+				// });
 
+				this.layer('layers', this.base, {
+					dataBind: function(data) {
+						var chart = this.chart();
+						console.log('data: ', data);
+						return this.selectAll('g').data(data);
+					},
+
+					insert: function(){
+						var chart = this.chart();
+						return this.append('g');
+					},
+
+					events: {
+						'enter': function() {
+							var chart = this.chart();
+
+							var line = chart.mixin('MyLine', chart.base.append('g'), {
+								info: containerInfo,
+								data: 'values'
+							});
+						}
+					}
+				});
 
 
 				// legend.dispatch.on('d3maLegendMouseenter', function(d,i){
