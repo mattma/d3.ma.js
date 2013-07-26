@@ -23,44 +23,67 @@ d3.chart('Base').extend('Line', {
 	initialize: function(options) {
 		options = options || {};
 
-		var self = this;
-
 		this.line = d3.svg.line();
 
-		if(this.onBuildLine) {
-			this.onBuildLine(this);
-		} else {
-			this.line
-				.x(function(d) { return self.xScale(d.x); })
-				.y(function(d) { return self.yScale(d.y);  });
-		}
+		this.layer('line', this.base, {
+			dataBind: function(data) {
+				var chart = this.chart();
+				if(chart.onDataBind) { chart.onDataBind(chart); }
 
-		return this;
-	},
+				chart.line
+					.x(function(d) { return chart.xScale(d.x); })
+					.y(function(d) { return chart.yScale(d.y);  });
 
-	transform: function(data) {
+				// data[options.data]  will return a single array, data will bind path element to each array index,
+				// by pushing options array into an anonymous array, ONLY one path element will be created
+				return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
+			},
 
-		this.linePath = this.base.append('path').attr({
-			'class': 'line',
-		});
+			insert: function(){
+				var chart = this.chart();
+				if(chart.onInsert) { chart.onInsert(chart); }
+				return this.append('path').classed('line', true);
+			},
 
-		if(this.onDataBind) { this.onDataBind(); }
+			events: {
+				'enter': function() {
+					var chart = this.chart();
 
-		this.linePath.datum(data).attr('d', this.line);
+					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
+					// this   # refer to each individual group just appended by insert command
+					if(chart.onEnter) { chart.onEnter(chart, this); }
 
-		// Define this fn where the data is manipulated
-		// after all the data var has the correct value, then call it on Window resize
-		// Normally, after calling this fn, need to define the _update to handle the Scale change, box size changes, attr updates
-		this._onWindowResize();
+					chart._onWindowResize(chart, this);
 
-		return data;
-	},
-
-	// Update Scale, Box Size, and attr values
-	_update: function(_width, _height) {
-
-		this.linePath.attr({
-			'd': this.line
+					this.attr('d', chart.line);
+				}
+			}
 		});
 	}
+
+	// transform: function(data) {
+
+	// 	this.linePath = this.base.append('path').attr({
+	// 		'class': 'line',
+	// 	});
+
+	// 	if(this.onDataBind) { this.onDataBind(); }
+
+	// 	this.linePath.datum(data).attr('d', this.line);
+
+	// 	// Define this fn where the data is manipulated
+	// 	// after all the data var has the correct value, then call it on Window resize
+	// 	// Normally, after calling this fn, need to define the _update to handle the Scale change, box size changes, attr updates
+	// 	this._onWindowResize();
+
+	// 	return data;
+	// }
+
+	// Update Scale, Box Size, and attr values
+	// _update: function(_width, _height) {
+
+	// 	this.linePath.attr({
+	// 		'd': this.line
+	// 	});
+	// }
 });

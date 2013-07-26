@@ -97,6 +97,21 @@ d3.ma.resize = function(array)  {
 	}
 };
 
+d3.ma.reloadResize = function(array)  {
+	array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
+
+	if( array.length ){
+		var e = {
+			width: d3.ma.windowSize().width,
+			height: d3.ma.windowSize().height
+		};
+		d3.ma.each(array, function(context, index){
+			context._resize.call(context || this);
+			context._redraw(e);
+		});
+	}
+};
+
 
 // modified implementation from zepto.js library
 // In general, you do not need to apply 2nd arg. by default, element is document

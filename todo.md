@@ -5,9 +5,11 @@ http://techslides.com/50-javascript-charting-and-graphics-libraries/#comment-848
 http://brendansudol.com/posts/colors-with-d3/
 https://gist.github.com/brendansudol/5995005
 
+best
+http://prcweb.co.uk/lab/selection/
 
 3. dashing d3 newletter
- finished: 36,
+ finished: 36, 35
 http://www.dashingd3js.com/data-visualization-and-d3-newsletter
 
 
@@ -18,3 +20,9 @@ TopoJson encodes topology and eliminates redundancy, resulting in a much smaller
 5. d3 map tutorial
 http://bost.ocks.org/mike/map/
 http://techslides.com/d3-world-maps-tooltips-zooming-and-queue
+
+
+https://github.com/prcweb/d3-circularheat
+
+(Here is the Online D3.js Geo File Renderer)
+http://techslides.com/d3-geojson-and-topojson-renderer/
