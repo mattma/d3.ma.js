@@ -28,11 +28,12 @@ d3.chart('Base').extend('Line', {
 		this.layer('line', this.base, {
 			dataBind: function(data) {
 				var chart = this.chart();
-				if(chart.onDataBind) { chart.onDataBind(chart); }
 
 				chart.line
 					.x(function(d) { return chart.xScale(d.x); })
 					.y(function(d) { return chart.yScale(d.y);  });
+
+				if(chart.onDataBind) { chart.onDataBind(chart); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
