@@ -99,6 +99,18 @@
 		d3.chart("FinalChart", {
 			initialize: function(containerInfo) {
 
+				// var self = this;
+				// data.forEach(function(d, i){
+				// 	// console.log('d: ', d);
+				// 	// console.log('i: ', i);
+				// 	var line = self.mixin('MyLine', self.base.append('g'), {
+				// 		info: containerInfo,
+				// 		data: 'values',
+				// 		index: i
+				// 	});
+				// })
+
+
 				// var legend = this.mixin('Legend', this.base.append('g'), {
 				// 	info: containerInfo,
 				// 	align: false
@@ -185,10 +197,6 @@
 
 		//render it with some data
 		canvas.draw(data);
-		//
-		// d3.ma.each(data, function(d, i) {
-		// 	canvas.draw(d);
-		// })
 
 	</script>
 

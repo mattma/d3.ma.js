@@ -22,6 +22,7 @@ d3.chart('Base').extend('Line', {
 
 	initialize: function(options) {
 		options = options || {};
+		this.dataIndex = options.index;
 
 		this.line = d3.svg.line();
 
@@ -30,6 +31,8 @@ d3.chart('Base').extend('Line', {
 				var chart = this.chart();
 
 				console.log('data: ', data);
+
+				console.log('(options.data) ', (options.data) ? [ data[options.data] ]: data);
 
 				chart.line
 					.x(function(d) { return chart.xScale(d.x); })
@@ -62,6 +65,10 @@ d3.chart('Base').extend('Line', {
 				}
 			}
 		});
+	},
+
+	transform: function(data) {
+		return (this.dataIndex) ? data[this.dataIndex] : data;
 	}
 
 	// 	this.linePath = this.base.append('path').attr({
