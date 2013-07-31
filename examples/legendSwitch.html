@@ -108,7 +108,6 @@
 				// 	info: containerInfo,
 				// 	data: 'values'
 				// });
-				var self = this;
 
 				this.layer('layers', this.base, {
 					dataBind: function(data) {
@@ -127,12 +126,29 @@
 							var chart = this.chart();
 
 							// two elements have two set of data
-							console.log('this: ', this);
+							//console.log('this: ', this);
 
+							var self = this;
+							this.each(function(_data){
 
-							// var line = chart.mixin('MyLine', this.append('g').classed('matt', true), {
+								var line = chart.mixin('MyLine', self.append('g').classed('matt', true), {
+									info: containerInfo,
+									data: 'values',
+									transform: _data
+								});
+
+							});
+
+					 	// 	console.log('begin');
+							// var line = chart.mixin('MyLine', matt.append('g').classed('mixin', true), {
 							// 	info: containerInfo,
 							// 	data: 'values'
+							// });
+
+							// this.attr({
+							// 	'fill': function(d) {
+							// 		console.log('d.key: ', d.key);
+							// 	}
 							// });
 
 							// this.append('rect').attr({

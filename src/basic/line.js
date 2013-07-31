@@ -25,46 +25,47 @@ d3.chart('Base').extend('Line', {
 
 		this.line = d3.svg.line();
 
-		// this.layer('line', this.base, {
-		// 	dataBind: function(data) {
-		// 		var chart = this.chart();
+		this.layer('line', this.base, {
+			dataBind: function(data) {
+				var chart = this.chart();
 
-		// 		chart.line
-		// 			.x(function(d) { return chart.xScale(d.x); })
-		// 			.y(function(d) { return chart.yScale(d.y);  });
+				data = options.transform;
 
-		// 		if(chart.onDataBind) { chart.onDataBind(chart); }
+				console.log('being init');
 
-		// 		// data[options.data]  will return a single array, data will bind path element to each array index,
-		// 		// by pushing options array into an anonymous array, ONLY one path element will be created
-		// 		return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
-		// 	},
+				console.log('data: ', data);
 
-		// 	insert: function(){
-		// 		var chart = this.chart();
-		// 		if(chart.onInsert) { chart.onInsert(chart); }
-		// 		return this.append('path').classed('line', true);
-		// 	},
+				chart.line
+					.x(function(d) { return chart.xScale(d.x); })
+					.y(function(d) { return chart.yScale(d.y);  });
 
-		// 	events: {
-		// 		'enter': function() {
-		// 			var chart = this.chart();
+				if(chart.onDataBind) { chart.onDataBind(chart); }
 
-		// 			// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
-		// 			// this   # refer to each individual group just appended by insert command
-		// 			if(chart.onEnter) { chart.onEnter(chart, this); }
+				// data[options.data]  will return a single array, data will bind path element to each array index,
+				// by pushing options array into an anonymous array, ONLY one path element will be created
+				return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
+			},
 
-		// 			chart._onWindowResize(chart, this);
+			insert: function(){
+				var chart = this.chart();
+				if(chart.onInsert) { chart.onInsert(chart); }
+				return this.append('path').classed('line', true);
+			},
 
-		// 			this.attr('d', chart.line);
-		// 		}
-		// 	}
-		// });
-	},
+			events: {
+				'enter': function() {
+					var chart = this.chart();
 
-	transform: function(data) {
-		console.log('data: ', data);
-		return data;
+					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
+					// this   # refer to each individual group just appended by insert command
+					if(chart.onEnter) { chart.onEnter(chart, this); }
+
+					chart._onWindowResize(chart, this);
+
+					this.attr('d', chart.line);
+				}
+			}
+		});
 	}
 
 	// 	this.linePath = this.base.append('path').attr({
