@@ -47,25 +47,25 @@
 				cos.push({x: i, y: .5 * Math.cos(i/10)});
 			}
 
-			// return 	{
-			// 	values: cos,
-			// 	key: "Cosine Wave",
-			// 	color: "#2ca02c"
-			// };
+			return 	{
+				values: cos,
+				key: "Cosine Wave",
+				color: "#2ca02c"
+			};
 
-			return [
-				{
-					area: true,
-					values: sin,
-					key: "Sine Wave",
-					color: "#ff7f0e"
-				},
-				{
-					values: cos,
-					key: "Cosine Wave",
-					color: "#2ca02c"
-				}
-			];
+			// return [
+			// 	{
+			// 		area: true,
+			// 		values: sin,
+			// 		key: "Sine Wave",
+			// 		color: "#ff7f0e"
+			// 	},
+			// 	{
+			// 		values: cos,
+			// 		key: "Cosine Wave",
+			// 		color: "#2ca02c"
+			// 	}
+			// ];
 		}
 
 		var data = sinAndCos();
@@ -75,7 +75,7 @@
 		d3.chart('Line').extend('MyLine', {
 			onDataBind: function(chart) {
 				var chart = chart || this;
-				//domain(chart);
+				domain(chart);
 			}
 		});
 
@@ -99,66 +99,66 @@
 		d3.chart("FinalChart", {
 			initialize: function(containerInfo) {
 
-				var legend = this.mixin('Legend', this.base.append('g'), {
-					info: containerInfo,
-					align: false
-				});
-
-				// var line = this.mixin('MyLine', this.base.append('g'), {
+				// var legend = this.mixin('Legend', this.base.append('g'), {
 				// 	info: containerInfo,
-				// 	data: 'values'
+				// 	align: false
 				// });
 
-				this.layer('layers', this.base, {
-					dataBind: function(data) {
-						var chart = this.chart();
-						//console.log('data: ', data);
-						return this.selectAll('.enter').data(data);
-					},
-
-					insert: function(){
-						var chart = this.chart();
-						return this.append('g').classed('enter', true);
-					},
-
-					events: {
-						'enter': function() {
-							var chart = this.chart();
-
-							// two elements have two set of data
-							//console.log('this: ', this);
-
-							var self = this;
-							this.each(function(_data){
-
-								var line = chart.mixin('MyLine', self.append('g').classed('matt', true), {
-									info: containerInfo,
-									data: 'values',
-									transform: _data
-								});
-
-							});
-
-					 	// 	console.log('begin');
-							// var line = chart.mixin('MyLine', matt.append('g').classed('mixin', true), {
-							// 	info: containerInfo,
-							// 	data: 'values'
-							// });
-
-							// this.attr({
-							// 	'fill': function(d) {
-							// 		console.log('d.key: ', d.key);
-							// 	}
-							// });
-
-							// this.append('rect').attr({
-							// 	'fill': function(d, i) {
-							// 		console.log('d: ', d);
-							// 	}
-							// });
-						}
-					}
+				var line = this.mixin('MyLine', this.base.append('g'), {
+					info: containerInfo,
+					data: 'values'
 				});
+
+				// this.layer('layers', this.base, {
+				// 	dataBind: function(data) {
+				// 		var chart = this.chart();
+				// 		//console.log('data: ', data);
+				// 		return this.selectAll('.enter').data(data);
+				// 	},
+
+				// 	insert: function(){
+				// 		var chart = this.chart();
+				// 		return this.append('g').classed('enter', true);
+				// 	},
+
+				// 	events: {
+				// 		'enter': function() {
+				// 			var chart = this.chart();
+
+				// 			// two elements have two set of data
+				// 			//console.log('this: ', this);
+
+				// 			var self = this;
+				// 			this.each(function(_data){
+
+				// 				var line = chart.mixin('MyLine', self.append('g').classed('matt', true), {
+				// 					info: containerInfo,
+				// 					data: 'values',
+				// 					transform: _data
+				// 				});
+
+				// 			});
+
+				// 	 	// 	console.log('begin');
+				// 			// var line = chart.mixin('MyLine', matt.append('g').classed('mixin', true), {
+				// 			// 	info: containerInfo,
+				// 			// 	data: 'values'
+				// 			// });
+
+				// 			// this.attr({
+				// 			// 	'fill': function(d) {
+				// 			// 		console.log('d.key: ', d.key);
+				// 			// 	}
+				// 			// });
+
+				// 			// this.append('rect').attr({
+				// 			// 	'fill': function(d, i) {
+				// 			// 		console.log('d: ', d);
+				// 			// 	}
+				// 			// });
+				// 		}
+				// 	}
+				// });
 
 
 				// legend.dispatch.on('d3maLegendMouseenter', function(d,i){
@@ -185,8 +185,10 @@
 
 		//render it with some data
 		canvas.draw(data);
-
-		//console.log('data: ', data);
+		//
+		// d3.ma.each(data, function(d, i) {
+		// 	canvas.draw(d);
+		// })
 
 	</script>
 

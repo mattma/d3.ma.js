@@ -55,7 +55,9 @@ d3.ma.each = function(obj, iterator, context) {
 
 	if (obj == null) return;
 
-	var nativeForEach = Array.prototype.forEach;
+	var breaker = {},
+		nativeForEach = Array.prototype.forEach;
+
 	if (nativeForEach && obj.forEach === nativeForEach) {
 		obj.forEach(iterator, context);
 	} else if (obj.length === +obj.length) {

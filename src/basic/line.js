@@ -29,10 +29,6 @@ d3.chart('Base').extend('Line', {
 			dataBind: function(data) {
 				var chart = this.chart();
 
-				data = options.transform;
-
-				console.log('being init');
-
 				console.log('data: ', data);
 
 				chart.line
