@@ -81,8 +81,6 @@
 
 		function domain(context, data) {
 
-			console.log('data: ', data);
-
 			var xMax = d3.extent(data.values, function(d){
 				return d.x;
 			});
@@ -139,11 +137,7 @@
 
 		gEnter.each(function(d, i){
 			d3.select(this).chart("FinalChart", container.info() ).draw( d );
-		})
-
-		// d3.ma.each(gEnter[0], function(value, index){
-		// 	d3.select(value).chart("FinalChart", container.info() ).draw( data[index] );
-		// });
+		});
 
 		canvas.chart("MyLegend", container.info() ).draw(data);
 

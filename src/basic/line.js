@@ -29,6 +29,8 @@ d3.chart('Base').extend('Line', {
 			dataBind: function(data) {
 				var chart = this.chart();
 
+				chart.baseData = data;
+
 				chart.line
 					.x(function(d) { return chart.xScale(d.x); })
 					.y(function(d) { return chart.yScale(d.y);  });
@@ -42,7 +44,7 @@ d3.chart('Base').extend('Line', {
 
 			insert: function(){
 				var chart = this.chart();
-				if(chart.onInsert) { chart.onInsert(chart); }
+				if(chart.onInsert) { chart.onInsert(chart, chart.baseData); }
 				return this.append('path').classed('line', true);
 			},
 
@@ -52,7 +54,7 @@ d3.chart('Base').extend('Line', {
 
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
-					if(chart.onEnter) { chart.onEnter(chart, this); }
+					if(chart.onEnter) { chart.onEnter(chart, this, chart.baseData); }
 
 					chart._onWindowResize(chart, this);
 
