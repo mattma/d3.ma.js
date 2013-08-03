@@ -47,25 +47,25 @@
 				cos.push({x: i, y: .5 * Math.cos(i/10)});
 			}
 
-			return 	{
-				values: cos,
-				key: "Cosine Wave",
-				color: "#2ca02c"
-			};
+			// return 	{
+			// 	values: cos,
+			// 	key: "Cosine Wave",
+			// 	color: "#2ca02c"
+			// };
 
-			// return [
-			// 	{
-			// 		area: true,
-			// 		values: sin,
-			// 		key: "Sine Wave",
-			// 		color: "#ff7f0e"
-			// 	},
-			// 	{
-			// 		values: cos,
-			// 		key: "Cosine Wave",
-			// 		color: "#2ca02c"
-			// 	}
-			// ];
+			return [
+				{
+					area: true,
+					values: sin,
+					key: "Sine Wave",
+					color: "#ff7f0e"
+				},
+				{
+					values: cos,
+					key: "Cosine Wave",
+					color: "#2ca02c"
+				}
+			];
 		}
 
 		var data = sinAndCos();
@@ -75,7 +75,7 @@
 		d3.chart('Line').extend('MyLine', {
 			onDataBind: function(chart) {
 				var chart = chart || this;
-				domain(chart);
+				//domain(chart);
 			}
 		});
 
@@ -115,8 +115,10 @@
 				// 	info: containerInfo,
 				// 	align: false
 				// });
+				//
+				//console.log('data: ', data[dataIndex]);
 
-				var line = this.mixin('MyLine', this.base.append('g'), {
+				var line = this.mixin('Line', this.base.append('g'), {
 					info: containerInfo,
 					data: 'values'
 				});
@@ -193,10 +195,16 @@
 
 		container.box(1400, 600);  //.resize()
 
-		var canvas = container.canvas().chart("FinalChart", container.info() );
+		var canvas = container.canvas();   //.chart("FinalChart", container.info() );
+
+		var gEnter = canvas.selectAll('g').data(data).enter().append('g');
+
+		d3.ma.each(gEnter[0], function(value, index){
+			d3.select(value).chart("FinalChart", container.info() ).draw( data[index] );
+		});
 
 		//render it with some data
-		canvas.draw(data);
+		//canvas.draw(data);
 
 	</script>
 

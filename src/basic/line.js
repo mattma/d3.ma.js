@@ -32,7 +32,7 @@ d3.chart('Base').extend('Line', {
 
 				console.log('data: ', data);
 
-				console.log('(options.data) ', (options.data) ? [ data[options.data] ]: data);
+				//console.log('(options.data) ', (options.data) ? [ data[options.data] ]: data);
 
 				chart.line
 					.x(function(d) { return chart.xScale(d.x); })
