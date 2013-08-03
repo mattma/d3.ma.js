@@ -65,10 +65,6 @@ d3.chart('Base').extend('Line', {
 				}
 			}
 		});
-	},
-
-	transform: function(data) {
-		return (this.dataIndex) ? data[this.dataIndex] : data;
 	}
 
 	// 	this.linePath = this.base.append('path').attr({
