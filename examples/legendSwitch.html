@@ -47,12 +47,6 @@
 				cos.push({x: i, y: .5 * Math.cos(i/10)});
 			}
 
-			// return 	{
-			// 	values: cos,
-			// 	key: "Cosine Wave",
-			// 	color: "#2ca02c"
-			// };
-
 			return [
 				{
 					area: true,
@@ -79,6 +73,25 @@
 			}
 		});
 
+		d3.chart('Axis').extend('MyAxis', {
+			onDataBind: function(chart){
+				var chart = chart || this;
+
+				var dataX = data.map(function(d, i){
+					return d3.extent(d['values'], function(d, i) { return d.x; })
+				});
+				var dataY = data.map(function(d, i){
+					return d3.extent(d['values'], function(d, i) { return d.y; })
+				});
+
+				var extentX = d3.extent(dataX, function(d, i){ return d[i] });
+				var extentY = d3.extent(dataY, function(d, i){ return d[i] });
+
+				chart.xScale.domain(extentX);
+				chart.yScale.domain([-1, 1]);
+			}
+		});
+
 		function domain(context, data) {
 
 			var xMax = d3.extent(data.values, function(d){
@@ -88,7 +101,7 @@
 				return d.y;
 			});
 
-			//console.log('xMax: ', xMax);
+			console.log('xMax: ', xMax);
 			// console.log('yMax: ', yMax);
 			//
 			// Setup xScale & yScale domain range
@@ -102,6 +115,16 @@
 					info: containerInfo,
 					align: false
 				});
+
+				var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
+					info: containerInfo,
+					guide: true,
+					ticksOnResize: true
+				});
+
+				axis
+					.xLabel('Line Chart X', 0, 20 )
+					.yLabel('Y Labels', 15, 20);
 
 				legend.dispatch.on('d3maLegendMouseenter', function(d,i){
 					console.log(d);
