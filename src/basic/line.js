@@ -22,7 +22,6 @@ d3.chart('Base').extend('Line', {
 
 	initialize: function(options) {
 		options = options || {};
-		this.dataIndex = options.index;
 
 		this.line = d3.svg.line();
 
@@ -30,15 +29,11 @@ d3.chart('Base').extend('Line', {
 			dataBind: function(data) {
 				var chart = this.chart();
 
-				console.log('data: ', data);
-
-				//console.log('(options.data) ', (options.data) ? [ data[options.data] ]: data);
-
 				chart.line
 					.x(function(d) { return chart.xScale(d.x); })
 					.y(function(d) { return chart.yScale(d.y);  });
 
-				if(chart.onDataBind) { chart.onDataBind(chart); }
+				if(chart.onDataBind) { chart.onDataBind(chart, data); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created

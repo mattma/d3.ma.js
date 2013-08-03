@@ -73,13 +73,15 @@
 
 	<script>
 		d3.chart('Line').extend('MyLine', {
-			onDataBind: function(chart) {
+			onDataBind: function(chart, data) {
 				var chart = chart || this;
-				domain(chart);
+				domain(chart, data);
 			}
 		});
 
-		function domain(context) {
+		function domain(context, data) {
+
+			console.log('data: ', data);
 
 			var xMax = d3.extent(data.values, function(d){
 				return d.x;
@@ -88,7 +90,7 @@
 				return d.y;
 			});
 
-			// console.log('xMax: ', xMax);
+			//console.log('xMax: ', xMax);
 			// console.log('yMax: ', yMax);
 			//
 			// Setup xScale & yScale domain range
@@ -102,94 +104,29 @@
 					info: containerInfo,
 					align: false
 				});
+
+				legend.dispatch.on('d3maLegendMouseenter', function(d,i){
+					console.log(d);
+				});
+				legend.dispatch.on('d3maLegendMouseout', function(d,i){
+					console.log(i);
+				});
+				legend.dispatch.on('d3maLegendClick', function(d,i, chart, single){
+					console.log('d: ', d);
+					console.log('i: ', i);
+					console.log('chart: ', chart);
+					console.log('single: ', single);
+				});
 			}
 		});
 
 		d3.chart("FinalChart", {
 			initialize: function(containerInfo) {
-
-				// var self = this;
-				// data.forEach(function(d, i){
-				// 	// console.log('d: ', d);
-				// 	// console.log('i: ', i);
-				// 	var line = self.mixin('MyLine', self.base.append('g'), {
-				// 		info: containerInfo,
-				// 		data: 'values',
-				// 		index: i
-				// 	});
-				// })
-
-				var line = this.mixin('Line', this.base.append('g'), {
+				var line = this.mixin('MyLine', this.base.append('g'), {
 					info: containerInfo,
 					data: 'values'
 				});
-
-				// this.layer('layers', this.base, {
-				// 	dataBind: function(data) {
-				// 		var chart = this.chart();
-				// 		//console.log('data: ', data);
-				// 		return this.selectAll('.enter').data(data);
-				// 	},
-
-				// 	insert: function(){
-				// 		var chart = this.chart();
-				// 		return this.append('g').classed('enter', true);
-				// 	},
-
-				// 	events: {
-				// 		'enter': function() {
-				// 			var chart = this.chart();
-
-				// 			// two elements have two set of data
-				// 			//console.log('this: ', this);
-
-				// 			var self = this;
-				// 			this.each(function(_data){
-
-				// 				var line = chart.mixin('MyLine', self.append('g').classed('matt', true), {
-				// 					info: containerInfo,
-				// 					data: 'values',
-				// 					transform: _data
-				// 				});
-
-				// 			});
-
-				// 	 	// 	console.log('begin');
-				// 			// var line = chart.mixin('MyLine', matt.append('g').classed('mixin', true), {
-				// 			// 	info: containerInfo,
-				// 			// 	data: 'values'
-				// 			// });
-
-				// 			// this.attr({
-				// 			// 	'fill': function(d) {
-				// 			// 		console.log('d.key: ', d.key);
-				// 			// 	}
-				// 			// });
-
-				// 			// this.append('rect').attr({
-				// 			// 	'fill': function(d, i) {
-				// 			// 		console.log('d: ', d);
-				// 			// 	}
-				// 			// });
-				// 		}
-				// 	}
-				// });
-
-
-				// legend.dispatch.on('d3maLegendMouseenter', function(d,i){
-				// 	console.log(d);
-				// });
-				// legend.dispatch.on('d3maLegendMouseout', function(d,i){
-				// 	console.log(i);
-				// });
-				// legend.dispatch.on('d3maLegendClick', function(d,i, chart, single){
-				// 	console.log('d: ', d);
-				// 	console.log('i: ', i);
-				// 	console.log('chart: ', chart);
-				// 	console.log('single: ', single);
-				// });
 			}
-
 		});
 
 		var container = d3.ma.container('#vis').margin({left: 50});
@@ -198,12 +135,15 @@
 
 		var canvas = container.canvas();
 
-
 		var gEnter = canvas.selectAll('g').data(data).enter().append('g');
 
-		d3.ma.each(gEnter[0], function(value, index){
-			d3.select(value).chart("FinalChart", container.info() ).draw( data[index] );
-		});
+		gEnter.each(function(d, i){
+			d3.select(this).chart("FinalChart", container.info() ).draw( d );
+		})
+
+		// d3.ma.each(gEnter[0], function(value, index){
+		// 	d3.select(value).chart("FinalChart", container.info() ).draw( data[index] );
+		// });
 
 		canvas.chart("MyLegend", container.info() ).draw(data);
 
