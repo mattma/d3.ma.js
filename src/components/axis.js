@@ -107,17 +107,23 @@ d3.chart('Base').extend("Axis", {
 			'transform': 'translate(0,' + _value + ')'
 		});
 
+		// TODO: will stretch the guide line on both side
+		if(this.guide) {
+			this.xAxis.tickSize(0); //axis.tickSize([major[​[, minor], end]])
+		}
+
 		return this;
 	},
 
 	yPos: function(_value) {
-
 		if(_value) {
-			this.xAxisG.attr({
+			this.yAxisG.attr({
 				'transform': 'translate(' + _value  + ' , 0)'
 			});
+			if(this.guide) {
+				this.yAxis.tickSize(0); //axis.tickSize([major[​[, minor], end]])
+			}
 		}
-
 		return this;
 	},
 
