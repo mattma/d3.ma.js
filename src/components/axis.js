@@ -70,14 +70,22 @@ d3.chart('Base').extend("Axis", {
 				.tickSize(-this.width, 0, 6);
 		}
 
-		this.xAxisG =  this.base.append('g').attr({
-			'class': 'x axis',
-			'transform': 'translate(0,' + this.height + ')'
+		this.xAxisG =  this.base.append('g');
+
+		this.xAxisG.attr({
+			'class': 'x axis'
+			//'transform': 'translate(0,' + this.height + ')'
 		});
 
-		this.yAxisG = this.base.append('g').attr({
+		this.xPos();
+
+		this.yAxisG = this.base.append('g');
+
+		this.yAxisG.attr({
 			'class': 'y axis'
 		});
+
+		this.yPos();
 	},
 
 	transform: function(data) {
@@ -90,6 +98,27 @@ d3.chart('Base').extend("Axis", {
 		this._onWindowResize();
 
 		return data;
+	},
+
+	xPos: function(_value) {
+		var _value = (_value) ? _value : this.height;
+
+		this.xAxisG.attr({
+			'transform': 'translate(0,' + _value + ')'
+		});
+
+		return this;
+	},
+
+	yPos: function(_value) {
+
+		if(_value) {
+			this.xAxisG.attr({
+				'transform': 'translate(' + _value  + ' , 0)'
+			});
+		}
+
+		return this;
 	},
 
 	// Update Scale, Box Size, and attr values
