@@ -120,6 +120,32 @@ module.exports = function( grunt ) {
 				tasks: ['livereload']
 			}
 		},
+
+		// https://github.com/karma-runner/grunt-karma
+		// @usage  grunt test:karma  or   grunt karma
+		// karma.conf.js should work independently, can be called by `karma start`
+		// Setting defined here should override the karma.conf.js setting
+		// watch task is for running a development, update on file changes
+		// single task is running for a single time, output its coverage report
+		karma: {
+			options: {
+				configFile: 'karma.conf.js',
+				browsers: ['Firefox'],
+				reporters: 'dots'
+			},
+			watch: {
+				options: {
+					singleRun: false,
+					autoWatch: true
+				}
+			},
+			single: {
+				options: {
+					singleRun: true,
+					autoWatch: false
+				}
+			}
+		},
 	});
 
 	grunt.renameTask('regarde', 'watch');
@@ -144,6 +170,10 @@ module.exports = function( grunt ) {
 			'uglify'
 		]);
 	});
+
+	grunt.registerTask('test', [
+		'karma:watch'
+	]);
 
 	// grunt.registerMultiTask('log', 'Log stuff.', function() {
 	// 	grunt.log.writeln(this.target + ': ' + this.data);
