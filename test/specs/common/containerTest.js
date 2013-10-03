@@ -5,6 +5,7 @@ define([
 	var expect = Chai.expect,
 		should = Chai.should(),
 		box,
+		info,
 		div,
 		defaultContainer,
 		container;
@@ -51,8 +52,9 @@ define([
 				var vis = document.body.appendChild(div);
 				vis.id='vis';
 
-				container = d3.ma.container('#vis').margin({top: 80, left: 80}).box(1400, 600);
+				container = d3.ma.container('#vis').margin({top: 80, left: 60}).box(1400, 600);
 				box = container.box();
+				info = container.info();
 				done();
 			});
 
@@ -99,14 +101,50 @@ define([
 				done();
 			});
 
+			// defs element and clipPath element start from here
 			it('should have a defs and a clippath elements inside svg element', function(done){
 				vis.getElementsByTagName('defs').should.not.to.be.empty;
 				vis.getElementsByTagName('clipPath').should.not.to.be.empty;
 				done();
 			});
 
+			// g.canvas relate tests start from here
 			it('should have a g element with class canvas, as a child of the svg element', function(done){
 				vis.getElementsByClassName('canvas').should.not.to.be.empty;
+				done();
+			});
+
+			it('should have a canvas g with generated id attribute', function(done){
+				var id = document.querySelector('.canvas').getAttribute('id');
+				id.should.not.to.be.null;
+				id.indexOf('d3ma-').should.have.above(-1);
+				('#'+id).should.have.equal(info.id);
+				done();
+			});
+
+			it('should have a canvas g with width/height which is the value of container box minus the margins', function(done){
+				var w = info.containerW - info.marginLeft - info.marginRight;
+				var h = info.containerH - info.marginTop - info.marginBottom;
+
+				var canvasW = document.querySelector('.canvas').getAttribute('width');
+				var canvasH = document.querySelector('.canvas').getAttribute('height');
+
+				parseInt(canvasW).should.be.equal(w);
+				parseInt(canvasH).should.be.equal(h);
+				done();
+			});
+
+			it('should have a canvas g with the right transform value', function(done){
+				var canvasTrans = document.querySelector('.canvas').getAttribute('transform');
+				var transformVal = 'translate(' + info.marginLeft + ',' + info.marginTop + ')';
+				canvasTrans.should.have.equal(transformVal);
+				done();
+			});
+
+			it('should have a clip-path with right clip element', function(done){
+				var canvasClip = document.querySelector('.canvas').getAttribute('clip-path');
+				var clipVal = 'url(#' + info.cid + ')';
+				canvasClip.should.have.equal(canvasClip);
 				done();
 			});
 		});
