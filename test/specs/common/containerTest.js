@@ -93,7 +93,20 @@ define([
 				var svgHeight = document.querySelector('svg').getAttribute('height');
 
 				parseInt(svgWidth).should.be.equal(box.containerWidth);
+				parseInt(svgWidth).should.be.equal(1400);
 				parseInt(svgHeight).should.be.equal(box.containerHeight);
+				parseInt(svgHeight).should.be.equal(600);
+				done();
+			});
+
+			it('should have a defs and a clippath elements inside svg element', function(done){
+				vis.getElementsByTagName('defs').should.not.to.be.empty;
+				vis.getElementsByTagName('clipPath').should.not.to.be.empty;
+				done();
+			});
+
+			it('should have a g element with class canvas, as a child of the svg element', function(done){
+				vis.getElementsByClassName('canvas').should.not.to.be.empty;
 				done();
 			});
 		});
