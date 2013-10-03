@@ -82,9 +82,9 @@ define([
 			});
 
 			it('should have a single svg child element', function(done){
-				var containerChildArr = document.getElementById('vis').children;
-
-				containerChildArr.length.should.equal(1);
+				// check the svg element is there
+				vis.getElementsByTagName('svg').should.not.to.be.empty;
+				vis.children.length.should.equal(1);
 				done();
 			});
 		});
