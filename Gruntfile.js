@@ -15,12 +15,12 @@ module.exports = function( grunt ) {
 		CONFIGS: {
 			BUILD: 'build',
 			HOSTNAME: 'file:///Users/mma',
-			PATH: '<%= CONFIGS.HOSTNAME %>/Desktop/d3.ma/index.html'
+			PATH: '<%= CONFIGS.HOSTNAME %>/Desktop/repo/bitbucket/d3.ma/index.html'
 		},
 
 		pkg: grunt.file.readJSON('package.json'),
 
-		BANNER: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> \n Author: <%= pkg.author.name %> (<%= pkg.author.email %>)\n\n*/',
+		BANNER: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> \n Author: <%= pkg.author.name %> (<%= pkg.author.email %>)\n*/',
 
 		// https://github.com/gruntjs/grunt-contrib-jshint
 		// Validate files with JSHint. it is a multi task
