@@ -177,6 +177,11 @@ define([
 				container.canvasW().should.be.equal( 3000 );
 				//container.canvasW().should.be.equal( info.canvasW );
 
+				done();
+			});
+
+			// @todo after set the canvasH, need a way to update the info object
+			it('should have a setter/getter fn called container.canvasH', function(done){
 				container.canvasH.should.be.a('function');
 				container.canvasH().should.be.equal( info.canvasH );
 
