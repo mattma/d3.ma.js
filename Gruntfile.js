@@ -192,6 +192,11 @@ module.exports = function( grunt ) {
 		'concurrent:test'
 	]);
 
+	grunt.registerTask('test:ci', [
+		'build',
+		'karma:single'
+	]);
+
 	// grunt.registerMultiTask('log', 'Log stuff.', function() {
 	// 	grunt.log.writeln(this.target + ': ' + this.data);
 	// });
