@@ -101,10 +101,29 @@ define([
 				done();
 			});
 
+			it('should have a margin top, bottom, left, right value', function(done){
+				info.marginTop.should.equal(80);
+				info.marginRight.should.equal(10);
+				info.marginBottom.should.equal(20);
+				info.marginLeft.should.equal(60);
+				done();
+			});
+
 			// defs element and clipPath element start from here
 			it('should have a defs and a clippath elements inside svg element', function(done){
 				vis.getElementsByTagName('defs').should.not.to.be.empty;
 				vis.getElementsByTagName('clipPath').should.not.to.be.empty;
+				done();
+			});
+
+			it('should have a clippath element include rect element with right size', function(done){
+				vis.getElementsByTagName('rect').should.not.to.be.empty;
+				var rectW = vis.querySelector('rect').getAttribute('width');
+				var rectH = vis.querySelector('rect').getAttribute('height');
+				parseInt(rectW).should.be.equal(box.containerWidth);
+				parseInt(rectW).should.be.equal(1400);
+				parseInt(rectH).should.be.equal(box.containerHeight);
+				parseInt(rectH).should.be.equal(600);
 				done();
 			});
 
@@ -141,7 +160,7 @@ define([
 				done();
 			});
 
-			it('should have a clip-path with right clip element', function(done){
+			it('should have a canvas g with clip-path attribute', function(done){
 				var canvasClip = document.querySelector('.canvas').getAttribute('clip-path');
 				var clipVal = 'url(#' + info.cid + ')';
 				canvasClip.should.have.equal(canvasClip);
