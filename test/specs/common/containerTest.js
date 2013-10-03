@@ -68,7 +68,7 @@ define([
 				done();
 			});
 
-			it('should have a custom container box with exacthg width and height', function(done){
+			it('should have a custom container box with exact width and height', function(done){
 				// acutally width of the vis element
 				//var containerBoxWidth = document.getElementById('vis').offsetWidth;
 
@@ -85,6 +85,15 @@ define([
 				// check the svg element is there
 				vis.getElementsByTagName('svg').should.not.to.be.empty;
 				vis.children.length.should.equal(1);
+				done();
+			});
+
+			it('should have a svg element with the same width and height of its container', function(done){
+				var svgWidth = document.querySelector('svg').getAttribute('width');
+				var svgHeight = document.querySelector('svg').getAttribute('height');
+
+				parseInt(svgWidth).should.be.equal(box.containerWidth);
+				parseInt(svgHeight).should.be.equal(box.containerHeight);
 				done();
 			});
 		});
