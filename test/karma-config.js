@@ -27,11 +27,16 @@ require.config({
 	},
 
 	shim: {
+		d3: {
+			exports : 'd3'
+		},
 		d3chart: {
+			exports : 'd3.chart',
 			deps : ['d3']
 		},
-		d3ma : {
-			deps : ['d3', 'd3chart']
+		d3ma: {
+			exports : 'd3.ma',
+			deps : ['d3chart']
 		}
 	},
 
