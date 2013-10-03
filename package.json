@@ -1,41 +1,33 @@
 {
-	"name": "d3.ma.js",
-	"description": "d3 magic library",
-	"author": {
-		"name": "Matt Ma",
-		"email": "matt@mattmadesign.com"
-	},
-
-	"version": "0.0.1",
-	"private": true,
-	"repository": "",
-
-	"main": "Gruntfile.js",
-
-	"dependencies": {
-
-	},
-
-	"devDependencies": {
-		"grunt": "~0.4.1",
-		"grunt-contrib-clean": "*",
-		"grunt-contrib-copy": "*",
-		"grunt-contrib-concat": "*",
-		"grunt-contrib-jshint": "*",
-		"grunt-contrib-uglify": "*",
-		"matchdep": "*",
-
-		"grunt-contrib-livereload": "~0.1.2",
-		"grunt-regarde": "*",
-		"grunt-open": "*",
-		"grunt-karma": "*",
-		"karma-mocha": "*",
-		"karma-coverage": "*"
-	},
-
-	"engines": {
-		"node": ">= 0.8.0"
-	},
-
-	"license": ""
+  "name": "d3.ma.js",
+  "description": "d3 magic library",
+  "author": {
+    "name": "Matt Ma",
+    "email": "matt@mattmadesign.com"
+  },
+  "version": "0.0.1",
+  "private": true,
+  "repository": "",
+  "main": "Gruntfile.js",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-uglify": "*",
+    "matchdep": "*",
+    "grunt-contrib-livereload": "~0.1.2",
+    "grunt-regarde": "*",
+    "grunt-open": "*",
+    "grunt-karma": "*",
+    "karma-mocha": "*",
+    "karma-coverage": "*",
+    "grunt-concurrent": "~0.4.0"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "license": ""
 }

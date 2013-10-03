@@ -118,6 +118,12 @@ module.exports = function( grunt ) {
 					'src/{,**/}*.js'
 				],
 				tasks: ['livereload']
+			},
+			test: {
+				files: [
+					'src/{,**/}*.js'
+				],
+				tasks: ['livereload', 'build']
 			}
 		},
 
@@ -146,6 +152,15 @@ module.exports = function( grunt ) {
 				}
 			}
 		},
+
+		concurrent: {
+			test: {
+				options: {
+					logConcurrentOutput: true
+				},
+				tasks: ['watch:test', 'karma:watch']
+			}
+		}
 	});
 
 	grunt.renameTask('regarde', 'watch');
@@ -156,7 +171,7 @@ module.exports = function( grunt ) {
 		grunt.task.run([
 			'livereload-start',
 			'open:dev',
-			'watch'
+			'watch:livereload'
 		]);
 	});
 
@@ -172,7 +187,9 @@ module.exports = function( grunt ) {
 	});
 
 	grunt.registerTask('test', [
-		'karma:watch'
+		'build',
+		'livereload-start',
+		'concurrent:test'
 	]);
 
 	// grunt.registerMultiTask('log', 'Log stuff.', function() {
