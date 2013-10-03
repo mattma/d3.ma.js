@@ -6,7 +6,7 @@ TODO:
 
 It could be used in all cases, or all general use cases including setup base container with margin values
 
-# core.js   # simply setup the d3.ma namespace
+# core.js   # simply setup the d3.ma namespace and current version
 
 # utils.js   # Utilities toolbelt. this library is growing pretty quickly. Currently includes,
 
