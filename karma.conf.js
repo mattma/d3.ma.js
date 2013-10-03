@@ -17,8 +17,11 @@ module.exports = function(config) {
 			'test/karma-config.js',
 
 			{pattern: 'test/*.js', included: false},
-			{pattern: 'test/specs/*.js', included: false},
-			{pattern: 'test/libs/**/*.js', included: false}
+			{pattern: 'test/specs/**/*.js', included: false},
+			{pattern: 'test/libs/**/*.js', included: false},
+			{pattern: 'src/**/*.js', included: false},
+			{pattern: 'libs/*.js', included: false},
+			{pattern: 'build/*.js', included: false}
 		],
 
 		// list of files to output the coverage by istanbul

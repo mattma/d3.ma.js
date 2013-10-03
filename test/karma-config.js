@@ -16,11 +16,28 @@ require.config({
 	baseUrl: '/base',
 
 	paths: {
+		'd3': 'libs/d3.v3',
+		'd3chart': 'libs/d3.chart',
+		'd3ma': 'build/d3.ma',
 		'chai': 'test/libs/chai',
 		'mocha': 'test/libs/mocha/mocha',
 		'common': 'test/libs/common',
 		'sinon-chai': 'test/libs/sinon-chai',
 		'sinon': 'test/libs/sinon'
+	},
+
+	shim: {
+		d3chart: {
+			deps : ['d3']
+		},
+		d3ma : {
+			deps : ['d3', 'd3chart']
+		}
+	},
+
+	hbs : {
+		disableI18n: true,
+		disableHelpers: true
 	},
 
 	//dynamically load all test files
