@@ -166,6 +166,26 @@ define([
 				canvasClip.should.have.equal(canvasClip);
 				done();
 			});
+
+			// API testing
+			// @todo after set the canvasW, need a way to update the info object
+			it('should have a setter/getter fn called container.canvasW', function(done){
+				container.canvasW.should.be.a('function');
+				container.canvasW().should.be.equal( info.canvasW );
+
+				container.canvasW(3000);
+				container.canvasW().should.be.equal( 3000 );
+				//container.canvasW().should.be.equal( info.canvasW );
+
+				container.canvasH.should.be.a('function');
+				container.canvasH().should.be.equal( info.canvasH );
+
+				container.canvasH(3000);
+				container.canvasH().should.be.equal( 3000 );
+				//container.canvasH().should.be.equal( info.canvasH );
+
+				done();
+			});
 		});
 	});
 });
