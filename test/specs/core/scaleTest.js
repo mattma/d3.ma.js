@@ -63,6 +63,13 @@ define([
 			done();
 		});
 
+		it('should have a private fn called _scale and return a function', function(done){
+			// _scale itself is a function,
+			// when calling it, also return another d3.scale function
+			bars._scale('linear').should.be.a('function');
+			done();
+		});
+
 		it('should have scale public width property with string value', function(done){
 			testDefault.width.should.be.a('number');
 			bars.width.should.be.a('number');
@@ -94,7 +101,6 @@ define([
 			testDefault._x.should.be.a('string');
 			bars._x.should.be.a('string');
 
-			console.log('bars._x: ', bars._x);
 			// default x value should be 'linear'
 			testDefault._x.should.be.equal('linear');
 			// can be overrided by passing x value from option
