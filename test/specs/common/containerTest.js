@@ -136,7 +136,7 @@ define([
 			it('should have a canvas g with generated id attribute', function(done){
 				var id = document.querySelector('.canvas').getAttribute('id');
 				id.should.not.to.be.null;
-				id.indexOf('d3ma-').should.have.above(-1);
+				id.should.contain('d3ma-');
 				('#'+id).should.have.equal(info.id);
 				done();
 			});
@@ -168,27 +168,41 @@ define([
 			});
 
 			// API testing
-			// @todo after set the canvasW, need a way to update the info object
 			it('should have a setter/getter fn called container.canvasW', function(done){
 				container.canvasW.should.be.a('function');
 				container.canvasW().should.be.equal( info.canvasW );
 
 				container.canvasW(3000);
 				container.canvasW().should.be.equal( 3000 );
-				//container.canvasW().should.be.equal( info.canvasW );
+				container.canvasW().should.be.equal( container.info().canvasW );
 
 				done();
 			});
 
-			// @todo after set the canvasH, need a way to update the info object
 			it('should have a setter/getter fn called container.canvasH', function(done){
 				container.canvasH.should.be.a('function');
 				container.canvasH().should.be.equal( info.canvasH );
 
 				container.canvasH(3000);
 				container.canvasH().should.be.equal( 3000 );
-				//container.canvasH().should.be.equal( info.canvasH );
+				container.canvasH().should.be.equal( container.info().canvasH );
 
+				done();
+			});
+
+			it('should have a setter/getter fn called container.margin', function(done){
+				// test getter, getter has been tested above
+				var margin = container.margin();
+				margin.should.be.an('object');
+				margin.should.have.keys(['top', 'right', 'bottom', 'left']);
+
+				// test setter
+				container.margin({ top: 100, right: 110, bottom: 120, left: 130 });
+				var newMargin = container.margin();
+				newMargin.top.should.be.equal(100);
+				newMargin.right.should.be.equal(110);
+				newMargin.bottom.should.be.equal(120);
+				newMargin.left.should.be.equal(130);
 				done();
 			});
 		});
