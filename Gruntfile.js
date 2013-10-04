@@ -212,7 +212,8 @@ module.exports = function( grunt ) {
 		grunt.task.run([
 			'test:ci',
 			'copy:build',
-			'uglify'
+			'uglify',
+			'clean:tmp'
 		]);
 	});
 
@@ -230,7 +231,7 @@ module.exports = function( grunt ) {
 	grunt.registerTask('release', [
 		'build',
 		'copy:release',
-		'clean'
+		'clean:build'
 	]);
 
 	// grunt.registerMultiTask('log', 'Log stuff.', function() {
