@@ -94,6 +94,16 @@ module.exports = function( grunt ) {
 			}
 		},
 
+		// https://github.com/gruntjs/grunt-contrib-copy
+		copy: {
+			build: {
+				files: [{
+					src: ['<%= CONFIGS.TMP %>/d3.ma.js'],
+					dest: '<%= CONFIGS.BUILD %>/d3.ma.js'
+				}]
+			}
+		},
+
 		// https://github.com/gruntjs/grunt-contrib-uglify
 		// Currently is being used by requirejs task, ONLY manual usage
 		uglify: {
@@ -193,13 +203,13 @@ module.exports = function( grunt ) {
 	});
 
 	grunt.registerTask('test', [
-		'build',
+		'concat',
 		'livereload-start',
 		'concurrent:test'
 	]);
 
 	grunt.registerTask('test:ci', [
-		'build',
+		'concat',
 		'karma:single'
 	]);
 
