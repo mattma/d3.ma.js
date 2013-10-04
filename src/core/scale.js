@@ -19,6 +19,8 @@
 		private atrribute:
 			x & y:  scale representation for the x axis and y axis. take x or y as a key, value should be a string representation of scale value, default value is linear, everything will override the default
 
+			Internally, it transformed from x & y to _x & _y as internal variables
+
 			Note: x, y could only be set by the initialization fn, option objects.
 
 		public attributes:
@@ -81,7 +83,10 @@ d3.chart('Scale', {
 		this._y = y;
 
 		this.width = options.width || options.info.canvasW || this.base.attr('width') || 1;
+		this.width = +this.width;
 		this.height = options.height || options.info.canvasH || this.base.attr('height') || 1;
+		this.height = +this.height;
+
 		this.info = options.info;
 
 		// init the scale
