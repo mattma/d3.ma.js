@@ -9,7 +9,7 @@ define([
 	var expect = Chai.expect,
 		should = Chai.should();
 
-	describe('d3 library', function() {
+	describe('d3 library - common/core.js', function() {
 		it('should be loaded from browser', function(done) {
 			var d3version = d3.version;
 
@@ -20,7 +20,7 @@ define([
 		});
 	});
 
-	describe('d3.chart library', function() {
+	describe('d3.chart library - common/core.js', function() {
 		it('should be loaded from browser', function(done) {
 			var d3chartObject = typeof d3chart;
 
@@ -29,7 +29,7 @@ define([
 		});
 	});
 
-	describe('d3.ma library', function() {
+	describe('d3.ma library - common/core.js', function() {
 		it('should be loaded from browser', function(done) {
 			var d3maVersion = d3ma.version;
 
@@ -41,7 +41,7 @@ define([
 		});
 	});
 
-	describe('d3.ma core', function(){
+	describe('d3.ma core - common/core.js', function(){
 		it('should have a fn called d3.ma.assert', function(done){
 			d3ma.assert.should.be.a('function');
 			done();

@@ -10,7 +10,7 @@ define([
 		defaultContainer,
 		container;
 
-	describe('d3.ma container', function() {
+	describe('d3.ma container - common/container.js', function() {
 		describe('default container', function(){
 			beforeEach(function(done){
 				div = document.createElement('div');
@@ -46,7 +46,7 @@ define([
 			});
 		});
 
-		describe('custom container', function(){
+		describe('custom container - common/container.js', function(){
 			beforeEach(function(done){
 				div = document.createElement('div');
 				var vis = document.body.appendChild(div);
