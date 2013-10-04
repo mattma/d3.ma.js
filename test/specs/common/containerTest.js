@@ -234,6 +234,16 @@ define([
 				var info = container.info();
 				info.should.be.an('object');
 				info.should.have.keys(['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'containerW', 'containerH', 'canvasW', 'canvasH', 'id', 'cid']);
+				info.marginTop.should.be.a('number');
+				info.marginRight.should.be.a('number');
+				info.marginBottom.should.be.a('number');
+				info.marginLeft.should.be.a('number');
+				info.containerW.should.be.a('number');
+				info.containerH.should.be.a('number');
+				info.canvasW.should.be.a('number');
+				info.canvasH.should.be.a('number');
+				info.id.should.be.a('string');
+				info.cid.should.be.a('string');
 				done();
 			});
 		});
