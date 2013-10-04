@@ -67,10 +67,18 @@ define([
 			testDefault.width.should.be.a('number');
 			bars.width.should.be.a('number');
 
-			// // default x value should be 'linear'
-			// testDefault.width.should.be.equal(1400);
-			// // can be overrided by passing x value from option
-			// bars.width.should.be.equal(960);
+			var width = bars.info.containerW - bars.info.marginLeft - bars.info.marginRight;
+			bars.width.should.be.equal(width);
+
+			done();
+		});
+
+		it('should have scale public height property with string value', function(done){
+			testDefault.height.should.be.a('number');
+			bars.height.should.be.a('number');
+
+			var height = bars.info.containerH - bars.info.marginTop - bars.info.marginBottom;
+			bars.height.should.be.equal(height);
 
 			done();
 		});
