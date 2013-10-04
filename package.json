@@ -5,7 +5,7 @@
     "name": "Matt Ma",
     "email": "matt@mattmadesign.com"
   },
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "repository": "",
   "main": "Gruntfile.js",
@@ -13,7 +13,7 @@
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-clean": "*",
-    "grunt-contrib-copy": "*",
+    "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-concat": "*",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-uglify": "*",
