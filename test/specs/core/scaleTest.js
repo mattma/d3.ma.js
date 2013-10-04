@@ -83,6 +83,13 @@ define([
 			done();
 		});
 
+		it('should have scale public info property with string value', function(done){
+			bars.info.should.be.exist;
+			bars.info.should.be.an('object');
+			bars.info.should.have.keys(['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'containerW', 'containerH', 'canvasW', 'canvasH', 'id', 'cid']);
+			done();
+		});
+
 		it('should have scale x property in options, match private _x property with string value', function(done){
 			testDefault._x.should.be.a('string');
 			bars._x.should.be.a('string');
