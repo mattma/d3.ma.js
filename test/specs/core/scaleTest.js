@@ -6,7 +6,8 @@ define([
 		should = Chai.should(),
 		div,
 		info,
-		bars;
+		bars,
+		testDefault;
 
 	describe('d3.ma scale - core/scale.js', function() {
 		beforeEach(function(done){
@@ -22,8 +23,13 @@ define([
 					bars = this.mixin('Bars', d3.select('.canvas').append('g'), {
 						info: containerInfo,
 						x: 'ordinal',
+						y: 'log',
 						width: this.base.attr('width'),  // optional
 						height: this.base.attr('height')  // optional
+					});
+
+					testDefault =  this.mixin('Bars', d3.select('.canvas').append('g'), {
+						info: containerInfo
 					});
 				}
 			});
@@ -54,6 +60,42 @@ define([
 			bars._scale.should.be.an('function');
 			bars._switchXScale.should.be.an('function');
 			bars._switchYScale.should.be.an('function');
+			done();
+		});
+
+		it('should have scale public width property with string value', function(done){
+			testDefault.width.should.be.a('number');
+			bars.width.should.be.a('number');
+
+			// // default x value should be 'linear'
+			// testDefault.width.should.be.equal(1400);
+			// // can be overrided by passing x value from option
+			// bars.width.should.be.equal(960);
+
+			done();
+		});
+
+		it('should have scale x property in options, match private _x property with string value', function(done){
+			testDefault._x.should.be.a('string');
+			bars._x.should.be.a('string');
+
+			// default x value should be 'linear'
+			testDefault._x.should.be.equal('linear');
+			// can be overrided by passing x value from option
+			bars._x.should.be.equal('ordinal');
+
+			done();
+		});
+
+		it('should have scale y property in options, match private _y property with string value', function(done){
+			testDefault._y.should.be.a('string');
+			bars._y.should.be.a('string');
+
+			// default x value should be 'linear'
+			testDefault._y.should.be.equal('linear');
+			// can be overrided by passing x value from option
+			bars._y.should.be.equal('log');
+
 			done();
 		});
 	});

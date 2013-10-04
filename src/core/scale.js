@@ -81,7 +81,10 @@ d3.chart('Scale', {
 		this._y = y;
 
 		this.width = options.width || options.info.canvasW || this.base.attr('width') || 1;
+		this.width = +this.width;
 		this.height = options.height || options.info.canvasH || this.base.attr('height') || 1;
+		this.height = +this.height;
+
 		this.info = options.info;
 
 		// init the scale
