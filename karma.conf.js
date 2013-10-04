@@ -21,8 +21,7 @@ module.exports = function(config) {
 			{pattern: 'test/libs/**/*.js', included: false},
 			{pattern: 'tmp/*.js', included: false},
 			{pattern: 'src/**/*.js', included: false},
-			{pattern: 'libs/*.js', included: false},
-			{pattern: 'build/*.js', included: false}
+			{pattern: 'libs/*.js', included: false}
 		],
 
 		// list of files to output the coverage by istanbul
