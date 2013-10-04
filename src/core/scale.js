@@ -19,6 +19,8 @@
 		private atrribute:
 			x & y:  scale representation for the x axis and y axis. take x or y as a key, value should be a string representation of scale value, default value is linear, everything will override the default
 
+			Internally, it transformed from x & y to _x & _y as internal variables
+
 			Note: x, y could only be set by the initialization fn, option objects.
 
 		public attributes:

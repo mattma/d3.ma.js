@@ -94,6 +94,7 @@ define([
 			testDefault._x.should.be.a('string');
 			bars._x.should.be.a('string');
 
+			console.log('bars._x: ', bars._x);
 			// default x value should be 'linear'
 			testDefault._x.should.be.equal('linear');
 			// can be overrided by passing x value from option
