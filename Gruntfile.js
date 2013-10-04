@@ -101,6 +101,19 @@ module.exports = function( grunt ) {
 					src: ['<%= CONFIGS.TMP %>/d3.ma.js'],
 					dest: '<%= CONFIGS.BUILD %>/d3.ma.js'
 				}]
+			},
+			release: {
+				files: [
+					{
+						expand: true,
+						dot: false,   // Enable the dot file when copy
+						cwd: '<%= CONFIGS.BUILD %>',
+						dest: '',
+						src: [
+							'*.js'
+						]
+					}
+				]
 			}
 		},
 
@@ -198,7 +211,7 @@ module.exports = function( grunt ) {
 
 		grunt.task.run([
 			'test:ci',
-			'copy',
+			'copy:build',
 			'uglify'
 		]);
 	});
@@ -212,6 +225,12 @@ module.exports = function( grunt ) {
 	grunt.registerTask('test:ci', [
 		'concat',
 		'karma:single'
+	]);
+
+	grunt.registerTask('release', [
+		'build',
+		'copy:release',
+		'clean'
 	]);
 
 	// grunt.registerMultiTask('log', 'Log stuff.', function() {
