@@ -205,6 +205,37 @@ define([
 				newMargin.left.should.be.equal(130);
 				done();
 			});
+
+			it('should have a setter/getter fn called container.box', function(done){
+				// test getter
+				var box = container.box();
+				box.should.be.an('object');
+				box.should.have.keys(['containerWidth', 'containerHeight']);
+				box.containerWidth.should.be.equal( info.containerW );
+				box.containerHeight.should.be.equal( info.containerH );
+
+				// test setter
+				//
+				// case 1, only one param is provided
+				container.box(100);
+				var newBox1 = container.box();
+				newBox1.containerWidth.should.be.equal( 100 );
+				newBox1.containerHeight.should.be.equal( 100 );
+
+				// case 2, both values have been provided
+				container.box(110,120);
+				var newBox2 = container.box();
+				newBox2.containerWidth.should.be.equal( 110 );
+				newBox2.containerHeight.should.be.equal( 120 );
+				done();
+			});
+
+			it('should have a getter fn called container.info', function(done){
+				var info = container.info();
+				info.should.be.an('object');
+				info.should.have.keys(['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'containerW', 'containerH', 'canvasW', 'canvasH', 'id', 'cid']);
+				done();
+			});
 		});
 	});
 });
