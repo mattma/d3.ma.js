@@ -14,6 +14,7 @@ module.exports = function( grunt ) {
 
 		CONFIGS: {
 			BUILD: 'build',
+			TMP: 'tmp',
 			HOSTNAME: 'file:///Users/mma',
 			PATH: '<%= CONFIGS.HOSTNAME %>/Desktop/repo/bitbucket/d3.ma/index.html'
 		},
@@ -51,6 +52,11 @@ module.exports = function( grunt ) {
 				src: [
 					'<%= CONFIGS.BUILD %>'
 				]
+			},
+			tmp: {
+				src: [
+					'<%= CONFIGS.TMP %>'
+				]
 			}
 		},
 
@@ -83,7 +89,7 @@ module.exports = function( grunt ) {
 
 					'src/outro.js'
 				],
-				dest: '<%= CONFIGS.BUILD %>/d3.ma.js'
+				dest: '<%= CONFIGS.TMP %>/d3.ma.js'
 				// nonull: true  // Warn if a given file is missing or invalid
 			}
 		},
