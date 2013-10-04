@@ -18,7 +18,7 @@ d3ma.assert(d3, 'd3.js is required');
 
 d3ma.assert( typeof d3.version === 'string' && d3.version.match(/^3/), 'd3.js version 3 is required' );
 
-d3.ma.version = '0.1.0';
+d3ma.version = '0.1.0';
 
 
 
