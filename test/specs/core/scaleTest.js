@@ -70,6 +70,38 @@ define([
 			done();
 		});
 
+		it('should have a private fn called _switchXScale and return a range', function(done){
+			// _switchXScale called at intialization. Need to check the default range value
+			//
+			// testDefault has x-scale: 'linear', can be tested with range()
+			testDefault.xScale.range().should.be.an('array');
+			testDefault.xScale.range().should.be.eql([0, testDefault.info.canvasW]);
+			// override the xScale with custom width, handle internally, should not call directly
+			testDefault._switchXScale('linear', 1000);
+			testDefault.xScale.range().should.be.eql([0, 1000]);
+
+			// bars has x-scale: 'ordinal', can be tested with rangeRounds()
+			bars.xScale.rangeExtent().should.be.an('array');
+			bars.xScale.rangeExtent().should.be.eql([0, testDefault.info.canvasW]);
+			done();
+		});
+
+		it('should have a private fn called _switchYScale and return a range', function(done){
+			// _switchXScale called at intialization. Need to check the default range value
+			//
+			// testDefault has y-scale: 'linear', can be tested with range()
+			testDefault.yScale.range().should.be.an('array');
+			testDefault.yScale.range().should.be.eql([testDefault.info.canvasH, 0]);
+			// override the yScale with custom width, handle internally, should not call directly
+			testDefault._switchYScale('linear', 1000);
+			testDefault.yScale.range().should.be.eql([1000, 0]);
+
+			// bars has y-scale: 'log', can be tested with rangeRounds()
+			bars.yScale.range().should.be.an('array');
+			//bars.yScale.range().should.be.eql([testDefault.info.canvasH, 0]);
+			done();
+		});
+
 		it('should have scale public width property with string value', function(done){
 			testDefault.width.should.be.a('number');
 			bars.width.should.be.a('number');
