@@ -21,7 +21,7 @@ module.exports = function( grunt ) {
 
 		pkg: grunt.file.readJSON('package.json'),
 
-		BANNER: '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> \n Author: <%= pkg.author.name %> (<%= pkg.author.email %>)\n*/',
+		BANNER: '/*! \n 	<%= pkg.name %> - v<%= pkg.version %>\n 	Author: <%= pkg.author.name %> (<%= pkg.author.email %>) \n 	Date: <%= grunt.template.today("yyyy-mm-dd") %>\n*/\n',
 
 		// https://github.com/gruntjs/grunt-contrib-jshint
 		// Validate files with JSHint. it is a multi task

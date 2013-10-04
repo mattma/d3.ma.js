@@ -5,7 +5,7 @@
     "name": "Matt Ma",
     "email": "matt@mattmadesign.com"
   },
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "repository": "",
   "main": "Gruntfile.js",
