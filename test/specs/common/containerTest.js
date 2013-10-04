@@ -136,7 +136,7 @@ define([
 			it('should have a canvas g with generated id attribute', function(done){
 				var id = document.querySelector('.canvas').getAttribute('id');
 				id.should.not.to.be.null;
-				id.indexOf('d3ma-').should.have.above(-1);
+				id.should.contain('d3ma-');
 				('#'+id).should.have.equal(info.id);
 				done();
 			});
@@ -168,27 +168,72 @@ define([
 			});
 
 			// API testing
-			// @todo after set the canvasW, need a way to update the info object
 			it('should have a setter/getter fn called container.canvasW', function(done){
 				container.canvasW.should.be.a('function');
 				container.canvasW().should.be.equal( info.canvasW );
 
 				container.canvasW(3000);
 				container.canvasW().should.be.equal( 3000 );
-				//container.canvasW().should.be.equal( info.canvasW );
+				container.canvasW().should.be.equal( container.info().canvasW );
 
 				done();
 			});
 
-			// @todo after set the canvasH, need a way to update the info object
 			it('should have a setter/getter fn called container.canvasH', function(done){
 				container.canvasH.should.be.a('function');
 				container.canvasH().should.be.equal( info.canvasH );
 
 				container.canvasH(3000);
 				container.canvasH().should.be.equal( 3000 );
-				//container.canvasH().should.be.equal( info.canvasH );
+				container.canvasH().should.be.equal( container.info().canvasH );
 
+				done();
+			});
+
+			it('should have a setter/getter fn called container.margin', function(done){
+				// test getter, getter has been tested above
+				var margin = container.margin();
+				margin.should.be.an('object');
+				margin.should.have.keys(['top', 'right', 'bottom', 'left']);
+
+				// test setter
+				container.margin({ top: 100, right: 110, bottom: 120, left: 130 });
+				var newMargin = container.margin();
+				newMargin.top.should.be.equal(100);
+				newMargin.right.should.be.equal(110);
+				newMargin.bottom.should.be.equal(120);
+				newMargin.left.should.be.equal(130);
+				done();
+			});
+
+			it('should have a setter/getter fn called container.box', function(done){
+				// test getter
+				var box = container.box();
+				box.should.be.an('object');
+				box.should.have.keys(['containerWidth', 'containerHeight']);
+				box.containerWidth.should.be.equal( info.containerW );
+				box.containerHeight.should.be.equal( info.containerH );
+
+				// test setter
+				//
+				// case 1, only one param is provided
+				container.box(100);
+				var newBox1 = container.box();
+				newBox1.containerWidth.should.be.equal( 100 );
+				newBox1.containerHeight.should.be.equal( 100 );
+
+				// case 2, both values have been provided
+				container.box(110,120);
+				var newBox2 = container.box();
+				newBox2.containerWidth.should.be.equal( 110 );
+				newBox2.containerHeight.should.be.equal( 120 );
+				done();
+			});
+
+			it('should have a getter fn called container.info', function(done){
+				var info = container.info();
+				info.should.be.an('object');
+				info.should.have.keys(['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'containerW', 'containerH', 'canvasW', 'canvasH', 'id', 'cid']);
 				done();
 			});
 		});
