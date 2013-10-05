@@ -106,5 +106,37 @@ define([
 
 			done();
 		});
+
+		it('should have those private functions', function(done){
+			// _bindMouseEnterOutEvents
+			// _resize
+			// _onWindowResize
+			// _redraw
+			// _unbind
+			// _updateScale
+			// _update
+			bars._bindMouseEnterOutEvents.should.be.an('function');
+			bars._resize.should.be.an('function');
+			bars._onWindowResize.should.be.an('function');
+			bars._redraw.should.be.an('function');
+			bars._unbind.should.be.an('function');
+			bars._updateScale.should.be.an('function');
+
+			done();
+		});
+
+		it('should have those custom events to be dispatched by modules', function(done){
+			var customEvents = d3.keys( bars.dispatch );
+			customEvents.should.have.length(6);
+
+			customEvents.should.have.been.include('on');
+			customEvents.should.have.been.include('d3maMouseenter');
+			customEvents.should.have.been.include('d3maMouseout');
+			customEvents.should.have.been.include('d3maOnWindowResize');
+			customEvents.should.have.been.include('d3maOffWindowResize');
+			customEvents.should.have.been.include('d3maSingleWindowResize');
+			done();
+		});
+
 	});
 });
