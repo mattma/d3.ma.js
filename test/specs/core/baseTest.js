@@ -1,9 +1,15 @@
 define([
-	'chai', 'd3', 'd3chart', 'd3ma'
-], function(Chai, d3, d3chart, d3ma) {
+	'chai', 'd3', 'd3chart', 'd3ma', 'sinon-chai', 'sinon'
+], function(Chai, d3, d3chart, d3ma, sinonChai, sinon) {
 
+	// Read sinon-chai doc here
+	// http://chaijs.com/plugins/sinon-chai
+	//
 	var expect = Chai.expect,
-		should = Chai.should();
+		should = Chai.should(),
+		bars;
+
+	Chai.use(sinonChai);
 
 	describe('d3.ma base - core/base.js', function() {
 		beforeEach(function(done){
@@ -138,5 +144,11 @@ define([
 			done();
 		});
 
+		it('should have called onResize with its right context', function(done){
+			var spy = sinon.spy( d3.ma, 'onResize');
+			d3.ma.resize(bars);
+			spy.should.have.been.calledOnce;
+			done();
+		});
 	});
 });
