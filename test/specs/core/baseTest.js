@@ -144,10 +144,18 @@ define([
 			done();
 		});
 
-		it('should have called onResize with its right context', function(done){
+		it('should have a private fn _resize which will be triggered by onResize', function(done){
 			var spy = sinon.spy( d3.ma, 'onResize');
+			var barsSpy = sinon.spy( bars, '_resize');
+
 			d3.ma.resize(bars);
 			spy.should.have.been.calledOnce;
+
+			// Only happens when onResize event triggered
+			window.onresize();
+			barsSpy.should.have.been.calledOnce;
+			barsSpy.should.have.been.calledOn( bars );
+
 			done();
 		});
 	});
