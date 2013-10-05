@@ -39,9 +39,71 @@ define([
 			done();
 		});
 
-		it('should have public keys property', function(done){
+		it('should have public w, h, box function', function(done){
 			//var barKeys = d3.keys(bars);
-			bars.should.contain.keys(['w', 'h', 'box' ]);
+			bars.w.should.be.an('function');
+			bars.h.should.be.an('function');
+			bars.box.should.be.an('function');
+			done();
+		});
+
+		it('should have a w() as a getter/setter', function(done){
+			// test getter
+			bars.w().should.be.equal( bars.info.canvasW );
+			// width property is inherited from scale.js
+			bars.width.should.be.equal( bars.info.canvasW );
+			// test setter
+			bars.w(1000);
+			bars.w().should.not.be.equal( bars.info.canvasW );
+			bars.w().should.be.equal( 1000 );
+			bars.width.should.be.equal( 1000 );
+			done();
+		});
+
+		it('should have a h() as a getter/setter', function(done){
+			// test getter
+			bars.h().should.be.equal( bars.info.canvasH );
+			// height property is inherited from scale.js
+			bars.height.should.be.equal( bars.info.canvasH );
+			// test setter
+			bars.h(1000);
+			bars.h().should.not.be.equal( bars.info.canvasH );
+			bars.h().should.be.equal( 1000 );
+			bars.height.should.be.equal( 1000 );
+			done();
+		});
+
+		it('should have a box() as a getter/setter', function(done){
+			// test getter
+			bars.box().should.be.an('object');
+			var obj = {
+				width: bars.info.canvasW,
+				height: bars.info.canvasH
+			};
+			bars.box().should.be.eql( obj );
+			bars.width.should.be.equal( bars.info.canvasW );
+			bars.height.should.be.equal( bars.info.canvasH );
+
+			// test setter with one argument
+			bars.box(1000);
+			var obj1= {
+				width: 1000,
+				height: 1000
+			};
+			bars.box().should.be.eql( obj1 );
+			bars.width.should.be.equal( 1000 );
+			bars.height.should.be.equal( 1000 );
+
+			// test setter with two argument
+			bars.box(1000, 1100);
+			var obj2= {
+				width: 1000,
+				height: 1100
+			};
+			bars.box().should.be.eql( obj2 );
+			bars.width.should.be.equal( 1000 );
+			bars.height.should.be.equal( 1100 );
+
 			done();
 		});
 	});
