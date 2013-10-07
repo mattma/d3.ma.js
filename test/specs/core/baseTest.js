@@ -144,6 +144,7 @@ define([
 			done();
 		});
 
+		// Step 1 _resize() to be triggered by onResize() or custom resize()
 		it('should have a private fn _resize which will be triggered by onResize', function(done){
 			var spy = sinon.spy( d3.ma, 'onResize');
 			var barsSpy = sinon.spy( bars, '_resize');
@@ -155,6 +156,34 @@ define([
 			window.onresize();
 			barsSpy.should.have.been.calledOnce;
 			barsSpy.should.have.been.calledOn( bars );
+
+			done();
+		});
+
+		// Step 2 _onWindowResize be triggered by _resize, handled conditionally, need to register this fn
+		it('should have a private event d3maOnWindowResize and its handler _redraw', function(done){
+			var spy = sinon.spy( bars, '_redraw' );
+
+			// @todo it need to register _onWindowResize event in every single module, to pass the context, and single instance through the function. It may have a better way to handle this.
+			bars._onWindowResize(bars, null);
+			var obj = { a: 1, b: 2, c: 3};
+			bars.dispatch.d3maOnWindowResize(obj);
+
+			spy.should.have.been.calledOnce;
+
+			done();
+		});
+
+		// Step 2 _onWindowResize be triggered by _resize, handled conditionally, need to register this fn
+		it('should have a private event d3maOffWindowResize and its handler _redraw', function(done){
+			var spy = sinon.spy( bars, '_unbind' );
+
+			// @todo it need to register _onWindowResize event in every single module, to pass the context, and single instance through the function. It may have a better way to handle this.
+			bars._onWindowResize(bars, null);
+			var obj = { a: 1, b: 2, c: 3};
+			bars.dispatch.d3maOffWindowResize(obj);
+
+			spy.should.have.been.calledOnce;
 
 			done();
 		});
