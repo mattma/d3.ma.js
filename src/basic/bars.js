@@ -179,6 +179,19 @@ d3.chart('Base').extend('Bars', {
 							.attr({
 								'fill-opacity': 0.8
 							});
+				},
+				'exit': function(){
+					var chart = this.chart();
+					return this
+							.remove();
+				},
+				'exit:transition': function() {
+					var chart = this.chart();
+					return this
+							.duration(400)
+							.attr({
+								'fill-opacity': 0
+							});
 				}
 			}
 		});
