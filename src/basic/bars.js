@@ -1,5 +1,5 @@
 /*
-	define an extended chart from the Base Chart  src/basic/base.js
+	define an extended chart from the Base Chart  src/core/base.js
 	It is used for displaying the bar chart
 
 	Initalization:
