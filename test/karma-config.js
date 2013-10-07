@@ -37,6 +37,12 @@ require.config({
 		d3ma: {
 			exports : 'd3.ma',
 			deps : ['d3chart']
+		},
+		sinon: {
+			exports: 'sinon'
+		},
+		'sinon-chai': {
+			exports: 'sinon-chai'
 		}
 	},
 
