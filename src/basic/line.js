@@ -29,6 +29,11 @@ d3.chart('Base').extend('Line', {
 
 				chart.line = d3.svg.line();
 
+				// Setup the auto resize to handle the on resize event
+				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
+					single.attr({ 'd': chart.line });
+				});
+
 				chart.line
 					.x(function(d) { return chart.xScale(d.x); })
 					.y(function(d) { return chart.yScale(d.y);  });
