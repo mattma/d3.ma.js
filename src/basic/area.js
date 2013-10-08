@@ -1,22 +1,6 @@
 /*
-	by default, the line is expect the data like this structure { x: 0.3434, y: 0.3242}
-	but if the object data is rather different like { z: 0.3434, y: 0.3242}
-
-
-	var line = this.mixin("Line", this.base.append('g').classed('lines', true), {
-		info: containerInfo
-	});
-
-	line.line.x(function(d){
-		return line.xScale(d.z);
-	});
-
-	Use this.line # this will be replaced with its current context like line here.
-	context.xScale will access the this.xScale here.
-
-	class:  dot
-
-	this.path leave in transform, so that it could be extended by Area chart
+	Doc is coming soon
+	area chart is almost identical to the line chart, only different is area instead line
  */
 d3.chart('Base').extend('Area', {
 
@@ -30,13 +14,14 @@ d3.chart('Base').extend('Area', {
 				chart.area = d3.svg.area();
 
 				// Setup the auto resize to handle the on resize event
-				// chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
-				// 	single.attr({ 'd': chart.line });
-				// });
+				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
+					single.attr({ 'd': chart.area });
+				});
 
 				chart.area
 					.x(function(d) { return chart.xScale(d.x); })
-					.y(function(d) { return chart.yScale(d.y);  });
+					.y1(function(d) { return chart.yScale(d.y);  })
+					.y0(chart.yScale(0));
 
 				if(chart.onDataBind) { chart.onDataBind(chart, data,  (options.data) ? options.data : undefined ); }
 
@@ -49,7 +34,7 @@ d3.chart('Base').extend('Area', {
 			insert: function(){
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
-				return this.append('path').classed('line', true);
+				return this.append('path').classed('area', true);
 			},
 
 			events: {
@@ -77,28 +62,4 @@ d3.chart('Base').extend('Area', {
 			}
 		});
 	}
-
-	// 	this.linePath = this.base.append('path').attr({
-	// 		'class': 'line',
-	// 	});
-
-	// 	if(this.onDataBind) { this.onDataBind(); }
-
-	// 	this.linePath.datum(data).attr('d', this.line);
-
-	// 	// Define this fn where the data is manipulated
-	// 	// after all the data var has the correct value, then call it on Window resize
-	// 	// Normally, after calling this fn, need to define the _update to handle the Scale change, box size changes, attr updates
-	// 	this._onWindowResize();
-
-	// 	return data;
-	// }
-
-	// Update Scale, Box Size, and attr values
-	// _update: function(_width, _height) {
-
-	// 	this.linePath.attr({
-	// 		'd': this.line
-	// 	});
-	// }
 });

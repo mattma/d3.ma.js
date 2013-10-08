@@ -108,9 +108,9 @@
 					info: containerInfo
 				});
 
-				// var area = this.mixin("Area", this.base.append('g').classed('area', true), {
-				// 	info: containerInfo
-				// });
+				var area = this.mixin("Area", this.base.append('g').classed('area', true), {
+					info: containerInfo
+				});
 
 				// var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
 				// 	info: containerInfo,
@@ -140,7 +140,7 @@
 				// Handle resize in utils.js
 				// convininent methods to recall onResize()
 				// d3.ma.resize(axis, line, area, circles);
-				d3.ma.resize(axis, line);
+				d3.ma.resize(axis, line, area);
 
 				//Tooltip section
 				// var tooltip = d3.ma.tooltip(this.base);
