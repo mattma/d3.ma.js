@@ -1,41 +1,65 @@
-
-d3.chart('Line').extend('Area', {
+/*
+	Doc is coming soon
+	area chart is almost identical to the line chart, only different is area instead line
+ */
+d3.chart('Base').extend('Area', {
 
 	initialize: function(options) {
 		options = options || {};
 
-		var self = this;
+		this.layer('area', this.base, {
+			dataBind: function(data) {
+				var chart = this.chart();
 
-		this.area = d3.svg.area();
+				chart.area = d3.svg.area();
 
-		this.areaPath = this.base.append('path').attr({
-			'class': 'area',
-		});
+				// Setup the auto resize to handle the on resize event
+				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
+					single.attr({ 'd': chart.area });
+				});
 
-		this.area
-			.x(this.line.x())
-			.y1(this.line.y())
-			.y0(this.yScale(0));
+				chart.area
+					.x(function(d) { return chart.xScale(d.x); })
+					.y1(function(d) { return chart.yScale(d.y);  })
+					.y0(chart.yScale(0));
 
-		return this;
-	},
+				if(chart.onDataBind) { chart.onDataBind(chart, data,  (options.data) ? options.data : undefined ); }
 
-	transform: function(data) {
+				// data[options.data]  will return a single array, data will bind path element to each array index,
+				// by pushing options array into an anonymous array, ONLY one path element will be created
+				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
+				return this.selectAll('path').data( [data] );
+			},
 
-		if(this.onDataBind) { this.onDataBind(); }
+			insert: function(){
+				var chart = this.chart();
+				if(chart.onInsert) { chart.onInsert(chart); }
+				return this.append('path').classed('area', true);
+			},
 
-		this.areaPath.datum(data).attr('d', this.area);
+			events: {
+				'enter': function() {
+					var chart = this.chart();
 
-		this._onWindowResize();
+					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
+					// this   # refer to each individual group just appended by insert command
+					if(chart.onEnter) { chart.onEnter(chart, this); }
 
-		return data;
-	},
+					chart._onWindowResize(chart, this);
 
-	// Update Scale, Box Size, and attr values
-	_update: function(_width, _height) {
+					this.attr({
+						'd': chart.area,
+						'opacity': 1e-6
+					});
+				},
 
-		this.areaPath.attr({
-			'd': this.area
+				'enter:transition': function() {
+					var chart = this.chart();
+					return this
+							.duration(1000)
+							.style('opacity', 1);
+				}
+			}
 		});
 	}
 });
