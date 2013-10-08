@@ -23,13 +23,11 @@ d3.chart('Base').extend('Line', {
 	initialize: function(options) {
 		options = options || {};
 
-		this.line = d3.svg.line();
-
 		this.layer('line', this.base, {
 			dataBind: function(data) {
 				var chart = this.chart();
 
-				this.baseData = data;
+				chart.line = d3.svg.line();
 
 				chart.line
 					.x(function(d) { return chart.xScale(d.x); })
