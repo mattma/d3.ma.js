@@ -196,6 +196,12 @@
 		//render it with some data
 		canvas.draw(data);
 
+		// exit code need to be there, when data changes, it will auto update the chart
+		// d3.select('#vis').on('click', function() {
+		// 	data.pop();
+		// 	canvas.draw( data );
+		// })
+
 	</script>
 
 	<!-- livereload snippet  -->

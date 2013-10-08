@@ -167,18 +167,21 @@ d3.chart('Base').extend('Bars', {
 					self._bindMouseEnterOutEvents(chart, this);
 
 					// Used for animation the fill opacity property, work with enter:transition
-					this.attr({
-						'fill-opacity': 0
-					});
+					this.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
 					var chart = this.chart();
 					return this
 							.duration(1000)
-							.attr({
-								'fill-opacity': 0.8
-							});
+							.style('opacity', 0.8);
+				},
+				'exit:transition': function() {
+					var chart = this.chart();
+					return this
+							.duration(400)
+							.style('opacity', 1e-6)
+							.remove();
 				}
 			}
 		});
