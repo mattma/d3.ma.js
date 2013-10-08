@@ -23,13 +23,16 @@ d3.chart('Base').extend('Line', {
 	initialize: function(options) {
 		options = options || {};
 
-		this.line = d3.svg.line();
-
 		this.layer('line', this.base, {
 			dataBind: function(data) {
 				var chart = this.chart();
 
-				this.baseData = data;
+				chart.line = d3.svg.line();
+
+				// Setup the auto resize to handle the on resize event
+				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
+					single.attr({ 'd': chart.line });
+				});
 
 				chart.line
 					.x(function(d) { return chart.xScale(d.x); })
@@ -39,7 +42,8 @@ d3.chart('Base').extend('Line', {
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
-				return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
+				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
+				return this.selectAll('path').data( [data] );
 			},
 
 			insert: function(){
@@ -58,7 +62,17 @@ d3.chart('Base').extend('Line', {
 
 					chart._onWindowResize(chart, this);
 
-					this.attr('d', chart.line);
+					this.attr({
+						'd': chart.line,
+						'opacity': 1e-6
+					});
+				},
+
+				'enter:transition': function() {
+					var chart = this.chart();
+					return this
+							.duration(1000)
+							.style('opacity', 1);
 				}
 			}
 		});

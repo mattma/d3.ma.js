@@ -162,6 +162,13 @@ d3.chart('Scale').extend('Base', {
 				width: containerInfo.canvasW,
 				height: containerInfo.canvasH
 			};
+			var origObj = {
+				width: containerInfo.containerW,
+				height: containerInfo.containerH
+			};
+			// dispatch the _redraw back to the original container box
+			this.dispatch.d3maOnWindowResize(origObj);
+			// unbind the window resize event
 			this.dispatch.d3maOffWindowResize(offObj);
 		}
 	},
