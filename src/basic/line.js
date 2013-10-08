@@ -57,7 +57,17 @@ d3.chart('Base').extend('Line', {
 
 					chart._onWindowResize(chart, this);
 
-					this.attr('d', chart.line);
+					this.attr({
+						'd': chart.line,
+						'opacity': 1e-6
+					});
+				},
+
+				'enter:transition': function() {
+					var chart = this.chart();
+					return this
+							.duration(1000)
+							.style('opacity', 1);
 				}
 			}
 		});
