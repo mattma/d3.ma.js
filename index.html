@@ -112,47 +112,46 @@
 					info: containerInfo
 				});
 
-				// var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
-				// 	info: containerInfo,
-				// 	showOnHover: true
-				// });
+				var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
+					info: containerInfo,
+					showOnHover: true
+				});
 
-				// circles.layer('circle').on('enter', function(chart){
-				// 	var chart = this.chart();
+				circles.layer('circle').on('enter', function(chart){
+					var chart = this.chart();
 
-				// 	this.attr({
-				// 		'class': 'dot',
-				// 		'cx': area.line.x(),
-				// 		'cy': area.line.y(),
-				// 		'r': 2.5
-				// 	})
-				// });
+					this.attr({
+						'class': 'dot',
+						'cx': function(d, i){ return area.xScale(d.x) },
+						'cy': function(d, i){ return area.yScale(d.y) },
+						'r': 2.5
+					})
+				});
 
-				// circles.dispatch.on('d3maSingleWindowResize', function(chart, single){
-				// 	var chart = chart || this;
+				circles.dispatch.on('d3maSingleWindowResize', function(chart, single){
+					var chart = chart || this;
 
-				// 	single.attr({
-				// 		'cx': area.line.x(),
-				// 		'cy': area.line.y()
-				// 	});
-				// });
+					single.attr({
+						'cx': function(d, i){ return area.xScale(d.x) },
+						'cy': function(d, i){ return area.yScale(d.y) }
+					});
+				});
 
 				// Handle resize in utils.js
 				// convininent methods to recall onResize()
-				// d3.ma.resize(axis, line, area, circles);
-				d3.ma.resize(axis, line, area);
+				d3.ma.resize(axis, line, area, circles);
 
 				//Tooltip section
-				// var tooltip = d3.ma.tooltip(this.base);
-				// circles.dispatch.on('d3maMouseenter', function(e){
-				// 	e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
-				// 	var html = "<div class='tips'>" + e.d.x + "<br><strong>" + e.d.y + "</strong>" + "</div>"
-				// 	tooltip.show([e.pos[0], e.pos[1]], html);
-				// });
+				var tooltip = d3.ma.tooltip(this.base);
+				circles.dispatch.on('d3maMouseenter', function(e){
+					e.pos = [ e.pos[0] + 20, e.pos[1] + 100 ];
+					var html = "<div class='tips'>" + e.d.x + "<br><strong>" + e.d.y + "</strong>" + "</div>"
+					tooltip.show([e.pos[0], e.pos[1]], html);
+				});
 
-				// circles.dispatch.on('d3maMouseout', function(e){
-				// 	tooltip.close();
-				// });
+				circles.dispatch.on('d3maMouseout', function(e){
+					tooltip.close();
+				});
 
 				//d3.ma.reloadResize(axis, line, area, circles);
 			}
