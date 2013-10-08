@@ -156,12 +156,21 @@ d3.chart('Scale').extend('Base', {
 				width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
 				height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
 			};
+			console.log('windowWidth: ', windowWidth);
+			console.log('containerInfo.containerW: ', containerInfo.containerW);
 			this.dispatch.d3maOnWindowResize(onObj);
 		} else {
 			var offObj = {
 				width: containerInfo.canvasW,
 				height: containerInfo.canvasH
 			};
+			var origObj = {
+				width: containerInfo.containerW,
+				height: containerInfo.containerH
+			};
+			// dispatch the _redraw back to the original container box
+			this.dispatch.d3maOnWindowResize(origObj);
+			// unbind the window resize event
 			this.dispatch.d3maOffWindowResize(offObj);
 		}
 	},
