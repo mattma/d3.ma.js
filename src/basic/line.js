@@ -64,16 +64,17 @@ d3.chart('Base').extend('Line', {
 
 					this.attr({
 						'd': chart.line,
-						'opacity': 1e-6
+						//'opacity': 1e-6
+						'opacity': 0.9
 					});
-				},
-
-				'enter:transition': function() {
-					var chart = this.chart();
-					return this
-							.duration(1000)
-							.style('opacity', 1);
 				}
+
+				// 'enter:transition': function() {
+				// 	var chart = this.chart();
+				// 	return this
+				// 			.duration(1000)
+				// 			.style('opacity', 1);
+				// }
 			}
 		});
 	}
