@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-10-08
+ 	Date: 2013-10-09
 */
 (function(){
 
@@ -448,7 +448,8 @@ d3.ma.container = function(selector) {
 			'canvasW': canvasW(),
 			'canvasH': canvasH(),
 			'id': '#'+id,
-			'cid': '#'+cid
+			'cid': '#'+cid,
+			'parentNode': selector
 		};
 	};
 
@@ -1478,10 +1479,9 @@ d3.chart('Base').extend('Line', {
 
 					chart._onWindowResize(chart, this);
 
-					this.attr({
-						'd': chart.line,
-						'opacity': 1e-6
-					});
+					this
+						.attr({ 'd': chart.line })
+						.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
@@ -1567,10 +1567,9 @@ d3.chart('Base').extend('Area', {
 
 					chart._onWindowResize(chart, this);
 
-					this.attr({
-						'd': chart.area,
-						'opacity': 1e-6
-					});
+					this
+						.attr({ 'd': chart.area })
+						.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
