@@ -164,7 +164,8 @@ d3.ma.container = function(selector) {
 			'canvasW': canvasW(),
 			'canvasH': canvasH(),
 			'id': '#'+id,
-			'cid': '#'+cid
+			'cid': '#'+cid,
+			'parentNode': selector
 		};
 	};
 
