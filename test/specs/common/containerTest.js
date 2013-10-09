@@ -233,7 +233,7 @@ define([
 			it('should have a getter fn called container.info', function(done){
 				var info = container.info();
 				info.should.be.an('object');
-				info.should.have.keys(['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'containerW', 'containerH', 'canvasW', 'canvasH', 'id', 'cid']);
+				info.should.have.keys(['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'containerW', 'containerH', 'canvasW', 'canvasH', 'id', 'cid', 'parentNode']);
 				info.marginTop.should.be.a('number');
 				info.marginRight.should.be.a('number');
 				info.marginBottom.should.be.a('number');
@@ -244,6 +244,8 @@ define([
 				info.canvasH.should.be.a('number');
 				info.id.should.be.a('string');
 				info.cid.should.be.a('string');
+				info.parentNode.should.be.a('string');
+				info.parentNode.should.be.equal('#vis');
 				done();
 			});
 		});

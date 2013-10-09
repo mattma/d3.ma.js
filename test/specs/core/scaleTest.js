@@ -125,7 +125,7 @@ define([
 		it('should have scale public info property with string value', function(done){
 			bars.info.should.be.exist;
 			bars.info.should.be.an('object');
-			bars.info.should.have.keys(['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'containerW', 'containerH', 'canvasW', 'canvasH', 'id', 'cid']);
+			bars.info.should.have.keys(['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'containerW', 'containerH', 'canvasW', 'canvasH', 'id', 'cid', 'parentNode']);
 			done();
 		});
 
