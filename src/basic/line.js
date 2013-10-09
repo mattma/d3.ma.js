@@ -62,19 +62,17 @@ d3.chart('Base').extend('Line', {
 
 					chart._onWindowResize(chart, this);
 
-					this.attr({
-						'd': chart.line,
-						//'opacity': 1e-6
-						'opacity': 0.9
-					});
-				}
+					this
+						.attr({ 'd': chart.line })
+						.style('opacity', 1e-6);
+				},
 
-				// 'enter:transition': function() {
-				// 	var chart = this.chart();
-				// 	return this
-				// 			.duration(1000)
-				// 			.style('opacity', 1);
-				// }
+				'enter:transition': function() {
+					var chart = this.chart();
+					return this
+							.duration(1000)
+							.style('opacity', 1);
+				}
 			}
 		});
 	}

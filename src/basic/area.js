@@ -47,10 +47,9 @@ d3.chart('Base').extend('Area', {
 
 					chart._onWindowResize(chart, this);
 
-					this.attr({
-						'd': chart.area,
-						'opacity': 1e-6
-					});
+					this
+						.attr({ 'd': chart.area })
+						.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
