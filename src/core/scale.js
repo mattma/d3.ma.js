@@ -159,6 +159,10 @@ d3.chart('Scale', {
 				return d3.scale.threshold();
 			break;
 
+			case 'time':
+				return d3.time.scale();
+			break;
+
 			default:
 				return d3.scale.linear();
 			break;
