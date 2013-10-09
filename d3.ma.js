@@ -965,9 +965,11 @@ d3.chart('Scale').extend('Base', {
 		// ex: d3.ma.onResize(line._resize, line);
 		// in this case, the context here is  line
 
-		var windowWidth = d3.ma.windowSize().width,
-			windowHeight = d3.ma.windowSize().height,
-			containerInfo = this.info;
+		var containerInfo = this.info,
+			widthOffset = d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
+			heightOffset = d3.ma.$$(containerInfo.parentNode).offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
+			windowWidth = d3.ma.windowSize().width - widthOffset,
+			windowHeight = d3.ma.windowSize().height - heightOffset;
 
 		if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
 			var onObj = {
