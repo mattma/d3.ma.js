@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-10-09
+ 	Date: 2013-10-10
 */
 (function(){
 
@@ -1368,7 +1368,7 @@ d3.chart('Base').extend("Axis", {
 d3.chart('Base').extend('Bars', {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		var self = this;
 
@@ -1427,6 +1427,8 @@ d3.chart('Base').extend('Bars', {
 	by default, the line is expect the data like this structure { x: 0.3434, y: 0.3242}
 	but if the object data is rather different like { z: 0.3434, y: 0.3242}
 
+	By doing 		this.options = options = options || {}; # will enable the custom key/value pair in the constructor access
+
 
 	var line = this.mixin("Line", this.base.append('g').classed('lines', true), {
 		info: containerInfo
@@ -1446,7 +1448,7 @@ d3.chart('Base').extend('Bars', {
 d3.chart('Base').extend('Line', {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		this.layer('line', this.base, {
 			dataBind: function(data) {
@@ -1533,7 +1535,7 @@ d3.chart('Base').extend('Line', {
 d3.chart('Base').extend('Area', {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		this.layer('area', this.base, {
 			dataBind: function(data) {
@@ -1596,7 +1598,7 @@ d3.chart('Base').extend('Area', {
 d3.chart('Base').extend('Circle', {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		var self = this,
 			showOnHover = options.showOnHover || false;
