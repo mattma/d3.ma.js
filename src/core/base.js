@@ -50,9 +50,11 @@
 		chart refer to this context, used it to access xScale, yScale, width, height, etc. chart property.
 		single refer to each individual group just appended by insert command.
 
-		`3. _redraw(e, chart, single)` will be triggered on 'd3maOnWindowResize'. First, it will trigger `5. _updateScale(_width, _height)`, based on the current xScale string value, yScale string value, update the xScale, yScale range array. ( defined in scale.js ) and update the module box width and height attribute.  Second, it will dispatch another global d3.ma event. 'd3maSingleWindowResize', passing (chart, single) as its arguments.  Third, defined a recommended method called `6. _update()`. E.G. this._update( _width, _height, chart, single ).  so any module could hook into this method and attach its own custom updates based on current context and its useful values like width, height, chart info and single info
+		`3. _redraw(e, chart, single)` will be triggered on 'd3maOnWindowResize'. First, it will trigger `5. _updateScale(_width, _height)`, based on the current xScale string value, yScale string value, update the xScale, yScale range array. ( defined in scale.js ) and update the module box width and height attribute.  Second, it will dispatch another global d3.ma event. 'd3maSingleWindowResize', passing (chart, single) as its arguments.  Third, defined a recommended method called `6. update()`. E.G. this.update( _width, _height, chart, single ).  so any module could hook into this method and attach its own custom updates based on current context and its useful values like width, height, chart info and single info
 
-		`4. _unbind(e, chart, single)` will be triggered on 'd3maOffWindowResize'. It will auto trigger `5. _updateScale(_width, _height)` and `6. _update( _width, _height, chart, single )` for modifying the scale range and domain
+		`4. _unbind(e, chart, single)` will be triggered on 'd3maOffWindowResize'. It will auto trigger `5. _updateScale(_width, _height)` and `6. update( _width, _height, chart, single )` for modifying the scale range and domain
+
+		`5. update, a public function, it will be called when _redraw or _unbind are being called. You could update the domain, range or whatever in your module. It need to be handled in the module level`
 
 		'd3maSingleWindowResize': `3. _redraw(e, chart, single)` dispatch an event of `d3maSingleWindowResize`, each instance of the module should handle it separately based on its settings. (like in index.html).
 			E.G.
@@ -147,15 +149,15 @@ d3.chart('Scale').extend('Base', {
 		// ex: d3.ma.onResize(line._resize, line);
 		// in this case, the context here is  line
 
-		// var containerInfo = this.info,
-		// 	widthOffset = d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
-		// 	heightOffset = d3.ma.$$(containerInfo.parentNode).offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
-		// 	windowWidth = d3.ma.windowSize().width - widthOffset,
-		// 	windowHeight = d3.ma.windowSize().height - heightOffset;
-
 		var containerInfo = this.info,
-			windowWidth = d3.ma.windowSize().width,
-			windowHeight = d3.ma.windowSize().height;
+			widthOffset = d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
+			heightOffset = d3.ma.$$(containerInfo.parentNode).offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
+			windowWidth = d3.ma.windowSize().width - widthOffset,
+			windowHeight = d3.ma.windowSize().height - heightOffset;
+
+		// var containerInfo = this.info,
+		// 	windowWidth = d3.ma.windowSize().width,
+		// 	windowHeight = d3.ma.windowSize().height;
 
 		if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
 			var onObj = {
@@ -210,8 +212,8 @@ d3.chart('Scale').extend('Base', {
 		// handle this in individual modules
 		// Optional step, if defined in each module, could
 		// setup the global default in this module, or setup global attrs
-		if (this._update)
-			this._update( _width, _height, chart, single );
+		if (this.update)
+			this.update( _width, _height, chart, single );
 	},
 
 	// this will trigger the _update internal fn
@@ -228,8 +230,8 @@ d3.chart('Scale').extend('Base', {
 			// same usage like _redraw fn for  _updateScale  &  _update
 			this._updateScale(_canvasW, _canvasH);
 
-			if (this._update)
-				this._update(_canvasW, _canvasH, chart, single);
+			if (this.update)
+				this.update(_canvasW, _canvasH, chart, single);
 		}
 	},
 
