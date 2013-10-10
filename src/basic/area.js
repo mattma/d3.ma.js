@@ -5,7 +5,7 @@
 d3.chart('Base').extend('Area', {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		this.layer('area', this.base, {
 			dataBind: function(data) {

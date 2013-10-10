@@ -2,6 +2,8 @@
 	by default, the line is expect the data like this structure { x: 0.3434, y: 0.3242}
 	but if the object data is rather different like { z: 0.3434, y: 0.3242}
 
+	By doing 		this.options = options = options || {}; # will enable the custom key/value pair in the constructor access
+
 
 	var line = this.mixin("Line", this.base.append('g').classed('lines', true), {
 		info: containerInfo
@@ -21,7 +23,7 @@
 d3.chart('Base').extend('Line', {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		this.layer('line', this.base, {
 			dataBind: function(data) {

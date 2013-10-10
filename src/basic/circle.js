@@ -4,7 +4,7 @@
 d3.chart('Base').extend('Circle', {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		var self = this,
 			showOnHover = options.showOnHover || false;

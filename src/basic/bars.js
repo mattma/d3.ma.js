@@ -132,7 +132,7 @@
 d3.chart('Base').extend('Bars', {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		var self = this;
 
