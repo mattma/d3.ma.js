@@ -122,6 +122,7 @@ d3.chart('Scale').extend('Base', {
 
 	// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 	// this    # refer to each individual group just appended by insert command
+	// single[0][i]  # refer to the current hover DOM element
 	_bindMouseEnterOutEvents: function(chart, single) {
 		var chart = chart || this;
 
@@ -129,7 +130,7 @@ d3.chart('Scale').extend('Base', {
 			d3.select(this).classed('hover', true);
 			var obj = {};
 			if(chart.onDataMouseenter) {
-				obj = chart.onDataMouseenter(d, i, chart);
+				obj = chart.onDataMouseenter(d, i, chart, single[0][i]);
 			}
 			chart.dispatch.d3maMouseenter(obj);
 		});
@@ -138,7 +139,7 @@ d3.chart('Scale').extend('Base', {
 			d3.select(this).classed('hover', false);
 			var obj = {};
 			if(chart.onDataMouseout) {
-				obj = chart.onDataMouseout(d, i, chart);
+				obj = chart.onDataMouseout(d, i, chart, single[0][i]);
 			}
 			chart.dispatch.d3maMouseout(obj);
 		});
