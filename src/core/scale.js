@@ -112,11 +112,11 @@ d3.chart('Scale', {
 	_switchYScale: function(y, _height) {
 		switch(y) {
 			case 'linear' :
-				this.yScale.range([_height, 0]);
+				this.yScale.range([_height, 15]);
 			break;
 
 			case 'ordinal' :
-				this.yScale.rangeRoundBands([_height, 0], 0.1);
+				this.yScale.rangeRoundBands([_height, 15], 0.1);
 			break;
 		}
 	},
