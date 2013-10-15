@@ -95,7 +95,7 @@ d3.chart('Base').extend("Axis", {
 		this.xAxisG.call( this.xAxis);
 		this.yAxisG.call( this.yAxis);
 
-		this._onWindowResize();
+		this._onWindowResize(data);
 
 		return data;
 	},
