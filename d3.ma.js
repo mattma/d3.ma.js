@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-10-10
+ 	Date: 2013-10-14
 */
 (function(){
 
@@ -759,11 +759,11 @@ d3.chart('Scale', {
 	_switchYScale: function(y, _height) {
 		switch(y) {
 			case 'linear' :
-				this.yScale.range([_height, 0]);
+				this.yScale.range([_height, 15]);
 			break;
 
 			case 'ordinal' :
-				this.yScale.rangeRoundBands([_height, 0], 0.1);
+				this.yScale.rangeRoundBands([_height, 15], 0.1);
 			break;
 		}
 	},
@@ -940,6 +940,7 @@ d3.chart('Scale').extend('Base', {
 
 	// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 	// this    # refer to each individual group just appended by insert command
+	// single[0][i]  # refer to the current hover DOM element
 	_bindMouseEnterOutEvents: function(chart, single) {
 		var chart = chart || this;
 
@@ -947,7 +948,7 @@ d3.chart('Scale').extend('Base', {
 			d3.select(this).classed('hover', true);
 			var obj = {};
 			if(chart.onDataMouseenter) {
-				obj = chart.onDataMouseenter(d, i, chart);
+				obj = chart.onDataMouseenter(d, i, chart, single[0][i]);
 			}
 			chart.dispatch.d3maMouseenter(obj);
 		});
@@ -956,7 +957,7 @@ d3.chart('Scale').extend('Base', {
 			d3.select(this).classed('hover', false);
 			var obj = {};
 			if(chart.onDataMouseout) {
-				obj = chart.onDataMouseout(d, i, chart);
+				obj = chart.onDataMouseout(d, i, chart, single[0][i]);
 			}
 			chart.dispatch.d3maMouseout(obj);
 		});
@@ -1155,12 +1156,12 @@ d3.chart('Base').extend("Axis", {
 
 	transform: function(data) {
 		//Acutally draw the xAxis, yAxis on the screen
-		if(this.onDataBind) { this.onDataBind(); }
+		if(this.onDataBind) { this.onDataBind(data); }
 
 		this.xAxisG.call( this.xAxis);
 		this.yAxisG.call( this.yAxis);
 
-		this._onWindowResize();
+		this._onWindowResize(data);
 
 		return data;
 	},
@@ -1377,7 +1378,7 @@ d3.chart('Base').extend('Bars', {
 			// select the elements we wish to bind to and bind the data to them.
 			dataBind: function(data) {
 				var chart = this.chart();
-				if(chart.onDataBind) { chart.onDataBind(chart); }
+				if(chart.onDataBind) { chart.onDataBind(data, chart); }
 				return this.selectAll('.group').data(data);
 			},
 
@@ -1465,7 +1466,7 @@ d3.chart('Base').extend('Line', {
 					.x(function(d) { return chart.xScale(d.x); })
 					.y(function(d) { return chart.yScale(d.y);  });
 
-				if(chart.onDataBind) { chart.onDataBind(chart, data,  (options.data) ? options.data : undefined ); }
+				if(chart.onDataBind) { chart.onDataBind( data, chart, (options.data) ? options.data : undefined ); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
@@ -1553,7 +1554,7 @@ d3.chart('Base').extend('Area', {
 					.y1(function(d) { return chart.yScale(d.y);  })
 					.y0(chart.yScale(0));
 
-				if(chart.onDataBind) { chart.onDataBind(chart, data,  (options.data) ? options.data : undefined ); }
+				if(chart.onDataBind) { chart.onDataBind(data, chart, (options.data) ? options.data : undefined ); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
@@ -1608,7 +1609,7 @@ d3.chart('Base').extend('Circle', {
 			dataBind: function(data) {
 				var chart = this.chart();
 
-				if(chart.onDataBind) { chart.onDataBind(chart); }
+				if(chart.onDataBind) { chart.onDataBind(data, chart); }
 
 				return this.classed('dotHover', (showOnHover) ? true : false).selectAll('circle').data(data);
 			},

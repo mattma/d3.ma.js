@@ -91,10 +91,10 @@ define([
 			//
 			// testDefault has y-scale: 'linear', can be tested with range()
 			testDefault.yScale.range().should.be.an('array');
-			testDefault.yScale.range().should.be.eql([testDefault.info.canvasH, 0]);
+			testDefault.yScale.range().should.be.eql([testDefault.info.canvasH, 15]);
 			// override the yScale with custom width, handle internally, should not call directly
 			testDefault._switchYScale('linear', 1000);
-			testDefault.yScale.range().should.be.eql([1000, 0]);
+			testDefault.yScale.range().should.be.eql([1000, 15]);
 
 			// bars has y-scale: 'log', can be tested with rangeRounds()
 			bars.yScale.range().should.be.an('array');
