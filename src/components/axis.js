@@ -90,7 +90,7 @@ d3.chart('Base').extend("Axis", {
 
 	transform: function(data) {
 		//Acutally draw the xAxis, yAxis on the screen
-		if(this.onDataBind) { this.onDataBind(); }
+		if(this.onDataBind) { this.onDataBind(data); }
 
 		this.xAxisG.call( this.xAxis);
 		this.yAxisG.call( this.yAxis);
