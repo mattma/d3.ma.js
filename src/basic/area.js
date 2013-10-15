@@ -23,7 +23,7 @@ d3.chart('Base').extend('Area', {
 					.y1(function(d) { return chart.yScale(d.y);  })
 					.y0(chart.yScale(0));
 
-				if(chart.onDataBind) { chart.onDataBind(chart, data,  (options.data) ? options.data : undefined ); }
+				if(chart.onDataBind) { chart.onDataBind(data, chart, (options.data) ? options.data : undefined ); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created

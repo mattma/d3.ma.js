@@ -141,7 +141,7 @@ d3.chart('Base').extend('Bars', {
 			// select the elements we wish to bind to and bind the data to them.
 			dataBind: function(data) {
 				var chart = this.chart();
-				if(chart.onDataBind) { chart.onDataBind(chart); }
+				if(chart.onDataBind) { chart.onDataBind(data, chart); }
 				return this.selectAll('.group').data(data);
 			},
 

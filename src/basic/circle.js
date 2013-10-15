@@ -14,7 +14,7 @@ d3.chart('Base').extend('Circle', {
 			dataBind: function(data) {
 				var chart = this.chart();
 
-				if(chart.onDataBind) { chart.onDataBind(chart); }
+				if(chart.onDataBind) { chart.onDataBind(data, chart); }
 
 				return this.classed('dotHover', (showOnHover) ? true : false).selectAll('circle').data(data);
 			},
