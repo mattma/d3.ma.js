@@ -76,9 +76,10 @@ d3.chart('Base').extend('Line', {
 							.style('opacity', 1);
 				},
 
-				'update': function() {
+				'update:transition': function() {
 					var chart = this.chart();
 					this
+						.duration(1000)
 						.attr('d', chart.line);
 				},
 

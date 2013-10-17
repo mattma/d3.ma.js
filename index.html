@@ -34,6 +34,7 @@
 
 </head>
 <body>
+	<button>update</button>
 	<div id="vis"></div>
 
 	<script>
@@ -166,6 +167,14 @@
 
 		//render it with some data
 		canvas.draw(data);
+
+		var data1 = d3.range(60).map(function(i) {
+			return {x: i / 60, y: (Math.sin(i / 3) + 2) / 20};
+		});
+
+		d3.selectAll("button").on("click", function() {
+			canvas.draw(data1);
+		});
 
 	</script>
 

@@ -59,9 +59,10 @@ d3.chart('Base').extend('Area', {
 							.style('opacity', 1);
 				},
 
-				'update': function() {
+				'update:transition': function() {
 					var chart = this.chart();
 					this
+						.duration(1000)
 						.attr('d', chart.area);
 				}
 			}
