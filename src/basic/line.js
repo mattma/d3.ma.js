@@ -74,6 +74,20 @@ d3.chart('Base').extend('Line', {
 					return this
 							.duration(1000)
 							.style('opacity', 1);
+				},
+
+				'remove:transition': function() {
+					var chart = this.chart();
+					console.log('animate');
+					return this
+							.duration(400)
+							.style('opacity', 1e-6);
+				},
+
+				'remove': function() {
+					var chart = this.chart();
+					console.log('delete');
+					return this.remove();
 				}
 			}
 		});
