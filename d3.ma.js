@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-10-14
+ 	Date: 2013-10-17
 */
 (function(){
 
@@ -1500,6 +1500,25 @@ d3.chart('Base').extend('Line', {
 					return this
 							.duration(1000)
 							.style('opacity', 1);
+				},
+
+				'update:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(1000)
+						.attr('d', chart.line);
+				},
+
+				'remove:transition': function() {
+					var chart = this.chart();
+					return this
+							.duration(400)
+							.style('opacity', 1e-6);
+				},
+
+				'remove': function() {
+					var chart = this.chart();
+					return this.remove();
 				}
 			}
 		});
@@ -1588,6 +1607,13 @@ d3.chart('Base').extend('Area', {
 					return this
 							.duration(1000)
 							.style('opacity', 1);
+				},
+
+				'update:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(1000)
+						.attr('d', chart.area);
 				}
 			}
 		});
