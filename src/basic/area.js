@@ -57,6 +57,12 @@ d3.chart('Base').extend('Area', {
 					return this
 							.duration(1000)
 							.style('opacity', 1);
+				},
+
+				'update': function() {
+					var chart = this.chart();
+					this
+						.attr('d', chart.area);
 				}
 			}
 		});

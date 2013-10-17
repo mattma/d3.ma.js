@@ -76,9 +76,14 @@ d3.chart('Base').extend('Line', {
 							.style('opacity', 1);
 				},
 
+				'update': function() {
+					var chart = this.chart();
+					this
+						.attr('d', chart.line);
+				},
+
 				'remove:transition': function() {
 					var chart = this.chart();
-					console.log('animate');
 					return this
 							.duration(400)
 							.style('opacity', 1e-6);
@@ -86,7 +91,6 @@ d3.chart('Base').extend('Line', {
 
 				'remove': function() {
 					var chart = this.chart();
-					console.log('delete');
 					return this.remove();
 				}
 			}
