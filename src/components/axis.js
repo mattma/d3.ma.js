@@ -92,8 +92,17 @@ d3.chart('Base').extend("Axis", {
 		//Acutally draw the xAxis, yAxis on the screen
 		if(this.onDataBind) { this.onDataBind(data); }
 
-		this.xAxisG.call( this.xAxis);
-		this.yAxisG.call( this.yAxis);
+		this.xAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.xAxis);
+
+		this.yAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.yAxis);
 
 		this._onWindowResize(data);
 
@@ -125,8 +134,17 @@ d3.chart('Base').extend("Axis", {
 
 		if(this.ticksOnResize) this._redrawTicksOnResize();
 
-		this.xAxisG.call( this.xAxis);
-		this.yAxisG.call( this.yAxis);
+		this.xAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.xAxis);
+
+		this.yAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.yAxis);
 	},
 
 	_redrawTicksOnResize: function() {
@@ -150,7 +168,13 @@ d3.chart('Base').extend("Axis", {
 			'x': xValue || containerInfo.marginLeft - 15, // control left and right of the label
 			'y': yValue || 0, // control up and down of the label
 			'transform': 'translate(' + this.info.marginLeft+ ',' + this.info.marginBottom + ')'
-		}).text(_label);
+		})
+			.style('opacity', 1e-6)
+			.text(_label)
+				.transition()
+				.duration(1000)
+				.ease('cubic-out')
+				.style('opacity', 1);
 
 		return this;
 	},
@@ -164,7 +188,13 @@ d3.chart('Base').extend("Axis", {
 			'x':  xValue || -15, // control up and down of the label
 			'y':  yValue || 15,  // control left and right of the label
 			'transform':  'rotate(-90) translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
-		}).text(_label);
+		})
+			.style('opacity', 1e-6)
+			.text(_label)
+				.transition()
+				.duration(800)
+				.ease('cubic-out')
+				.style('opacity', 1);
 
 		return this;
 	}
