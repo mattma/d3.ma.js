@@ -210,11 +210,18 @@ d3.chart('Scale').extend('Base', {
 		//usage on rects, circles, like multiple repeated elements.
 		this.dispatch.d3maSingleWindowResize(chart, single);
 
+		// Except Axis, only pass in the chart without single, everything else should pass all 4 args
+		// Currently, _update is only used in axis base, for constant API, update could be used inside custom constructors
+		if (this._update) {
+			this._update( _width, _height, chart, single );
+		}
 		// handle this in individual modules
 		// Optional step, if defined in each module, could
 		// setup the global default in this module, or setup global attrs
-		if (this.update)
+		// Axis is using this in the custom construtor.
+		if (this.update) {
 			this.update( _width, _height, chart, single );
+		}
 	},
 
 	// this will trigger the _update internal fn

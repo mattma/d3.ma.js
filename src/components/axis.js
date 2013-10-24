@@ -104,7 +104,8 @@ d3.chart('Base').extend("Axis", {
 			.ease('cubic-out')
 			.call( this.yAxis);
 
-		this._onWindowResize(data);
+		// this: it is the chart object itself, does not pass single by any chances
+		this._onWindowResize(this);
 
 		return data;
 	},
@@ -129,7 +130,7 @@ d3.chart('Base').extend("Axis", {
 	},
 
 	// Update Scale, Box Size, and attr values
-	_update: function(_width, _height) {
+	_update: function( _width, _height, chart ) {
 		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
 
 		if(this.ticksOnResize) this._redrawTicksOnResize();
