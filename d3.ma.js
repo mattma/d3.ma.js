@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-10-17
+ 	Date: 2013-10-24
 */
 (function(){
 
@@ -1028,11 +1028,18 @@ d3.chart('Scale').extend('Base', {
 		//usage on rects, circles, like multiple repeated elements.
 		this.dispatch.d3maSingleWindowResize(chart, single);
 
+		// Except Axis, only pass in the chart without single, everything else should pass all 4 args
+		// Currently, _update is only used in axis base, for constant API, update could be used inside custom constructors
+		if (this._update) {
+			this._update( _width, _height, chart, single );
+		}
 		// handle this in individual modules
 		// Optional step, if defined in each module, could
 		// setup the global default in this module, or setup global attrs
-		if (this.update)
+		// Axis is using this in the custom construtor.
+		if (this.update) {
 			this.update( _width, _height, chart, single );
+		}
 	},
 
 	// this will trigger the _update internal fn
@@ -1158,10 +1165,20 @@ d3.chart('Base').extend("Axis", {
 		//Acutally draw the xAxis, yAxis on the screen
 		if(this.onDataBind) { this.onDataBind(data); }
 
-		this.xAxisG.call( this.xAxis);
-		this.yAxisG.call( this.yAxis);
+		this.xAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.xAxis);
 
-		this._onWindowResize(data);
+		this.yAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.yAxis);
+
+		// this: it is the chart object itself, does not pass single by any chances
+		this._onWindowResize(this);
 
 		return data;
 	},
@@ -1186,13 +1203,22 @@ d3.chart('Base').extend("Axis", {
 	},
 
 	// Update Scale, Box Size, and attr values
-	_update: function(_width, _height) {
+	_update: function( _width, _height, chart ) {
 		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
 
 		if(this.ticksOnResize) this._redrawTicksOnResize();
 
-		this.xAxisG.call( this.xAxis);
-		this.yAxisG.call( this.yAxis);
+		this.xAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.xAxis);
+
+		this.yAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.yAxis);
 	},
 
 	_redrawTicksOnResize: function() {
@@ -1216,7 +1242,13 @@ d3.chart('Base').extend("Axis", {
 			'x': xValue || containerInfo.marginLeft - 15, // control left and right of the label
 			'y': yValue || 0, // control up and down of the label
 			'transform': 'translate(' + this.info.marginLeft+ ',' + this.info.marginBottom + ')'
-		}).text(_label);
+		})
+			.style('opacity', 1e-6)
+			.text(_label)
+				.transition()
+				.duration(1000)
+				.ease('cubic-out')
+				.style('opacity', 1);
 
 		return this;
 	},
@@ -1230,7 +1262,13 @@ d3.chart('Base').extend("Axis", {
 			'x':  xValue || -15, // control up and down of the label
 			'y':  yValue || 15,  // control left and right of the label
 			'transform':  'rotate(-90) translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
-		}).text(_label);
+		})
+			.style('opacity', 1e-6)
+			.text(_label)
+				.transition()
+				.duration(800)
+				.ease('cubic-out')
+				.style('opacity', 1);
 
 		return this;
 	}
@@ -1451,11 +1489,13 @@ d3.chart('Base').extend('Line', {
 	initialize: function(options) {
 		this.options = options = options || {};
 
-		this.layer('line', this.base, {
+		this.linePath = this.base.append('svg:path').classed('line', true);
+
+		this.line = d3.svg.line();
+
+		this.layer('line', this.linePath, {
 			dataBind: function(data) {
 				var chart = this.chart();
-
-				chart.line = d3.svg.line();
 
 				// Setup the auto resize to handle the on resize event
 				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
@@ -1471,13 +1511,13 @@ d3.chart('Base').extend('Line', {
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
 				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
-				return this.selectAll('path').data( [data] );
+				return this.data( [data] );
 			},
 
 			insert: function(){
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
-				return this.append('path').classed('line', true);
+				return chart.linePath;
 			},
 
 			events: {
@@ -1489,44 +1529,18 @@ d3.chart('Base').extend('Line', {
 					if(chart.onEnter) { chart.onEnter(chart, this); }
 
 					chart._onWindowResize(chart, this);
-
-					this
-						.attr({ 'd': chart.line })
-						.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(1000)
-							.style('opacity', 1);
-				},
-
-				'update:transition': function() {
-					var chart = this.chart();
 					this
-						.duration(1000)
-						.attr('d', chart.line);
-				},
-
-				'remove:transition': function() {
-					var chart = this.chart();
-					return this
-							.duration(400)
-							.style('opacity', 1e-6);
-				},
-
-				'remove': function() {
-					var chart = this.chart();
-					return this.remove();
+						.duration(700)
+						.ease('cubic-out')
+						.attr({ 'd': chart.line })
 				}
 			}
 		});
 	}
-
-	// 	this.linePath = this.base.append('path').attr({
-	// 		'class': 'line',
-	// 	});
 
 	// 	if(this.onDataBind) { this.onDataBind(); }
 
@@ -1542,11 +1556,6 @@ d3.chart('Base').extend('Line', {
 
 	// Update Scale, Box Size, and attr values
 	// _update: function(_width, _height) {
-
-	// 	this.linePath.attr({
-	// 		'd': this.line
-	// 	});
-	// }
 });
 /*
 	Doc is coming soon
@@ -1557,11 +1566,13 @@ d3.chart('Base').extend('Area', {
 	initialize: function(options) {
 		this.options = options = options || {};
 
-		this.layer('area', this.base, {
+		this.areaPath = this.base.append('svg:path').classed('area', true);
+
+		this.area = d3.svg.area();
+
+		this.layer('area', this.areaPath, {
 			dataBind: function(data) {
 				var chart = this.chart();
-
-				chart.area = d3.svg.area();
 
 				// Setup the auto resize to handle the on resize event
 				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
@@ -1571,20 +1582,20 @@ d3.chart('Base').extend('Area', {
 				chart.area
 					.x(function(d) { return chart.xScale(d.x); })
 					.y1(function(d) { return chart.yScale(d.y);  })
-					.y0(chart.yScale(0));
+					.y0( chart.height );
 
 				if(chart.onDataBind) { chart.onDataBind(data, chart, (options.data) ? options.data : undefined ); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
 				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
-				return this.selectAll('path').data( [data] );
+				return this.data( [data] );
 			},
 
 			insert: function(){
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
-				return this.append('path').classed('area', true);
+				return chart.areaPath;
 			},
 
 			events: {
@@ -1596,24 +1607,14 @@ d3.chart('Base').extend('Area', {
 					if(chart.onEnter) { chart.onEnter(chart, this); }
 
 					chart._onWindowResize(chart, this);
-
-					this
-						.attr({ 'd': chart.area })
-						.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(1000)
-							.style('opacity', 1);
-				},
-
-				'update:transition': function() {
-					var chart = this.chart();
 					this
-						.duration(1000)
-						.attr('d', chart.area);
+						.duration(700)
+						.ease('cubic-out')
+						.attr({ 'd': chart.area });
 				}
 			}
 		});

@@ -135,6 +135,17 @@ d3.chart('Base').extend("Axis", {
 
 		if(this.ticksOnResize) this._redrawTicksOnResize();
 
+		// Redraw the guide when resize event triggers
+		if(this.guide) {
+			this.xAxis
+				.tickPadding(5)
+				.tickSize(-this.height, 0, 6); //axis.tickSize([major[​[, minor], end]])
+
+			this.yAxis
+				.tickPadding(5)
+				.tickSize(-this.width, 0, 6);
+		}
+
 		this.xAxisG
 			.transition()
 			.duration(400)
