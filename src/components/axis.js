@@ -189,6 +189,17 @@ d3.chart('Base').extend("Axis", {
 			.call( this.yAxis);
 
 		if(this.options.y1) {
+			// When dealing with y1 axis resize, the axis is following the max x tick
+			// Solution here is: calculate this.xScale() on the max x value. then use that value to be the translate value. Ex:
+ 			// here is using update, if using _update will override the existing one, regular update() is consistant API like circles, lines, etc.
+ 			//
+			// update: function( _width, _height, chart, single ) {
+			// 		var parseDate = d3.time.format('%Y%m%d').parse,
+			// 		maxDate = d3.max(moduleSelf.dataset, function(d, i){ return parseDate(d['date']) }),
+			// 		mxXTick = chart.xScale(maxDate);
+			// 		this.y1AxisG.attr('transform', 'translate(' + mxXTick  + ' , 0)');
+			// 	}
+
 			this.y1AxisG
 				.transition()
 				.duration(400)
