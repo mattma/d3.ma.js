@@ -187,6 +187,14 @@ d3.chart('Base').extend("Axis", {
 			.duration(400)
 			.ease('cubic-out')
 			.call( this.yAxis);
+
+		if(this.options.y1) {
+			this.y1AxisG
+				.transition()
+				.duration(400)
+				.ease('cubic-out')
+				.call( this.y1Axis.orient('right') );
+		}
 	},
 
 	_redrawTicksOnResize: function() {
