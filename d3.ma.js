@@ -741,7 +741,15 @@ d3.chart('Scale', {
 		this.yScale = this._scale(y);
 
 		this._switchXScale(x, this.width);
-		this._switchYScale(y, this.height);
+		this._switchYScale(y, this.height, false);
+
+		if(options.y1) {
+			var y1 = options.y1 || 'linear';
+			this.y1Scale = this._scale(y1);
+			// using the same _switchYScale fn, most likely using the same axis
+			// if 3rd arg is true, it will switch from this.yScale to this.y1Scale
+			this._switchYScale(y1, this.height, true);
+		}
 	},
 
 	_switchXScale: function(x, _width) {
@@ -756,14 +764,15 @@ d3.chart('Scale', {
 		}
 	},
 
-	_switchYScale: function(y, _height) {
+	_switchYScale: function(y, _height, y1flag) {
+		var yscale = (y1flag) ? this.y1Scale : this.yScale;
 		switch(y) {
 			case 'linear' :
-				this.yScale.range([_height, 15]);
+				yscale.range([_height, 15]);
 			break;
 
 			case 'ordinal' :
-				this.yScale.rangeRoundBands([_height, 15], 0.1);
+				yscale.rangeRoundBands([_height, 15], 0.1);
 			break;
 		}
 	},
@@ -1120,11 +1129,14 @@ d3.chart('Scale').extend('Base', {
 
 			By default, the text will be translated to margin.left and margin.top, rotate -90 degrees
 			Use  .y .label  selector to style the label
+
+
+		When using the y1 flag, all the line, circle or whatever the instance should define the y1 since it is totally optional, ex: y1: 'linear'  this will actually pass to the axis element here to create y1 axis
 */
 d3.chart('Base').extend("Axis", {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		this.guide = options.guide || false;
 		this.ticksOnResize = options.ticksOnResize || false;
@@ -1136,7 +1148,7 @@ d3.chart('Base').extend("Axis", {
 		if(this.guide) {
 			this.xAxis
 				.tickPadding(5)
-				.tickSize(-this.height, 0, 6); //axis.tickSize([major[​[, minor], end]])
+				.tickSize(-this.height, 0, 6); //axis.tickSize([major[‚Äã[, minor], end]])
 
 			this.yAxis
 				.tickPadding(5)
@@ -1158,7 +1170,23 @@ d3.chart('Base').extend("Axis", {
 			'class': 'y axis'
 		});
 
-		this.yPos();
+		this.yPos(null, false);
+
+		if(options.y1) {
+
+			this.y1Axis = d3.svg.axis()
+					.scale(this.y1Scale)
+					.orient('right')
+					.tickPadding(5);
+
+			this.y1AxisG =  this.base.append('g');
+
+			this.y1AxisG.attr({
+				'class': 'y1 axis'
+			});
+
+			this.yPos(this.width, true);
+		}
 	},
 
 	transform: function(data) {
@@ -1177,6 +1205,15 @@ d3.chart('Base').extend("Axis", {
 			.ease('cubic-out')
 			.call( this.yAxis);
 
+		if(this.options.y1) {
+
+			this.y1AxisG
+				.transition()
+				.duration(400)
+				.ease('cubic-out')
+				.call( this.y1Axis );
+		}
+
 		// this: it is the chart object itself, does not pass single by any chances
 		this._onWindowResize(this);
 
@@ -1193,9 +1230,12 @@ d3.chart('Base').extend("Axis", {
 		return this;
 	},
 
-	yPos: function(_value) {
+	yPos: function(_value, y1flag) {
+		var yaxisg= (y1flag) ? this.y1AxisG : this.yAxisG;
+
+		// _value, by default, it won't translate at all, stay at 0, 0
 		if(_value) {
-			this.yAxisG.attr({
+			yaxisg.attr({
 				'transform': 'translate(' + _value  + ' , 0)'
 			});
 		}
@@ -1207,6 +1247,16 @@ d3.chart('Base').extend("Axis", {
 		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
 
 		if(this.ticksOnResize) this._redrawTicksOnResize();
+
+		if(this.guide) {
+			this.xAxis
+				.tickPadding(5)
+				.tickSize(-this.height, 0, 6); //axis.tickSize([major[‚Äã[, minor], end]])
+
+			this.yAxis
+				.tickPadding(5)
+				.tickSize(-this.width, 0, 6);
+		}
 
 		this.xAxisG
 			.transition()
@@ -1253,15 +1303,29 @@ d3.chart('Base').extend("Axis", {
 		return this;
 	},
 
-	yLabel: function(_label, upDownPosition, leftRightPosition) {
-		var containerInfo = this.info,
-			xValue = (-upDownPosition) + containerInfo.marginTop - 15,
-			yValue = Math.abs(leftRightPosition - containerInfo.marginLeft) - 5;
+	// The way to position the axis is super tricky here
+	// leftRightPosition: control the left and right position value, actually modify the y value
+	// upDownPosition: control the top and down position value, actually modify the x value
+	// with some logic when switch y and y1, we could pass all positive number and ignore the negative value
+	// Ex:
+	// y example:   chart.yLabel(moduleSelf.key1, 20, 130);
+	// y1 example: chart.yLabel(moduleSelf.key2, 5, 155, true);
+	// The 4th arg for taking care of the y1 as a flag
+	yLabel: function(_label, leftRightPosition, upDownPosition, y1flag) {
+		var containerInfo = this.info;
+			// this is the old xValue and yValue automation. forget what I thought on this implementation
+			// xValue = (-upDownPosition) + containerInfo.marginTop - 15,
+			// yValue = Math.abs(leftRightPosition - containerInfo.marginLeft) - 5;
 
-		this.yAxisG.append('text').classed('label', true).attr({
-			'x':  xValue || -15, // control up and down of the label
-			'y':  yValue || 15,  // control left and right of the label
-			'transform':  'rotate(-90) translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
+		var yaxisg= (y1flag) ? this.y1AxisG : this.yAxisG,
+			upDownVal =  (y1flag) ? upDownPosition : -(upDownPosition),
+			rotateVal = (y1flag) ? -270 : -90;
+
+		yaxisg.append('text').classed('label', true).attr({
+			'x':  upDownVal || -15, // control up and down of the label
+			'y':  leftRightPosition || 15,  // control left and right of the label
+			'transform':  'rotate(' + rotateVal + ') translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
+			//'transform':  'rotate(' + rotateVal + ') translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
 		})
 			.style('opacity', 1e-6)
 			.text(_label)
