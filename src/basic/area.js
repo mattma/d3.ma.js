@@ -56,6 +56,15 @@ d3.chart('Base').extend('Area', {
 						.duration(700)
 						.ease('cubic-out')
 						.attr({ 'd': chart.area });
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});

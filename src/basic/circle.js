@@ -39,6 +39,15 @@ d3.chart('Base').extend('Circle', {
 					chart._onWindowResize(chart, this);
 
 					self._bindMouseEnterOutEvents(chart, this);
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});

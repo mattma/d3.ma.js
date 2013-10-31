@@ -176,12 +176,14 @@ d3.chart('Base').extend('Bars', {
 							.duration(1000)
 							.style('opacity', 0.8);
 				},
+
 				'exit:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(400)
-							.style('opacity', 1e-6)
-							.remove();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
