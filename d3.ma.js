@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-10-30
+ 	Date: 2013-11-01
 */
 (function(){
 
@@ -326,6 +326,10 @@ d3.ma.zoom = function() {
 		container.canvas()
 			# getter. Return the canvas object for easy chaining
 
+		container.fluid()
+			# setter. return the container for easy chaining.
+			# it will set parentNode 'data-fluid' to 'responsive' on changing the resize calculation
+
 		container.info()
 			# getter. Return all the infomation about this container. expose all the data to the world
 			include value of   marginTop, marginRight, marginBottom, marginLeft, containerW, containerH, canvasW, canvasH, id, cid
@@ -499,6 +503,29 @@ d3.ma.container = function(selector) {
 				}
 			}
 		});
+		return container;
+	};
+
+	// How to use container.fluid()
+	// it takes no args. return container for chaining.
+	// Purpose: to set the current chart as responsive design svg element, like set svg width 100%
+	//
+	// How?
+	// step 1: set svg's parent element ( container ) css box style   ex: +box(100%, 360)
+	// step 2: when/where initialize the container, calling fluid function.
+	// Ex:
+	// 	var clientW = d3.ma.$$('#summaryChart').clientWidth,
+	// 		clientH = d3.ma.$$('#summaryChart').clientHeight;
+	// 	container.box( clientW, clientH ).fluid();
+	// step 3: at the finalChart rendering function, calling the resize function
+	// Ex: 	d3.ma.resize(key1Line, axis);
+	//
+	// It will set parentNode data-fluid attribute on individual chart, then framework will check each chart on this custom value, if it match 'responsive' value, then it will do all the calculation to make a responsive chart. By default, it will expect data-fluid as an empty value, then it will do the fixed layout resizing
+	container.fluid = function() {
+		var info = container.info(),
+			svgEl = d3.ma.$$(info.parentNode);
+
+		svgEl.setAttribute('data-fluid', 'responsive');
 		return container;
 	};
 
@@ -976,36 +1003,72 @@ d3.chart('Scale').extend('Base', {
 		// NOTE: this here is the context where you definied in the 2nd param when initialized
 		// ex: d3.ma.onResize(line._resize, line);
 		// in this case, the context here is  line
+		//
+		// fluid attribute is being checked, on parentNode element data-fluid attr, it could be set by container.fluid()
 
 		var containerInfo = this.info,
-			widthOffset = d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
-			heightOffset = d3.ma.$$(containerInfo.parentNode).offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
-			windowWidth = d3.ma.windowSize().width - widthOffset,
-			windowHeight = d3.ma.windowSize().height - heightOffset;
+			parentNodeEl = d3.ma.$$(containerInfo.parentNode),
+			currentWindowSize = d3.ma.windowSize(),
+			fluid = parentNodeEl.getAttribute('data-fluid'),
 
-		// var containerInfo = this.info,
-		// 	windowWidth = d3.ma.windowSize().width,
-		// 	windowHeight = d3.ma.windowSize().height;
+			widthOffset = ( d3.ma.responsive ) ? parentNodeEl.offsetLeft : d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
 
-		if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
+			heightOffset =  ( d3.ma.responsive ) ? parentNodeEl.offsetTop : parentNodeEl.offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
+
+			windowWidth = currentWindowSize.width - widthOffset,
+			windowHeight = currentWindowSize.height - heightOffset;
+
+		if ( fluid === 'responsive' ) {
+			var oldClientW = containerInfo.containerW,
+				newClientW = parentNodeEl.clientWidth,
+				oldClientH = containerInfo.containerH,
+				newClientH = parentNodeEl.clientHeight;
+
+			if ( oldClientW < newClientW || oldClientH < newClientH ) {
+				var viewBoxValue = '0 0 ' + newClientW + ' ' + newClientH,
+					svgEl = parentNodeEl.children[0],
+					canvasEl = d3.ma.$$(containerInfo.id),
+					clippathEl = d3.ma.$$(containerInfo.cid + ' rect');
+
+				// update svg element width & height property
+				svgEl.setAttribute('width', newClientW);
+				svgEl.setAttribute('height', newClientH);
+				svgEl.setAttribute('viewBox', viewBoxValue);
+				// canvas element update width & height property
+				canvasEl.setAttribute('width', newClientW);
+				canvasEl.setAttribute('height', newClientH);
+				// clippath element update width & height property
+				clippathEl.setAttribute('width', newClientW);
+				clippathEl.setAttribute('height', newClientH);
+			}
+
 			var onObj = {
-				width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
+				width: newClientW,
 				height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
 			};
+
 			this.dispatch.d3maOnWindowResize(onObj);
 		} else {
-			var offObj = {
-				width: containerInfo.canvasW,
-				height: containerInfo.canvasH
-			};
-			var origObj = {
-				width: containerInfo.containerW,
-				height: containerInfo.containerH
-			};
-			// dispatch the _redraw back to the original container box
-			this.dispatch.d3maOnWindowResize(origObj);
-			// unbind the window resize event
-			this.dispatch.d3maOffWindowResize(offObj);
+			if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
+				var onObj = {
+					width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
+					height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
+				};
+				this.dispatch.d3maOnWindowResize(onObj);
+			} else {
+				var offObj = {
+					width: containerInfo.canvasW,
+					height: containerInfo.canvasH
+				};
+				var origObj = {
+					width: containerInfo.containerW,
+					height: containerInfo.containerH
+				};
+				// dispatch the _redraw back to the original container box
+				this.dispatch.d3maOnWindowResize(origObj);
+				// unbind the window resize event
+				this.dispatch.d3maOffWindowResize(offObj);
+			}
 		}
 	},
 
