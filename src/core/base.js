@@ -149,36 +149,72 @@ d3.chart('Scale').extend('Base', {
 		// NOTE: this here is the context where you definied in the 2nd param when initialized
 		// ex: d3.ma.onResize(line._resize, line);
 		// in this case, the context here is  line
+		//
+		// fluid attribute is being checked, on parentNode element data-fluid attr, it could be set by container.fluid()
 
 		var containerInfo = this.info,
-			widthOffset = d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
-			heightOffset = d3.ma.$$(containerInfo.parentNode).offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
-			windowWidth = d3.ma.windowSize().width - widthOffset,
-			windowHeight = d3.ma.windowSize().height - heightOffset;
+			parentNodeEl = d3.ma.$$(containerInfo.parentNode),
+			currentWindowSize = d3.ma.windowSize(),
+			fluid = parentNodeEl.getAttribute('data-fluid'),
 
-		// var containerInfo = this.info,
-		// 	windowWidth = d3.ma.windowSize().width,
-		// 	windowHeight = d3.ma.windowSize().height;
+			widthOffset = ( d3.ma.responsive ) ? parentNodeEl.offsetLeft : d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
 
-		if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
+			heightOffset =  ( d3.ma.responsive ) ? parentNodeEl.offsetTop : parentNodeEl.offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
+
+			windowWidth = currentWindowSize.width - widthOffset,
+			windowHeight = currentWindowSize.height - heightOffset;
+
+		if ( fluid === 'responsive' ) {
+			var oldClientW = containerInfo.containerW,
+				newClientW = parentNodeEl.clientWidth,
+				oldClientH = containerInfo.containerH,
+				newClientH = parentNodeEl.clientHeight;
+
+			if ( oldClientW < newClientW || oldClientH < newClientH ) {
+				var viewBoxValue = '0 0 ' + newClientW + ' ' + newClientH,
+					svgEl = parentNodeEl.children[0],
+					canvasEl = d3.ma.$$(containerInfo.id),
+					clippathEl = d3.ma.$$(containerInfo.cid + ' rect');
+
+				// update svg element width & height property
+				svgEl.setAttribute('width', newClientW);
+				svgEl.setAttribute('height', newClientH);
+				svgEl.setAttribute('viewBox', viewBoxValue);
+				// canvas element update width & height property
+				canvasEl.setAttribute('width', newClientW);
+				canvasEl.setAttribute('height', newClientH);
+				// clippath element update width & height property
+				clippathEl.setAttribute('width', newClientW);
+				clippathEl.setAttribute('height', newClientH);
+			}
+
 			var onObj = {
-				width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
+				width: newClientW,
 				height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
 			};
+
 			this.dispatch.d3maOnWindowResize(onObj);
 		} else {
-			var offObj = {
-				width: containerInfo.canvasW,
-				height: containerInfo.canvasH
-			};
-			var origObj = {
-				width: containerInfo.containerW,
-				height: containerInfo.containerH
-			};
-			// dispatch the _redraw back to the original container box
-			this.dispatch.d3maOnWindowResize(origObj);
-			// unbind the window resize event
-			this.dispatch.d3maOffWindowResize(offObj);
+			if( windowWidth < onResizeW || windowHeight < containerInfo.containerH ) {
+				var onObj = {
+					width: ( windowWidth < onResizeW ) ? windowWidth : onResizeW,
+					height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
+				};
+				this.dispatch.d3maOnWindowResize(onObj);
+			} else {
+				var offObj = {
+					width: containerInfo.canvasW,
+					height: containerInfo.canvasH
+				};
+				var origObj = {
+					width: containerInfo.containerW,
+					height: containerInfo.containerH
+				};
+				// dispatch the _redraw back to the original container box
+				this.dispatch.d3maOnWindowResize(origObj);
+				// unbind the window resize event
+				this.dispatch.d3maOffWindowResize(offObj);
+			}
 		}
 	},
 

@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-10-24
+ 	Date: 2013-10-30
 */
 (function(){
 
@@ -1271,6 +1271,17 @@ d3.chart('Base').extend("Axis", {
 			.call( this.yAxis);
 
 		if(this.options.y1) {
+			// When dealing with y1 axis resize, the axis is following the max x tick
+			// Solution here is: calculate this.xScale() on the max x value. then use that value to be the translate value. Ex:
+ 			// here is using update, if using _update will override the existing one, regular update() is consistant API like circles, lines, etc.
+ 			//
+			// update: function( _width, _height, chart, single ) {
+			// 		var parseDate = d3.time.format('%Y%m%d').parse,
+			// 		maxDate = d3.max(moduleSelf.dataset, function(d, i){ return parseDate(d['date']) }),
+			// 		mxXTick = chart.xScale(maxDate);
+			// 		this.y1AxisG.attr('transform', 'translate(' + mxXTick  + ' , 0)');
+			// 	}
+
 			this.y1AxisG
 				.transition()
 				.duration(400)
@@ -1523,12 +1534,14 @@ d3.chart('Base').extend('Bars', {
 							.duration(1000)
 							.style('opacity', 0.8);
 				},
+
 				'exit:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(400)
-							.style('opacity', 1e-6)
-							.remove();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
@@ -1609,6 +1622,15 @@ d3.chart('Base').extend('Line', {
 						.duration(700)
 						.ease('cubic-out')
 						.attr({ 'd': chart.line })
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
@@ -1687,6 +1709,15 @@ d3.chart('Base').extend('Area', {
 						.duration(700)
 						.ease('cubic-out')
 						.attr({ 'd': chart.area });
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
@@ -1733,6 +1764,15 @@ d3.chart('Base').extend('Circle', {
 					chart._onWindowResize(chart, this);
 
 					self._bindMouseEnterOutEvents(chart, this);
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
