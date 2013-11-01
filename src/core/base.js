@@ -195,9 +195,9 @@ d3.chart('Scale').extend('Base', {
 
 			this.dispatch.d3maOnWindowResize(onObj);
 		} else {
-			if( windowWidth < onResizeW || windowHeight < containerInfo.containerH ) {
+			if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
 				var onObj = {
-					width: ( windowWidth < onResizeW ) ? windowWidth : onResizeW,
+					width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
 					height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
 				};
 				this.dispatch.d3maOnWindowResize(onObj);
