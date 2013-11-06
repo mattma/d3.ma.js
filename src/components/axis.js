@@ -149,10 +149,9 @@ d3.chart('Base').extend("Axis", {
 	},
 
 	yPos: function(_value, y1flag) {
-		var yaxisg= (y1flag) ? this.y1AxisG : this.yAxisG;
-
 		// _value, by default, it won't translate at all, stay at 0, 0
 		if(_value) {
+			var yaxisg= (y1flag) ? this.y1AxisG : this.yAxisG;
 			yaxisg.attr({
 				'transform': 'translate(' + _value  + ' , 0)'
 			});
