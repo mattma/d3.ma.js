@@ -124,6 +124,8 @@ d3.chart('Base').extend("Axis", {
 			.call( this.yAxis);
 
 		if(this.options.y1) {
+			var _w = +(this.base.attr('width'));
+			this.yPos( _w, true);
 
 			this.y1AxisG
 				.transition()
