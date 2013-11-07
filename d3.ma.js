@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-11-01
+ 	Date: 2013-11-07
 */
 (function(){
 
@@ -1294,10 +1294,9 @@ d3.chart('Base').extend("Axis", {
 	},
 
 	yPos: function(_value, y1flag) {
-		var yaxisg= (y1flag) ? this.y1AxisG : this.yAxisG;
-
 		// _value, by default, it won't translate at all, stay at 0, 0
 		if(_value) {
+			var yaxisg= (y1flag) ? this.y1AxisG : this.yAxisG;
 			yaxisg.attr({
 				'transform': 'translate(' + _value  + ' , 0)'
 			});
@@ -1583,10 +1582,6 @@ d3.chart('Base').extend('Bars', {
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
 
-					chart._onWindowResize(chart, this);
-
-					self._bindMouseEnterOutEvents(chart, this);
-
 					// Used for animation the fill opacity property, work with enter:transition
 					this.style('opacity', 1e-6);
 				},
@@ -1596,6 +1591,13 @@ d3.chart('Base').extend('Bars', {
 					return this
 							.duration(1000)
 							.style('opacity', 0.8);
+				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
+					self._bindMouseEnterOutEvents(chart, this);
 				},
 
 				'exit:transition': function() {
@@ -1675,8 +1677,6 @@ d3.chart('Base').extend('Line', {
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
-
-					chart._onWindowResize(chart, this);
 				},
 
 				'enter:transition': function() {
@@ -1685,6 +1685,12 @@ d3.chart('Base').extend('Line', {
 						.duration(700)
 						.ease('cubic-out')
 						.attr({ 'd': chart.line })
+				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
 				},
 
 				'exit:transition': function() {
@@ -1762,8 +1768,6 @@ d3.chart('Base').extend('Area', {
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
-
-					chart._onWindowResize(chart, this);
 				},
 
 				'enter:transition': function() {
@@ -1772,6 +1776,12 @@ d3.chart('Base').extend('Area', {
 						.duration(700)
 						.ease('cubic-out')
 						.attr({ 'd': chart.area });
+				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
 				},
 
 				'exit:transition': function() {
@@ -1823,9 +1833,12 @@ d3.chart('Base').extend('Circle', {
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
+				},
+
+				'merge': function() {
+					var chart = this.chart();
 
 					chart._onWindowResize(chart, this);
-
 					self._bindMouseEnterOutEvents(chart, this);
 				},
 
