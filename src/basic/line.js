@@ -63,8 +63,6 @@ d3.chart('Base').extend('Line', {
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
-
-					chart._onWindowResize(chart, this);
 				},
 
 				'enter:transition': function() {
@@ -73,6 +71,12 @@ d3.chart('Base').extend('Line', {
 						.duration(700)
 						.ease('cubic-out')
 						.attr({ 'd': chart.line })
+				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
 				},
 
 				'exit:transition': function() {
