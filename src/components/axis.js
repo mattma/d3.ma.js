@@ -163,6 +163,10 @@ d3.chart('Base').extend("Axis", {
 
 	// Update Scale, Box Size, and attr values
 	_update: function( _width, _height, chart ) {
+		if(this.update) {
+			this.update( _width, _height, chart );
+		}
+
 		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
 
 		if(this.ticksOnResize) this._redrawTicksOnResize();
