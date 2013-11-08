@@ -170,11 +170,14 @@ d3.chart('Scale').extend('Base', {
 				oldClientH = containerInfo.containerH,
 				newClientH = parentNodeEl.clientHeight;
 
+			// canvasEl & clippathEl,
+			// When chart updated, containerOption Id value is not being updated,
+			// for the current bug fixes, it just goes down the dom tree to find the element by structure
 			if ( oldClientW < newClientW || oldClientH < newClientH ) {
 				var viewBoxValue = '0 0 ' + newClientW + ' ' + newClientH,
 					svgEl = parentNodeEl.children[0],
-					canvasEl = d3.ma.$$(containerInfo.id),
-					clippathEl = d3.ma.$$(containerInfo.cid + ' rect');
+					canvasEl = d3.ma.$$(containerInfo.id) || d3.ma.$$('#summaryChart').children[0].children[1],
+					clippathEl = d3.ma.$$(containerInfo.cid + ' rect') || d3.ma.$$('#summaryChart').children[0].children[0].children[0].children[0];
 
 				// update svg element width & height property
 				svgEl.setAttribute('width', newClientW);
