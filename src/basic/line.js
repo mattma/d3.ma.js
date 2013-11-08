@@ -42,7 +42,7 @@ d3.chart('Base').extend('Line', {
 					.x(function(d) { return chart.xScale(d.x); })
 					.y(function(d) { return chart.yScale(d.y);  });
 
-				if(chart.onDataBind) { chart.onDataBind( data, chart, (options.data) ? options.data : undefined ); }
+				if(chart.onDataBind) { chart.onDataBind( data, chart ); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
@@ -89,6 +89,13 @@ d3.chart('Base').extend('Line', {
 				}
 			}
 		});
+	},
+
+	_update: function( _width, _height, chart, single ) {
+		if(this.update) {
+			this.update( _width, _height, chart, single );
+		}
+		this.linePath.attr({ 'd': chart.line });
 	}
 
 	// 	if(this.onDataBind) { this.onDataBind(); }

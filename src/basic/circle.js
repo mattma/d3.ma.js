@@ -54,5 +54,11 @@ d3.chart('Base').extend('Circle', {
 				}
 			}
 		});
+	},
+
+	_update: function( _width, _height, chart, single ) {
+		if(this.update) {
+			this.update( _width, _height, chart, single );
+		}
 	}
 });
