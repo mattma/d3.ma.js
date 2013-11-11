@@ -153,8 +153,13 @@ d3.chart('Scale').extend('Base', {
 		// fluid attribute is being checked, on parentNode element data-fluid attr, it could be set by container.fluid()
 
 		var containerInfo = this.info,
-			parentNodeEl = d3.ma.$$(containerInfo.parentNode),
-			currentWindowSize = d3.ma.windowSize(),
+			parentNodeEl = d3.ma.$$(containerInfo.parentNode);
+
+		// If parentNodeEl is undefined, that means we need to unbind the resize event
+		// in this case, simply just return false
+		if ( !parentNodeEl ) { return false; }
+
+		var currentWindowSize = d3.ma.windowSize(),
 			fluid = parentNodeEl.getAttribute('data-fluid'),
 
 			widthOffset = ( d3.ma.responsive ) ? parentNodeEl.offsetLeft : d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
