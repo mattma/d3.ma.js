@@ -226,6 +226,17 @@ d3.chart('Scale').extend('Base', {
 		}
 	},
 
+	// Currently did not use in the app, but need hook to the unBind Resize event
+	// @todo has a global on, off, in the framework to handle all the event binding, unbinding
+	_unbindResize: function() {
+		var containerInfo = this.info,
+			offObj = {
+				width: containerInfo.canvasW,
+				height: containerInfo.canvasH
+			};
+		this.dispatch.d3maOffWindowResize(offObj);
+	},
+
 	// it is the handler for the internal _resize() which definied above this one
 	_onWindowResize: function(chart, single){
 		var self = this;
