@@ -76,11 +76,10 @@ d3.ma.each = function(obj, iterator, context) {
 // Pull Straight out of nvd3 library
 // Easy way to bind multiple functions to window.onresize
 // TODO: give a way to remove a function after its bound, other than removing all of them
-d3.ma.onResize = function(fun, context, svgEl){
+d3.ma.onResize = function(fun, context){
 	var oldresize = window.onresize;
 
 	window.onresize = function(e) {
-		if(!d3.ma.$$(svgEl)) { return; }
 		if (typeof oldresize === 'function') oldresize.call(context || this, e);
 		fun.call(context || this, e);
 	}
@@ -95,11 +94,11 @@ d3.ma.resize = function(array)  {
 	// Test 1st item in the array, found out the its svgEl id,
 	// pass to the onResize event, if the element exists on the page,
 	// then we will bind the resize event, otherwise, not binding the event
-	var svgEl = array[0].options.info.id;
+	//var svgEl = array[0].options.info.id;
 
 	if( array.length ){
 		d3.ma.each(array, function(context, index){
-			d3.ma.onResize(context._resize, context, svgEl);
+			d3.ma.onResize(context._resize, context);
 		});
 	}
 };
