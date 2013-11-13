@@ -77,10 +77,19 @@ d3.ma.each = function(obj, iterator, context) {
 // Easy way to bind multiple functions to window.onresize
 // TODO: give a way to remove a function after its bound, other than removing all of them
 d3.ma.onResize = function(fun, context){
-	var oldresize = window.onresize;
+	// var oldresize = window.onresize;
 
-	window.onresize = function(e) {
-		if (typeof oldresize === 'function') oldresize.call(context || this, e);
+	// window.onresize = function(e) {
+	// 	if (typeof oldresize === 'function') oldresize.call(context || this, e);
+	// 	fun.call(context || this, e);
+	// }
+
+	// @todo merge it into the framework, handle it internally
+	// Not calling on resize event at all, send the functionalities to the view layer
+
+	// onResize() simply just binding the context to the function.
+	// it will call its own private method: _resize correctly
+	return function(e) {
 		fun.call(context || this, e);
 	}
 };
@@ -89,18 +98,20 @@ d3.ma.onResize = function(fun, context){
 // E.G  d3.ma.onResize(line._resize, line);
 // E.G  d3.ma.onResize(area._resize, area);
 // New Approach:  d3.ma.resize(line, area);  //actually, bind the right context to execute the onResize()
+//
+// This function will return an array of the elements which will need to bind resize event
+// @todo currently handle by the view layer, need to do it in the framework level
 d3.ma.resize = function(array)  {
 	array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
-	// Test 1st item in the array, found out the its svgEl id,
-	// pass to the onResize event, if the element exists on the page,
-	// then we will bind the resize event, otherwise, not binding the event
-	//var svgEl = array[0].options.info.id;
+	var listenters = [];
 
 	if( array.length ){
 		d3.ma.each(array, function(context, index){
-			d3.ma.onResize(context._resize, context);
+			listenters.push( d3.ma.onResize(context._resize, context) );
 		});
 	}
+
+	return listenters;
 };
 
 d3.ma.reloadResize = function(array)  {
