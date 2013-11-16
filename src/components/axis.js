@@ -167,19 +167,23 @@ d3.chart('Base').extend("Axis", {
 			this.update( _width, _height, chart );
 		}
 
-		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
 
 		if(this.ticksOnResize) this._redrawTicksOnResize();
 
-		if(this.guide) {
-			this.xAxis
-				.tickPadding(5)
-				.tickSize(-this.height, 0, 6); //axis.tickSize([major[‚Äã[, minor], end]])
+		// Those updates need to handle by the update method
+		// Otherwise, constructor update won't be able to override this setting
+		//
+		//this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
 
-			this.yAxis
-				.tickPadding(5)
-				.tickSize(-this.width, 0, 6);
-		}
+		// if(this.guide) {
+		// 	this.xAxis
+		// 		.tickPadding(5)
+		// 		.tickSize(-this.height, 0, 6); //axis.tickSize([major[‚Äã[, minor], end]])
+
+		// 	this.yAxis
+		// 		.tickPadding(5)
+		// 		.tickSize(-this.width, 0, 6);
+		// }
 
 		this.xAxisG
 			.transition()
