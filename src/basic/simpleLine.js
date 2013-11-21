@@ -5,9 +5,7 @@ d3.chart('Base').extend('SimpleLine', {
 	initialize: function(options) {
 		this.options = options = options || {};
 
-		this.simpleLine = this.base.append('svg:line').classed('simple-line', true);
-
-		this.layer('line', this.simpleLine, {
+		this.layer('simpleLine', this.base, {
 			dataBind: function(data) {
 				var chart = this.chart();
 
@@ -16,13 +14,14 @@ d3.chart('Base').extend('SimpleLine', {
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
 				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
-				return this.data( data );
+				//return this.data( data );
+				return this.classed('simple-lines', true).selectAll('line').data(data);
 			},
 
 			insert: function(){
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
-				return chart.simpleLine;
+				return this.append('line');
 			},
 
 			events: {
