@@ -4,6 +4,7 @@ d3.chart('Base').extend('SimpleLine', {
 
 	initialize: function(options) {
 		this.options = options = options || {};
+		var self = this;
 
 		this.layer('simpleLine', this.base, {
 			dataBind: function(data) {
@@ -37,6 +38,7 @@ d3.chart('Base').extend('SimpleLine', {
 					var chart = this.chart();
 
 					chart._onWindowResize(chart, this);
+					self._bindMouseEnterOutEvents(chart, this);
 				},
 
 				'exit:transition': function() {
