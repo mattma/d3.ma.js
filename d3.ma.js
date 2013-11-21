@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-10-14
+ 	Date: 2013-11-07
 */
 (function(){
 
@@ -326,6 +326,10 @@ d3.ma.zoom = function() {
 		container.canvas()
 			# getter. Return the canvas object for easy chaining
 
+		container.fluid()
+			# setter. return the container for easy chaining.
+			# it will set parentNode 'data-fluid' to 'responsive' on changing the resize calculation
+
 		container.info()
 			# getter. Return all the infomation about this container. expose all the data to the world
 			include value of   marginTop, marginRight, marginBottom, marginLeft, containerW, containerH, canvasW, canvasH, id, cid
@@ -499,6 +503,29 @@ d3.ma.container = function(selector) {
 				}
 			}
 		});
+		return container;
+	};
+
+	// How to use container.fluid()
+	// it takes no args. return container for chaining.
+	// Purpose: to set the current chart as responsive design svg element, like set svg width 100%
+	//
+	// How?
+	// step 1: set svg's parent element ( container ) css box style   ex: +box(100%, 360)
+	// step 2: when/where initialize the container, calling fluid function.
+	// Ex:
+	// 	var clientW = d3.ma.$$('#summaryChart').clientWidth,
+	// 		clientH = d3.ma.$$('#summaryChart').clientHeight;
+	// 	container.box( clientW, clientH ).fluid();
+	// step 3: at the finalChart rendering function, calling the resize function
+	// Ex: 	d3.ma.resize(key1Line, axis);
+	//
+	// It will set parentNode data-fluid attribute on individual chart, then framework will check each chart on this custom value, if it match 'responsive' value, then it will do all the calculation to make a responsive chart. By default, it will expect data-fluid as an empty value, then it will do the fixed layout resizing
+	container.fluid = function() {
+		var info = container.info(),
+			svgEl = d3.ma.$$(info.parentNode);
+
+		svgEl.setAttribute('data-fluid', 'responsive');
 		return container;
 	};
 
@@ -741,7 +768,15 @@ d3.chart('Scale', {
 		this.yScale = this._scale(y);
 
 		this._switchXScale(x, this.width);
-		this._switchYScale(y, this.height);
+		this._switchYScale(y, this.height, false);
+
+		if(options.y1) {
+			var y1 = options.y1 || 'linear';
+			this.y1Scale = this._scale(y1);
+			// using the same _switchYScale fn, most likely using the same axis
+			// if 3rd arg is true, it will switch from this.yScale to this.y1Scale
+			this._switchYScale(y1, this.height, true);
+		}
 	},
 
 	_switchXScale: function(x, _width) {
@@ -756,14 +791,15 @@ d3.chart('Scale', {
 		}
 	},
 
-	_switchYScale: function(y, _height) {
+	_switchYScale: function(y, _height, y1flag) {
+		var yscale = (y1flag) ? this.y1Scale : this.yScale;
 		switch(y) {
 			case 'linear' :
-				this.yScale.range([_height, 15]);
+				yscale.range([_height, 15]);
 			break;
 
 			case 'ordinal' :
-				this.yScale.rangeRoundBands([_height, 15], 0.1);
+				yscale.rangeRoundBands([_height, 15], 0.1);
 			break;
 		}
 	},
@@ -967,36 +1003,72 @@ d3.chart('Scale').extend('Base', {
 		// NOTE: this here is the context where you definied in the 2nd param when initialized
 		// ex: d3.ma.onResize(line._resize, line);
 		// in this case, the context here is  line
+		//
+		// fluid attribute is being checked, on parentNode element data-fluid attr, it could be set by container.fluid()
 
 		var containerInfo = this.info,
-			widthOffset = d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
-			heightOffset = d3.ma.$$(containerInfo.parentNode).offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
-			windowWidth = d3.ma.windowSize().width - widthOffset,
-			windowHeight = d3.ma.windowSize().height - heightOffset;
+			parentNodeEl = d3.ma.$$(containerInfo.parentNode),
+			currentWindowSize = d3.ma.windowSize(),
+			fluid = parentNodeEl.getAttribute('data-fluid'),
 
-		// var containerInfo = this.info,
-		// 	windowWidth = d3.ma.windowSize().width,
-		// 	windowHeight = d3.ma.windowSize().height;
+			widthOffset = ( d3.ma.responsive ) ? parentNodeEl.offsetLeft : d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
 
-		if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
+			heightOffset =  ( d3.ma.responsive ) ? parentNodeEl.offsetTop : parentNodeEl.offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
+
+			windowWidth = currentWindowSize.width - widthOffset,
+			windowHeight = currentWindowSize.height - heightOffset;
+
+		if ( fluid === 'responsive' ) {
+			var oldClientW = containerInfo.containerW,
+				newClientW = parentNodeEl.clientWidth,
+				oldClientH = containerInfo.containerH,
+				newClientH = parentNodeEl.clientHeight;
+
+			if ( oldClientW < newClientW || oldClientH < newClientH ) {
+				var viewBoxValue = '0 0 ' + newClientW + ' ' + newClientH,
+					svgEl = parentNodeEl.children[0],
+					canvasEl = d3.ma.$$(containerInfo.id),
+					clippathEl = d3.ma.$$(containerInfo.cid + ' rect');
+
+				// update svg element width & height property
+				svgEl.setAttribute('width', newClientW);
+				svgEl.setAttribute('height', newClientH);
+				svgEl.setAttribute('viewBox', viewBoxValue);
+				// canvas element update width & height property
+				canvasEl.setAttribute('width', newClientW);
+				canvasEl.setAttribute('height', newClientH);
+				// clippath element update width & height property
+				clippathEl.setAttribute('width', newClientW);
+				clippathEl.setAttribute('height', newClientH);
+			}
+
 			var onObj = {
-				width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
+				width: newClientW,
 				height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
 			};
+
 			this.dispatch.d3maOnWindowResize(onObj);
 		} else {
-			var offObj = {
-				width: containerInfo.canvasW,
-				height: containerInfo.canvasH
-			};
-			var origObj = {
-				width: containerInfo.containerW,
-				height: containerInfo.containerH
-			};
-			// dispatch the _redraw back to the original container box
-			this.dispatch.d3maOnWindowResize(origObj);
-			// unbind the window resize event
-			this.dispatch.d3maOffWindowResize(offObj);
+			if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
+				var onObj = {
+					width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
+					height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
+				};
+				this.dispatch.d3maOnWindowResize(onObj);
+			} else {
+				var offObj = {
+					width: containerInfo.canvasW,
+					height: containerInfo.canvasH
+				};
+				var origObj = {
+					width: containerInfo.containerW,
+					height: containerInfo.containerH
+				};
+				// dispatch the _redraw back to the original container box
+				this.dispatch.d3maOnWindowResize(origObj);
+				// unbind the window resize event
+				this.dispatch.d3maOffWindowResize(offObj);
+			}
 		}
 	},
 
@@ -1028,11 +1100,18 @@ d3.chart('Scale').extend('Base', {
 		//usage on rects, circles, like multiple repeated elements.
 		this.dispatch.d3maSingleWindowResize(chart, single);
 
+		// Except Axis, only pass in the chart without single, everything else should pass all 4 args
+		// Currently, _update is only used in axis base, for constant API, update could be used inside custom constructors
+		if (this._update) {
+			this._update( _width, _height, chart, single );
+		}
 		// handle this in individual modules
 		// Optional step, if defined in each module, could
 		// setup the global default in this module, or setup global attrs
-		if (this.update)
+		// Axis is using this in the custom construtor.
+		if (this.update) {
 			this.update( _width, _height, chart, single );
+		}
 	},
 
 	// this will trigger the _update internal fn
@@ -1113,11 +1192,14 @@ d3.chart('Scale').extend('Base', {
 
 			By default, the text will be translated to margin.left and margin.top, rotate -90 degrees
 			Use  .y .label  selector to style the label
+
+
+		When using the y1 flag, all the line, circle or whatever the instance should define the y1 since it is totally optional, ex: y1: 'linear'  this will actually pass to the axis element here to create y1 axis
 */
 d3.chart('Base').extend("Axis", {
 
 	initialize: function(options) {
-		options = options || {};
+		this.options = options = options || {};
 
 		this.guide = options.guide || false;
 		this.ticksOnResize = options.ticksOnResize || false;
@@ -1129,7 +1211,7 @@ d3.chart('Base').extend("Axis", {
 		if(this.guide) {
 			this.xAxis
 				.tickPadding(5)
-				.tickSize(-this.height, 0, 6); //axis.tickSize([major[​[, minor], end]])
+				.tickSize(-this.height, 0, 6); //axis.tickSize([major[‚Äã[, minor], end]])
 
 			this.yAxis
 				.tickPadding(5)
@@ -1151,17 +1233,52 @@ d3.chart('Base').extend("Axis", {
 			'class': 'y axis'
 		});
 
-		this.yPos();
+		this.yPos(null, false);
+
+		if(options.y1) {
+
+			this.y1Axis = d3.svg.axis()
+					.scale(this.y1Scale)
+					.orient('right')
+					.tickPadding(5);
+
+			this.y1AxisG =  this.base.append('g');
+
+			this.y1AxisG.attr({
+				'class': 'y1 axis'
+			});
+
+			this.yPos(this.width, true);
+		}
 	},
 
 	transform: function(data) {
 		//Acutally draw the xAxis, yAxis on the screen
 		if(this.onDataBind) { this.onDataBind(data); }
 
-		this.xAxisG.call( this.xAxis);
-		this.yAxisG.call( this.yAxis);
+		this.xAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.xAxis);
 
-		this._onWindowResize(data);
+		this.yAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.yAxis);
+
+		if(this.options.y1) {
+
+			this.y1AxisG
+				.transition()
+				.duration(400)
+				.ease('cubic-out')
+				.call( this.y1Axis );
+		}
+
+		// this: it is the chart object itself, does not pass single by any chances
+		this._onWindowResize(this);
 
 		return data;
 	},
@@ -1176,9 +1293,11 @@ d3.chart('Base').extend("Axis", {
 		return this;
 	},
 
-	yPos: function(_value) {
+	yPos: function(_value, y1flag) {
+		// _value, by default, it won't translate at all, stay at 0, 0
 		if(_value) {
-			this.yAxisG.attr({
+			var yaxisg= (y1flag) ? this.y1AxisG : this.yAxisG;
+			yaxisg.attr({
 				'transform': 'translate(' + _value  + ' , 0)'
 			});
 		}
@@ -1186,13 +1305,51 @@ d3.chart('Base').extend("Axis", {
 	},
 
 	// Update Scale, Box Size, and attr values
-	_update: function(_width, _height) {
+	_update: function( _width, _height, chart ) {
 		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
 
 		if(this.ticksOnResize) this._redrawTicksOnResize();
 
-		this.xAxisG.call( this.xAxis);
-		this.yAxisG.call( this.yAxis);
+		if(this.guide) {
+			this.xAxis
+				.tickPadding(5)
+				.tickSize(-this.height, 0, 6); //axis.tickSize([major[‚Äã[, minor], end]])
+
+			this.yAxis
+				.tickPadding(5)
+				.tickSize(-this.width, 0, 6);
+		}
+
+		this.xAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.xAxis);
+
+		this.yAxisG
+			.transition()
+			.duration(400)
+			.ease('cubic-out')
+			.call( this.yAxis);
+
+		if(this.options.y1) {
+			// When dealing with y1 axis resize, the axis is following the max x tick
+			// Solution here is: calculate this.xScale() on the max x value. then use that value to be the translate value. Ex:
+ 			// here is using update, if using _update will override the existing one, regular update() is consistant API like circles, lines, etc.
+ 			//
+			// update: function( _width, _height, chart, single ) {
+			// 		var parseDate = d3.time.format('%Y%m%d').parse,
+			// 		maxDate = d3.max(moduleSelf.dataset, function(d, i){ return parseDate(d['date']) }),
+			// 		mxXTick = chart.xScale(maxDate);
+			// 		this.y1AxisG.attr('transform', 'translate(' + mxXTick  + ' , 0)');
+			// 	}
+
+			this.y1AxisG
+				.transition()
+				.duration(400)
+				.ease('cubic-out')
+				.call( this.y1Axis.orient('right') );
+		}
 	},
 
 	_redrawTicksOnResize: function() {
@@ -1216,21 +1373,47 @@ d3.chart('Base').extend("Axis", {
 			'x': xValue || containerInfo.marginLeft - 15, // control left and right of the label
 			'y': yValue || 0, // control up and down of the label
 			'transform': 'translate(' + this.info.marginLeft+ ',' + this.info.marginBottom + ')'
-		}).text(_label);
+		})
+			.style('opacity', 1e-6)
+			.text(_label)
+				.transition()
+				.duration(1000)
+				.ease('cubic-out')
+				.style('opacity', 1);
 
 		return this;
 	},
 
-	yLabel: function(_label, upDownPosition, leftRightPosition) {
-		var containerInfo = this.info,
-			xValue = (-upDownPosition) + containerInfo.marginTop - 15,
-			yValue = Math.abs(leftRightPosition - containerInfo.marginLeft) - 5;
+	// The way to position the axis is super tricky here
+	// leftRightPosition: control the left and right position value, actually modify the y value
+	// upDownPosition: control the top and down position value, actually modify the x value
+	// with some logic when switch y and y1, we could pass all positive number and ignore the negative value
+	// Ex:
+	// y example:   chart.yLabel(moduleSelf.key1, 20, 130);
+	// y1 example: chart.yLabel(moduleSelf.key2, 5, 155, true);
+	// The 4th arg for taking care of the y1 as a flag
+	yLabel: function(_label, leftRightPosition, upDownPosition, y1flag) {
+		var containerInfo = this.info;
+			// this is the old xValue and yValue automation. forget what I thought on this implementation
+			// xValue = (-upDownPosition) + containerInfo.marginTop - 15,
+			// yValue = Math.abs(leftRightPosition - containerInfo.marginLeft) - 5;
 
-		this.yAxisG.append('text').classed('label', true).attr({
-			'x':  xValue || -15, // control up and down of the label
-			'y':  yValue || 15,  // control left and right of the label
-			'transform':  'rotate(-90) translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
-		}).text(_label);
+		var yaxisg= (y1flag) ? this.y1AxisG : this.yAxisG,
+			upDownVal =  (y1flag) ? upDownPosition : -(upDownPosition),
+			rotateVal = (y1flag) ? -270 : -90;
+
+		yaxisg.append('text').classed('label', true).attr({
+			'x':  upDownVal || -15, // control up and down of the label
+			'y':  leftRightPosition || 15,  // control left and right of the label
+			'transform':  'rotate(' + rotateVal + ') translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
+			//'transform':  'rotate(' + rotateVal + ') translate(' + (-this.info.marginTop)+ ',' + (-this.info.marginLeft) + ')'
+		})
+			.style('opacity', 1e-6)
+			.text(_label)
+				.transition()
+				.duration(800)
+				.ease('cubic-out')
+				.style('opacity', 1);
 
 		return this;
 	}
@@ -1399,10 +1582,6 @@ d3.chart('Base').extend('Bars', {
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
 
-					chart._onWindowResize(chart, this);
-
-					self._bindMouseEnterOutEvents(chart, this);
-
 					// Used for animation the fill opacity property, work with enter:transition
 					this.style('opacity', 1e-6);
 				},
@@ -1413,12 +1592,21 @@ d3.chart('Base').extend('Bars', {
 							.duration(1000)
 							.style('opacity', 0.8);
 				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
+					self._bindMouseEnterOutEvents(chart, this);
+				},
+
 				'exit:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(400)
-							.style('opacity', 1e-6)
-							.remove();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
@@ -1451,11 +1639,13 @@ d3.chart('Base').extend('Line', {
 	initialize: function(options) {
 		this.options = options = options || {};
 
-		this.layer('line', this.base, {
+		this.linePath = this.base.append('svg:path').classed('line', true);
+
+		this.line = d3.svg.line();
+
+		this.layer('line', this.linePath, {
 			dataBind: function(data) {
 				var chart = this.chart();
-
-				chart.line = d3.svg.line();
 
 				// Setup the auto resize to handle the on resize event
 				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
@@ -1471,13 +1661,13 @@ d3.chart('Base').extend('Line', {
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
 				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
-				return this.selectAll('path').data( [data] );
+				return this.data( [data] );
 			},
 
 			insert: function(){
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
-				return this.append('path').classed('line', true);
+				return chart.linePath;
 			},
 
 			events: {
@@ -1487,27 +1677,33 @@ d3.chart('Base').extend('Line', {
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
-
-					chart._onWindowResize(chart, this);
-
-					this
-						.attr({ 'd': chart.line })
-						.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(1000)
-							.style('opacity', 1);
+					this
+						.duration(700)
+						.ease('cubic-out')
+						.attr({ 'd': chart.line })
+				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
 	}
-
-	// 	this.linePath = this.base.append('path').attr({
-	// 		'class': 'line',
-	// 	});
 
 	// 	if(this.onDataBind) { this.onDataBind(); }
 
@@ -1523,11 +1719,6 @@ d3.chart('Base').extend('Line', {
 
 	// Update Scale, Box Size, and attr values
 	// _update: function(_width, _height) {
-
-	// 	this.linePath.attr({
-	// 		'd': this.line
-	// 	});
-	// }
 });
 /*
 	Doc is coming soon
@@ -1538,11 +1729,13 @@ d3.chart('Base').extend('Area', {
 	initialize: function(options) {
 		this.options = options = options || {};
 
-		this.layer('area', this.base, {
+		this.areaPath = this.base.append('svg:path').classed('area', true);
+
+		this.area = d3.svg.area();
+
+		this.layer('area', this.areaPath, {
 			dataBind: function(data) {
 				var chart = this.chart();
-
-				chart.area = d3.svg.area();
 
 				// Setup the auto resize to handle the on resize event
 				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
@@ -1552,20 +1745,20 @@ d3.chart('Base').extend('Area', {
 				chart.area
 					.x(function(d) { return chart.xScale(d.x); })
 					.y1(function(d) { return chart.yScale(d.y);  })
-					.y0(chart.yScale(0));
+					.y0( chart.height );
 
 				if(chart.onDataBind) { chart.onDataBind(data, chart, (options.data) ? options.data : undefined ); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
 				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
-				return this.selectAll('path').data( [data] );
+				return this.data( [data] );
 			},
 
 			insert: function(){
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
-				return this.append('path').classed('area', true);
+				return chart.areaPath;
 			},
 
 			events: {
@@ -1575,19 +1768,29 @@ d3.chart('Base').extend('Area', {
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
-
-					chart._onWindowResize(chart, this);
-
-					this
-						.attr({ 'd': chart.area })
-						.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(1000)
-							.style('opacity', 1);
+					this
+						.duration(700)
+						.ease('cubic-out')
+						.attr({ 'd': chart.area });
+				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
@@ -1630,10 +1833,22 @@ d3.chart('Base').extend('Circle', {
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
+				},
+
+				'merge': function() {
+					var chart = this.chart();
 
 					chart._onWindowResize(chart, this);
-
 					self._bindMouseEnterOutEvents(chart, this);
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});

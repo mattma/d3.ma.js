@@ -94,7 +94,15 @@ d3.chart('Scale', {
 		this.yScale = this._scale(y);
 
 		this._switchXScale(x, this.width);
-		this._switchYScale(y, this.height);
+		this._switchYScale(y, this.height, false);
+
+		if(options.y1) {
+			var y1 = options.y1 || 'linear';
+			this.y1Scale = this._scale(y1);
+			// using the same _switchYScale fn, most likely using the same axis
+			// if 3rd arg is true, it will switch from this.yScale to this.y1Scale
+			this._switchYScale(y1, this.height, true);
+		}
 	},
 
 	_switchXScale: function(x, _width) {
@@ -109,14 +117,15 @@ d3.chart('Scale', {
 		}
 	},
 
-	_switchYScale: function(y, _height) {
+	_switchYScale: function(y, _height, y1flag) {
+		var yscale = (y1flag) ? this.y1Scale : this.yScale;
 		switch(y) {
 			case 'linear' :
-				this.yScale.range([_height, 15]);
+				yscale.range([_height, 15]);
 			break;
 
 			case 'ordinal' :
-				this.yScale.rangeRoundBands([_height, 15], 0.1);
+				yscale.rangeRoundBands([_height, 15], 0.1);
 			break;
 		}
 	},

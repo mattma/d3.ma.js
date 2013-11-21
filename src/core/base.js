@@ -149,37 +149,92 @@ d3.chart('Scale').extend('Base', {
 		// NOTE: this here is the context where you definied in the 2nd param when initialized
 		// ex: d3.ma.onResize(line._resize, line);
 		// in this case, the context here is  line
+		//
+		// fluid attribute is being checked, on parentNode element data-fluid attr, it could be set by container.fluid()
 
 		var containerInfo = this.info,
-			widthOffset = d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
-			heightOffset = d3.ma.$$(containerInfo.parentNode).offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
-			windowWidth = d3.ma.windowSize().width - widthOffset,
-			windowHeight = d3.ma.windowSize().height - heightOffset;
+			parentNodeEl = d3.ma.$$(containerInfo.parentNode);
 
-		// var containerInfo = this.info,
-		// 	windowWidth = d3.ma.windowSize().width,
-		// 	windowHeight = d3.ma.windowSize().height;
+		// If parentNodeEl is undefined, that means we need to unbind the resize event
+		// in this case, simply just return false
+		if ( !parentNodeEl ) { return false; }
 
-		if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
+		var currentWindowSize = d3.ma.windowSize(),
+			fluid = parentNodeEl.getAttribute('data-fluid'),
+
+			widthOffset = ( d3.ma.responsive ) ? parentNodeEl.offsetLeft : d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
+
+			heightOffset =  ( d3.ma.responsive ) ? parentNodeEl.offsetTop : parentNodeEl.offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
+
+			windowWidth = currentWindowSize.width - widthOffset,
+			windowHeight = currentWindowSize.height - heightOffset;
+
+		if ( fluid === 'responsive' ) {
+			var oldClientW = containerInfo.containerW,
+				newClientW = parentNodeEl.clientWidth,
+				oldClientH = containerInfo.containerH,
+				newClientH = parentNodeEl.clientHeight;
+
+			// canvasEl & clippathEl,
+			// When chart updated, containerOption Id value is not being updated,
+			// for the current bug fixes, it just goes down the dom tree to find the element by structure
+			if ( oldClientW < newClientW || oldClientH < newClientH ) {
+				var viewBoxValue = '0 0 ' + newClientW + ' ' + newClientH,
+					svgEl = parentNodeEl.children[0],
+					canvasEl = d3.ma.$$(containerInfo.id) || d3.ma.$$('#summaryChart').children[0].children[1],
+					clippathEl = d3.ma.$$(containerInfo.cid + ' rect') || d3.ma.$$('#summaryChart').children[0].children[0].children[0].children[0];
+
+				// update svg element width & height property
+				svgEl.setAttribute('width', newClientW);
+				svgEl.setAttribute('height', newClientH);
+				svgEl.setAttribute('viewBox', viewBoxValue);
+				// canvas element update width & height property
+				canvasEl.setAttribute('width', newClientW);
+				canvasEl.setAttribute('height', newClientH);
+				// clippath element update width & height property
+				clippathEl.setAttribute('width', newClientW);
+				clippathEl.setAttribute('height', newClientH);
+			}
+
 			var onObj = {
-				width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
+				width: newClientW,
 				height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
 			};
+
 			this.dispatch.d3maOnWindowResize(onObj);
 		} else {
-			var offObj = {
+			if( windowWidth < containerInfo.containerW || windowHeight < containerInfo.containerH ) {
+				var onObj = {
+					width: ( windowWidth < containerInfo.containerW ) ? windowWidth : containerInfo.containerW,
+					height: ( windowHeight < containerInfo.containerH ) ? windowHeight : containerInfo.containerH
+				};
+				this.dispatch.d3maOnWindowResize(onObj);
+			} else {
+				var offObj = {
+					width: containerInfo.canvasW,
+					height: containerInfo.canvasH
+				};
+				var origObj = {
+					width: containerInfo.containerW,
+					height: containerInfo.containerH
+				};
+				// dispatch the _redraw back to the original container box
+				this.dispatch.d3maOnWindowResize(origObj);
+				// unbind the window resize event
+				this.dispatch.d3maOffWindowResize(offObj);
+			}
+		}
+	},
+
+	// Currently did not use in the app, but need hook to the unBind Resize event
+	// @todo has a global on, off, in the framework to handle all the event binding, unbinding
+	_unbindResize: function() {
+		var containerInfo = this.info,
+			offObj = {
 				width: containerInfo.canvasW,
 				height: containerInfo.canvasH
 			};
-			var origObj = {
-				width: containerInfo.containerW,
-				height: containerInfo.containerH
-			};
-			// dispatch the _redraw back to the original container box
-			this.dispatch.d3maOnWindowResize(origObj);
-			// unbind the window resize event
-			this.dispatch.d3maOffWindowResize(offObj);
-		}
+		this.dispatch.d3maOffWindowResize(offObj);
 	},
 
 	// it is the handler for the internal _resize() which definied above this one
@@ -210,11 +265,18 @@ d3.chart('Scale').extend('Base', {
 		//usage on rects, circles, like multiple repeated elements.
 		this.dispatch.d3maSingleWindowResize(chart, single);
 
+		// Except Axis, only pass in the chart without single, everything else should pass all 4 args
+		// Currently, _update is only used in axis base, for constant API, update could be used inside custom constructors
+		if (this._update) {
+			this._update( _width, _height, chart, single );
+		}
 		// handle this in individual modules
 		// Optional step, if defined in each module, could
 		// setup the global default in this module, or setup global attrs
-		if (this.update)
+		// Axis is using this in the custom construtor.
+		if (this.update) {
 			this.update( _width, _height, chart, single );
+		}
 	},
 
 	// this will trigger the _update internal fn

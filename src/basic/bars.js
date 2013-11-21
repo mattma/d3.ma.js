@@ -162,10 +162,6 @@ d3.chart('Base').extend('Bars', {
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
 
-					chart._onWindowResize(chart, this);
-
-					self._bindMouseEnterOutEvents(chart, this);
-
 					// Used for animation the fill opacity property, work with enter:transition
 					this.style('opacity', 1e-6);
 				},
@@ -176,12 +172,21 @@ d3.chart('Base').extend('Bars', {
 							.duration(1000)
 							.style('opacity', 0.8);
 				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
+					self._bindMouseEnterOutEvents(chart, this);
+				},
+
 				'exit:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(400)
-							.style('opacity', 1e-6)
-							.remove();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});

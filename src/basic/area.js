@@ -7,11 +7,13 @@ d3.chart('Base').extend('Area', {
 	initialize: function(options) {
 		this.options = options = options || {};
 
-		this.layer('area', this.base, {
+		this.areaPath = this.base.append('svg:path').classed('area', true);
+
+		this.area = d3.svg.area();
+
+		this.layer('area', this.areaPath, {
 			dataBind: function(data) {
 				var chart = this.chart();
-
-				chart.area = d3.svg.area();
 
 				// Setup the auto resize to handle the on resize event
 				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
@@ -21,20 +23,20 @@ d3.chart('Base').extend('Area', {
 				chart.area
 					.x(function(d) { return chart.xScale(d.x); })
 					.y1(function(d) { return chart.yScale(d.y);  })
-					.y0(chart.yScale(0));
+					.y0( chart.height );
 
-				if(chart.onDataBind) { chart.onDataBind(data, chart, (options.data) ? options.data : undefined ); }
+				if(chart.onDataBind) { chart.onDataBind(data, chart); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
 				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
-				return this.selectAll('path').data( [data] );
+				return this.data( [data] );
 			},
 
 			insert: function(){
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
-				return this.append('path').classed('area', true);
+				return chart.areaPath;
 			},
 
 			events: {
@@ -44,21 +46,38 @@ d3.chart('Base').extend('Area', {
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
-
-					chart._onWindowResize(chart, this);
-
-					this
-						.attr({ 'd': chart.area })
-						.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(1000)
-							.style('opacity', 1);
+					this
+						.duration(700)
+						.ease('cubic-out')
+						.attr({ 'd': chart.area });
+				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
+	},
+
+	_update: function( _width, _height, chart, single ) {
+		if(this.update) {
+			this.update( _width, _height, chart, single );
+		}
+		this.areaPath.attr({ 'd': chart.area });
 	}
 });

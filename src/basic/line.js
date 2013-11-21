@@ -25,11 +25,13 @@ d3.chart('Base').extend('Line', {
 	initialize: function(options) {
 		this.options = options = options || {};
 
-		this.layer('line', this.base, {
+		this.linePath = this.base.append('svg:path').classed('line', true);
+
+		this.line = d3.svg.line();
+
+		this.layer('line', this.linePath, {
 			dataBind: function(data) {
 				var chart = this.chart();
-
-				chart.line = d3.svg.line();
 
 				// Setup the auto resize to handle the on resize event
 				chart.dispatch.on('d3maSingleWindowResize', function(chart, single){
@@ -40,18 +42,18 @@ d3.chart('Base').extend('Line', {
 					.x(function(d) { return chart.xScale(d.x); })
 					.y(function(d) { return chart.yScale(d.y);  });
 
-				if(chart.onDataBind) { chart.onDataBind( data, chart, (options.data) ? options.data : undefined ); }
+				if(chart.onDataBind) { chart.onDataBind( data, chart ); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
 				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
-				return this.selectAll('path').data( [data] );
+				return this.data( [data] );
 			},
 
 			insert: function(){
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
-				return this.append('path').classed('line', true);
+				return chart.linePath;
 			},
 
 			events: {
@@ -61,27 +63,40 @@ d3.chart('Base').extend('Line', {
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
 					if(chart.onEnter) { chart.onEnter(chart, this); }
-
-					chart._onWindowResize(chart, this);
-
-					this
-						.attr({ 'd': chart.line })
-						.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(1000)
-							.style('opacity', 1);
+					this
+						.duration(700)
+						.ease('cubic-out')
+						.attr({ 'd': chart.line })
+				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
 				}
 			}
 		});
-	}
+	},
 
-	// 	this.linePath = this.base.append('path').attr({
-	// 		'class': 'line',
-	// 	});
+	_update: function( _width, _height, chart, single ) {
+		if(this.update) {
+			this.update( _width, _height, chart, single );
+		}
+		this.linePath.attr({ 'd': chart.line });
+	}
 
 	// 	if(this.onDataBind) { this.onDataBind(); }
 
@@ -97,9 +112,4 @@ d3.chart('Base').extend('Line', {
 
 	// Update Scale, Box Size, and attr values
 	// _update: function(_width, _height) {
-
-	// 	this.linePath.attr({
-	// 		'd': this.line
-	// 	});
-	// }
 });

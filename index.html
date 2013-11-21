@@ -34,6 +34,7 @@
 
 </head>
 <body>
+	<button>update</button>
 	<div id="vis"></div>
 
 	<script>
@@ -52,7 +53,7 @@
 		// 	return this;
 		// };
 
-		function domain(context) {
+		function domain(data, context) {
 			// Setup xScale domain range
 			context.xScale.domain( [ 0, d3.max(data, function(d, i){ return d.x }) ]);
 
@@ -60,16 +61,16 @@
 		}
 
 		d3.chart('Axis').extend('MyAxis', {
-			onDataBind: function(chart){
+			onDataBind: function(data){
 				var chart = chart || this;
-				domain(chart);
+				domain(data, chart);
 			}
 		});
 
 		d3.chart('Circle').extend('MyCircle', {
-			onDataBind: function(chart){
+			onDataBind: function(data){
 				var chart = chart || this;
-				domain(chart);
+				domain(data, chart);
 			},
 
 			onDataMouseenter: function(d, i, chart) {
@@ -166,6 +167,14 @@
 
 		//render it with some data
 		canvas.draw(data);
+
+		var data1 = d3.range(60).map(function(i) {
+			return {x: i / 60, y: (Math.sin(i / 3) + 2) / 20};
+		});
+
+		d3.selectAll("button").on("click", function() {
+			canvas.draw(data1);
+		});
 
 	</script>
 

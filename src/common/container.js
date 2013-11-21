@@ -42,6 +42,10 @@
 		container.canvas()
 			# getter. Return the canvas object for easy chaining
 
+		container.fluid()
+			# setter. return the container for easy chaining.
+			# it will set parentNode 'data-fluid' to 'responsive' on changing the resize calculation
+
 		container.info()
 			# getter. Return all the infomation about this container. expose all the data to the world
 			include value of   marginTop, marginRight, marginBottom, marginLeft, containerW, containerH, canvasW, canvasH, id, cid
@@ -215,6 +219,29 @@ d3.ma.container = function(selector) {
 				}
 			}
 		});
+		return container;
+	};
+
+	// How to use container.fluid()
+	// it takes no args. return container for chaining.
+	// Purpose: to set the current chart as responsive design svg element, like set svg width 100%
+	//
+	// How?
+	// step 1: set svg's parent element ( container ) css box style   ex: +box(100%, 360)
+	// step 2: when/where initialize the container, calling fluid function.
+	// Ex:
+	// 	var clientW = d3.ma.$$('#summaryChart').clientWidth,
+	// 		clientH = d3.ma.$$('#summaryChart').clientHeight;
+	// 	container.box( clientW, clientH ).fluid();
+	// step 3: at the finalChart rendering function, calling the resize function
+	// Ex: 	d3.ma.resize(key1Line, axis);
+	//
+	// It will set parentNode data-fluid attribute on individual chart, then framework will check each chart on this custom value, if it match 'responsive' value, then it will do all the calculation to make a responsive chart. By default, it will expect data-fluid as an empty value, then it will do the fixed layout resizing
+	container.fluid = function() {
+		var info = container.info(),
+			svgEl = d3.ma.$$(info.parentNode);
+
+		svgEl.setAttribute('data-fluid', 'responsive');
 		return container;
 	};
 
