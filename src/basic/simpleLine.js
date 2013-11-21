@@ -12,10 +12,6 @@ d3.chart('Base').extend('SimpleLine', {
 
 				if(chart.onDataBind) { chart.onDataBind( data, chart ); }
 
-				// data[options.data]  will return a single array, data will bind path element to each array index,
-				// by pushing options array into an anonymous array, ONLY one path element will be created
-				//return this.selectAll('path').data( (options.data) ? [ data[options.data] ]: data );
-				//return this.data( data );
 				return this.classed('simple-lines', true).selectAll('line').data(data);
 			},
 
