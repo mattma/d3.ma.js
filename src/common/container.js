@@ -50,13 +50,17 @@
 			# getter. Return all the infomation about this container. expose all the data to the world
 			include value of   marginTop, marginRight, marginBottom, marginLeft, containerW, containerH, canvasW, canvasH, id, cid
 */
-d3.ma.container = function(selector) {
 
-	var selection = d3.select(selector);
+// Context is very important here. When dealing with backbone itemview.
+// try to limit the current context of the selector, so need to apply the context to limit the selector scope
+// context is an optional param, ignore it as needed
+d3.ma.container = function(selector, context) {
+
+	var selection = (context) ? d3.select(context).select(selector) : d3.select(selector);
 
 	var margin = { top: 30, right: 10, bottom: 20, left: 40 },
-		containerW = d3.ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
-		containerH = d3.ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
+		containerW = (context) ? d3.ma.$$(context + ' '+ selector).clientWidth : d3.ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
+		containerH = (context) ? d3.ma.$$(context + ' '+ selector).clientHeight : d3.ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
 		canvasW,
 		canvasH,
 		container = selection.append('svg'),  // Create container, append svg element to the selection
