@@ -144,7 +144,8 @@ module.exports = function( grunt ) {
 		watch: {
 			livereload: {
 				files: [
-					'examples/basic-bars.html',
+					'examples/*.html',
+					'index.html',
 					'src/{,**/}*.js'
 				],
 				tasks: ['livereload']
