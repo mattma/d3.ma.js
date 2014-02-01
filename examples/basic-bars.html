@@ -80,26 +80,30 @@
 		// 	return this;
 		// };
 
-		function domain(context) {
+		function domain(data, context) {
+			var xRange = [];
+			d3.map(data).forEach(function(index, d) { xRange.push( d.label )  });
+
 			// Setup xScale domain range
-			context.xScale.domain(d3.merge(data).map(function(d) { return d.label }));
+			context.xScale.domain(xRange);
 			// Setup yScale domain range
 			var maxY = Math.round( d3.max( data.map(function(val, ind){ return val.value;  }) ) );
 			context.yScale.domain([ 0, maxY ]);
 		}
 
 		d3.chart('Axis').extend('MyAxis', {
-			onDataBind: function(chart){
+			onDataBind: function(data, chart){
 				var chart = chart || this;
-				domain(chart);
+				domain(data, chart);
 				chart.yAxis.tickFormat(d3.format(',.1f'));
 			}
 		});
 
 		d3.chart('Bars').extend('MyBars', {
-			onDataBind: function(chart) {
+			onDataBind: function(data, chart) {
 				var chart = chart || this;
-				domain(chart);
+				console.log('chart: ', chart);
+				domain(data, chart);
 			},
 
 			onEnter: function(chart, single) {
@@ -148,7 +152,7 @@
 					.xLabel('X Labels', (containerInfo.canvasW - containerInfo.marginLeft - containerInfo.marginRight) )
 					.yLabel('Y Labels', 15, 15);
 
-				console.log('this: ', this);
+				// console.log('this: ', this);
 
 				var bars = this.mixin("MyBars", this.base.append('g').classed('bars', true), {
 					info: containerInfo,
