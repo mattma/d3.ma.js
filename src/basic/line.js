@@ -92,9 +92,6 @@ d3.chart('Base').extend('Line', {
 	},
 
 	_update: function( _width, _height, chart, single ) {
-		if(this.update) {
-			this.update( _width, _height, chart, single );
-		}
 		this.linePath.attr({ 'd': chart.line });
 	}
 
