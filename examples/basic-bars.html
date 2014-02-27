@@ -31,6 +31,7 @@
 
 </head>
 <body>
+      <button>update</button>
 	<div id="vis"></div>
 
 	<script>
@@ -72,6 +73,44 @@
 				"value" : 19.138723423
 			}
 		];
+		var data1 = [
+			{
+				"label" : "A" ,
+				"value" : 19
+			} ,
+			{
+				"label" : "B" ,
+				"value" : 54
+			} ,
+			{
+				"label" : "C" ,
+				"value" : 134
+			} ,
+			{
+				"label" : "D" ,
+				"value" : 86
+			} ,
+			{
+				"label" : "E" ,
+				"value" : 3
+			} ,
+			{
+				"label" : "F" ,
+				"value" : 23
+			} ,
+			{
+				"label" : "G" ,
+				"value" : 84
+			} ,
+			{
+				"label" : "H" ,
+				"value" : 45
+			},
+			{
+				"label" : "I" ,
+				"value" : 96
+			}
+		];
 	</script>
 
 	<script>
@@ -106,7 +145,6 @@
 		d3.chart('Bars').extend('MyBars', {
 			onDataBind: function(data, chart) {
 				var chart = chart || this;
-				console.log('chart: ', chart);
 				domain(data, chart);
 			},
 
@@ -209,6 +247,13 @@
 		// 	data.pop();
 		// 	canvas.draw( data );
 		// })
+
+		d3.selectAll("button").on("click", function() {
+			console.log('hello world');
+			console.log('data1: ', data1);
+			canvas.draw(data1);
+		});
+
 
 	</script>
 
