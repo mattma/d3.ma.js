@@ -136,13 +136,15 @@ d3.chart('Base').extend('Bars', {
 
 		var self = this;
 
+		this.barsGroup = this.base.selectAll('.group');
+
 		this.layer('bars', this.base, {
 
 			// select the elements we wish to bind to and bind the data to them.
 			dataBind: function(data) {
 				var chart = this.chart();
 				if(chart.onDataBind) { chart.onDataBind(data, chart); }
-				return this.selectAll('.group').data(data);
+				return chart.barsGroup.data(data);
 			},
 
 			// insert actual bars, defined its own attrs
