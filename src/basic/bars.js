@@ -138,20 +138,25 @@ d3.chart('Base').extend('Bars', {
 
 		this.barsGroup = this.base.selectAll('.group');
 
-		this.layer('bars', this.base, {
+		this.layer('bars', this.barsGroup, {
 
 			// select the elements we wish to bind to and bind the data to them.
 			dataBind: function(data) {
 				var chart = this.chart();
 				if(chart.onDataBind) { chart.onDataBind(data, chart); }
-				return chart.barsGroup.data(data);
+				return ( chart.rectsGroup ) ? chart.rectsGroup.data(data) : this.data(data);
 			},
 
 			// insert actual bars, defined its own attrs
 			insert: function() {
 				var chart = this.chart();
 				if(chart.onInsert) { chart.onInsert(chart); }
-				return this.append('g').classed('group', true).append('rect');
+
+				if( !chart.rectsGroup ) {
+					chart.rectsGroup = this.append('g').classed('group', true).append('rect');
+				}
+
+				return chart.rectsGroup;
 			},
 
 			// define lifecycle events
@@ -171,12 +176,14 @@ d3.chart('Base').extend('Bars', {
 				'enter:transition': function() {
 					var chart = this.chart();
 					return this
-							.duration(1000)
+							.duration(600)
 							.style('opacity', 0.8);
 				},
 
 				'merge': function() {
 					var chart = this.chart();
+
+					if(chart.onMerge) { chart.onMerge(chart, this); }
 
 					chart._onWindowResize(chart, this);
 					self._bindMouseEnterOutEvents(chart, this);
