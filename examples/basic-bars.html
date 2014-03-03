@@ -148,17 +148,20 @@
 				domain(data, chart);
 			},
 
-			onEnter: function(chart, single) {
+			onEnterTransition: function(chart, single) {
 				var chart = chart || this,
 					color = d3.scale.category10();
 
-				single.attr({
-					'x': function(d, i) { return chart.xScale(d.label); },
-					'y': function(d) { return chart.yScale(d.value); },
-					'width': function(d) { return chart.xScale.rangeBand() ; },
-					'height': function(d) { return chart.height - chart.yScale(d.value); },
-					'fill': function(d) { return color(d.value); }
-				});
+				single
+					.duration(700)
+					.ease('cubic-out')
+					.attr({
+						'x': function(d, i) { return chart.xScale(d.label); },
+						'y': function(d) { return chart.yScale(d.value); },
+						'width': function(d) { return chart.xScale.rangeBand() ; },
+						'height': function(d) { return chart.height - chart.yScale(d.value); },
+						'fill': function(d) { return color(d.value); }
+					});
 			},
 
 			onDataMouseenter: function(d, i, chart) {
