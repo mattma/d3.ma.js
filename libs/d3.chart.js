@@ -3,107 +3,120 @@
  *  Date: 2014-02-21
  */
 (function(window, undefined) {
-/*jshint unused: false */
-'use strict';
+	/*jshint unused: false */
+	'use strict';
 
-var d3Chart = window.d3Chart = {};
-var d3 = window.d3;
-var hasOwnProp = Object.hasOwnProperty;
+	var d3Chart = window.d3Chart = {};
+	var d3 = window.d3;
+	var hasOwnProp = Object.hasOwnProperty;
 
-var d3cAssert = function(test, message) {
-	if (test) {
-		return;
-	}
-	throw new Error("[d3.chart] " + message);
-};
+	var d3cAssert = function(test, message) {
+		if (test) {
+			return;
+		}
+		throw new Error("[d3.chart] " + message);
+	};
 
-d3cAssert(d3, "d3.js is required");
-d3cAssert(typeof d3.version === "string" && d3.version.match(/^3/),
-	"d3.js version 3 is required");
+	d3cAssert(d3, "d3.js is required");
+	d3cAssert(typeof d3.version === "string" && d3.version.match(/^3/),
+		"d3.js version 3 is required");
 
-// @todo file break line
+	// @todo file break line
 
-var lifecycleRe = /^(enter|update|merge|exit)(:transition)?$/;
+	var lifecycleRe = /^(enter|update|merge|exit)(:transition)?$/;
 
-/**
- * Create a layer using the provided `base`. The layer instance is *not*
- * exposed to d3.chart users. Instead, its instance methods are mixed in to the
- * `base` selection it describes; users interact with the instance via these
- * bound methods.
- *
- * @private
- * @constructor
- *
- * @param {d3.selection} base The containing DOM node for the layer.
- */
-var Layer = function(base) {
-	d3cAssert(base, "Layers must be initialized with a base.");
-	this._base = base;
-	this._handlers = {};
-};
+	/**
+	 * Create a layer using the provided `base`. The layer instance is *not*
+	 * exposed to d3.chart users. Instead, its instance methods are mixed in to the
+	 * `base` selection it describes; users interact with the instance via these
+	 * bound methods.
+	 *
+	 * @private
+	 * @constructor
+	 *
+	 * @param {d3.selection} base The containing DOM node for the layer.
+	 */
+	var Layer = function(base) {
+		d3cAssert(base, "Layers must be initialized with a base.");
+		this._base = base;
+		this._handlers = {};
+	};
 
-/**
- * Invoked by {@link Layer#draw} to join data with this layer's DOM nodes. This
- * implementation is "virtual"--it *must* be overridden by Layer instances.
- *
- * @param {Array} data Value passed to {@link Layer#draw}
- */
-Layer.prototype.dataBind = function() {
-	d3cAssert(false, "Layers must specify a `dataBind` method.");
-};
+	/**
+	 * Invoked by {@link Layer#draw} to join data with this layer's DOM nodes. This
+	 * implementation is "virtual"--it *must* be overridden by Layer instances.
+	 *
+	 * @param {Array} data Value passed to {@link Layer#draw}
+	 */
+	Layer.prototype.dataBind = function() {
+		d3cAssert(false, "Layers must specify a `dataBind` method.");
+	};
 
-/**
- * Invoked by {@link Layer#draw} in order to insert new DOM nodes into this
- * layer's `base`. This implementation is "virtual"--it *must* be overridden by
- * Layer instances.
- */
-Layer.prototype.insert = function() {
-	d3cAssert(false, "Layers must specify an `insert` method.");
-};
+	/**
+	 * Invoked by {@link Layer#draw} in order to insert new DOM nodes into this
+	 * layer's `base`. This implementation is "virtual"--it *must* be overridden by
+	 * Layer instances.
+	 */
+	Layer.prototype.insert = function() {
+		d3cAssert(false, "Layers must specify an `insert` method.");
+	};
 
-/**
- * Subscribe a handler to a "lifecycle event". These events (and only these
- * events) are triggered when {@link Layer#draw} is invoked--see that method
- * for more details on lifecycle events.
- *
- * @param {String} eventName Identifier for the lifecycle event for which to
- *        subscribe.
- * @param {Function} handler Callback function
- *
- * @returns {d3.selection} Reference to the layer's base.
- */
-Layer.prototype.on = function(eventName, handler, options) {
-	options = options || {};
-      d3cAssert(
-            lifecycleRe.test(eventName),
-            "Unrecognized lifecycle event name specified to `Layer#on`: '" +
-            eventName + "'."
-      );
-	if (!(eventName in this._handlers)) {
-		this._handlers[eventName] = [];
-	}
-	this._handlers[eventName].push({
-		callback: handler,
-		chart: options.chart || null
-	});
-      return this._base;
-};
+	/**
+	 * Subscribe a handler to a "lifecycle event". These events (and only these
+	 * events) are triggered when {@link Layer#draw} is invoked--see that method
+	 * for more details on lifecycle events.
+	 *
+	 * @param {String} eventName Identifier for the lifecycle event for which to
+	 *        subscribe.
+	 * @param {Function} handler Callback function
+	 *
+	 * @returns {d3.selection} Reference to the layer's base.
+	 */
+	Layer.prototype.on = function(eventName, handler, options) {
+		options = options || {};
+		d3cAssert(
+			lifecycleRe.test(eventName),
+			"Unrecognized lifecycle event name specified to `Layer#on`: '" +
+			eventName + "'."
+		);
+		if (!(eventName in this._handlers)) {
+			this._handlers[eventName] = [];
+		}
+		this._handlers[eventName].push({
+			callback: handler,
+			chart: options.chart || null
+		});
+		return this._base;
+	};
 
-	// off
-	// Remove the specified handler. If no handler is supplied, remove *all*
-	// handlers from the specified event type.
+	/**
+	 * Unsubscribe the specified handler from the specified event. If no handler is
+	 * supplied, remove *all* handlers from the event.
+	 *
+	 * @param {String} eventName Identifier for event from which to remove
+	 *        unsubscribe
+	 * @param {Function} handler Callback to remove from the specified event
+	 *
+	 * @returns {d3.selection} Reference to the layer's base.
+	 */
 	Layer.prototype.off = function(eventName, handler) {
 
 		var handlers = this._handlers[eventName];
 		var idx;
 
+		d3cAssert(
+			lifecycleRe.test(eventName),
+			"Unrecognized lifecycle event name specified to `Layer#off`: '" +
+			eventName + "'."
+		);
+
 		if (!handlers) {
-			return;
+			return this._base;
 		}
 
 		if (arguments.length === 1) {
 			handlers.length = 0;
-			return;
+			return this._base;
 		}
 
 		for (idx = handlers.length - 1; idx > -1; --idx) {
@@ -111,11 +124,24 @@ Layer.prototype.on = function(eventName, handler, options) {
 				handlers.splice(idx, 1);
 			}
 		}
+		return this._base;
 	};
 
-	// draw
-	// Bind the data to the layer, make lifecycle selections, and invoke all
-	// relevant handlers.
+	/**
+	 * Render the layer according to the input data: Bind the data to the layer
+	 * (according to {@link Layer#dataBind}, insert new elements (according to
+	 * {@link Layer#insert}, make lifecycle selections, and invoke all relevant
+	 * handlers (as attached via {@link Layer#on}) with the lifecycle selections.
+	 *
+	 * - update
+	 * - update:transition
+	 * - enter
+	 * - enter:transition
+	 * - exit
+	 * - exit:transition
+	 *
+	 * @param {Array} data Data to drive the rendering.
+	 */
 	Layer.prototype.draw = function(data) {
 		var bound, entering, events, selection, handlers, eventName, idx, len;
 
@@ -130,28 +156,23 @@ Layer.prototype.on = function(eventName, handler, options) {
 		entering = bound.enter();
 		entering._chart = this._base._chart;
 
-		events = [
-			{
-				name: "update",
-				selection: bound
-			},
-			{
-				name: "enter",
-				// Defer invocation of the `insert` method so that the previous
-				// `update` selection does not contain the new nodes.
-				selection: this.insert.bind(entering)
-			},
-			{
-				name: "merge",
-				// This selection will be modified when the previous selection
-				// is made.
-				selection: bound
-			},
-			{
-				name: "exit",
-				selection: bound.exit.bind(bound)
-			}
-		];
+		events = [{
+			name: "update",
+			selection: bound
+		}, {
+			name: "enter",
+			// Defer invocation of the `insert` method so that the previous
+			// `update` selection does not contain the new nodes.
+			selection: this.insert.bind(entering)
+		}, {
+			name: "merge",
+			// This selection will be modified when the previous selection
+			// is made.
+			selection: bound
+		}, {
+			name: "exit",
+			selection: bound.exit.bind(bound)
+		}];
 
 		for (var i = 0, l = events.length; i < l; ++i) {
 			eventName = events[i].name;
@@ -161,6 +182,10 @@ Layer.prototype.on = function(eventName, handler, options) {
 			// they may be delayed.
 			if (typeof selection === "function") {
 				selection = selection();
+			}
+
+			if (selection.empty()) {
+				continue;
 			}
 
 			// Although `selection instanceof d3.selection` is more explicit,
@@ -194,6 +219,17 @@ Layer.prototype.on = function(eventName, handler, options) {
 		}
 	};
 
+	// @todo file break line
+
+	/**
+	 * Create a new layer on the d3 selection from which it is called.
+	 *
+	 * @static
+	 *
+	 * @param {Object} [options] Options to be forwarded to {@link Layer|the Layer
+	 *        constructor}
+	 * @returns {d3.selection}
+	 */
 	d3.selection.prototype.layer = function(options) {
 		var layer = new Layer(this);
 		var eventName;
@@ -210,14 +246,22 @@ Layer.prototype.on = function(eventName, handler, options) {
 		}
 
 		// Mix the public methods into the D3.js selection (bound appropriately)
-		this.on = function() { return layer.on.apply(layer, arguments); };
-		this.off = function() { return layer.off.apply(layer, arguments); };
-		this.draw = function() { return layer.draw.apply(layer, arguments); };
+		this.on = function() {
+			return layer.on.apply(layer, arguments);
+		};
+		this.off = function() {
+			return layer.off.apply(layer, arguments);
+		};
+		this.draw = function() {
+			return layer.draw.apply(layer, arguments);
+		};
 
 		return this;
 	};
 
-	var Surrogate = function(ctor) { this.constructor = ctor; };
+	var Surrogate = function(ctor) {
+		this.constructor = ctor;
+	};
 	var variadicNew = function(Ctor, args) {
 		var inst;
 		Surrogate.prototype = Ctor.prototype;
@@ -245,17 +289,21 @@ Layer.prototype.on = function(eventName, handler, options) {
 		return object;
 	}
 
-	// initCascade
-	// Call the initialize method up the inheritance chain, starting with the
-	// base class and continuing "downward".
+	/**
+	 * Call the {@Chart#initialize} method up the inheritance chain, starting with
+	 * the base class and continuing "downward".
+	 *
+	 * @private
+	 */
 	var initCascade = function(instance, args) {
-		var sup = this.constructor.__super__;
+		var ctor = this.constructor;
+		var sup = ctor.__super__;
 		if (sup) {
 			initCascade.call(sup, instance, args);
 		}
 		// Do not invoke the `initialize` method on classes further up the
-		// prototype chain.
-		if (hasOwnProp.call(this.constructor.prototype, "initialize")) {
+		// prototype chain (again).
+		if (hasOwnProp.call(ctor.prototype, "initialize")) {
 			this.initialize.apply(instance, args);
 		}
 	};
@@ -296,7 +344,7 @@ Layer.prototype.on = function(eventName, handler, options) {
 				return this._layers[name];
 
 			} else {
-				d3cAssert(false, "When reattaching a layer, the second argument "+
+				d3cAssert(false, "When reattaching a layer, the second argument " +
 					"must be a d3.chart layer");
 			}
 		}
@@ -390,7 +438,7 @@ Layer.prototype.on = function(eventName, handler, options) {
 			while (j--) {
 				event = events[j];
 				if ((callback && callback === event.callback) ||
-						(context && context === event.context)) {
+					(context && context === event.context)) {
 					events.splice(j, 1);
 				}
 			}
@@ -424,7 +472,9 @@ Layer.prototype.on = function(eventName, handler, options) {
 		if (protoProps && hasOwnProp.call(protoProps, "constructor")) {
 			child = protoProps.constructor;
 		} else {
-			child = function(){ return parent.apply(this, arguments); };
+			child = function() {
+				return parent.apply(this, arguments);
+			};
 		}
 
 		// Add static properties to the constructor function, if supplied.
@@ -432,13 +482,17 @@ Layer.prototype.on = function(eventName, handler, options) {
 
 		// Set the prototype chain to inherit from `parent`, without calling
 		// `parent`'s constructor function.
-		var Surrogate = function(){ this.constructor = child; };
+		var Surrogate = function() {
+			this.constructor = child;
+		};
 		Surrogate.prototype = parent.prototype;
 		child.prototype = new Surrogate();
 
 		// Add prototype properties (instance properties) to the subclass, if
 		// supplied.
-		if (protoProps) { extend(child.prototype, protoProps); }
+		if (protoProps) {
+			extend(child.prototype, protoProps);
+		}
 
 		// Set a convenience property in case the parent's prototype is needed
 		// later.
