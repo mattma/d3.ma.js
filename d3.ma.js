@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.1.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2013-11-07
+ 	Date: 2014-03-03
 */
 (function(){
 
@@ -111,10 +111,19 @@ d3.ma.each = function(obj, iterator, context) {
 // Easy way to bind multiple functions to window.onresize
 // TODO: give a way to remove a function after its bound, other than removing all of them
 d3.ma.onResize = function(fun, context){
-	var oldresize = window.onresize;
+	// var oldresize = window.onresize;
 
-	window.onresize = function(e) {
-		if (typeof oldresize === 'function') oldresize.call(context || this, e);
+	// window.onresize = function(e) {
+	// 	if (typeof oldresize === 'function') oldresize.call(context || this, e);
+	// 	fun.call(context || this, e);
+	// }
+
+	// @todo merge it into the framework, handle it internally
+	// Not calling on resize event at all, send the functionalities to the view layer
+
+	// onResize() simply just binding the context to the function.
+	// it will call its own private method: _resize correctly
+	return function(e) {
 		fun.call(context || this, e);
 	}
 };
@@ -123,14 +132,20 @@ d3.ma.onResize = function(fun, context){
 // E.G  d3.ma.onResize(line._resize, line);
 // E.G  d3.ma.onResize(area._resize, area);
 // New Approach:  d3.ma.resize(line, area);  //actually, bind the right context to execute the onResize()
+//
+// This function will return an array of the elements which will need to bind resize event
+// @todo currently handle by the view layer, need to do it in the framework level
 d3.ma.resize = function(array)  {
 	array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
+	var listenters = [];
 
 	if( array.length ){
 		d3.ma.each(array, function(context, index){
-			d3.ma.onResize(context._resize, context);
+			listenters.push( d3.ma.onResize(context._resize, context) );
 		});
 	}
+
+	return listenters;
 };
 
 d3.ma.reloadResize = function(array)  {
@@ -334,13 +349,17 @@ d3.ma.zoom = function() {
 			# getter. Return all the infomation about this container. expose all the data to the world
 			include value of   marginTop, marginRight, marginBottom, marginLeft, containerW, containerH, canvasW, canvasH, id, cid
 */
-d3.ma.container = function(selector) {
 
-	var selection = d3.select(selector);
+// Context is very important here. When dealing with backbone itemview.
+// try to limit the current context of the selector, so need to apply the context to limit the selector scope
+// context is an optional param, ignore it as needed
+d3.ma.container = function(selector, context) {
+
+	var selection = (context) ? d3.select(context).select(selector) : d3.select(selector);
 
 	var margin = { top: 30, right: 10, bottom: 20, left: 40 },
-		containerW = d3.ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
-		containerH = d3.ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
+		containerW = (context) ? d3.ma.$$(context + ' '+ selector).clientWidth : d3.ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
+		containerH = (context) ? d3.ma.$$(context + ' '+ selector).clientHeight : d3.ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
 		canvasW,
 		canvasH,
 		container = selection.append('svg'),  // Create container, append svg element to the selection
@@ -1007,8 +1026,13 @@ d3.chart('Scale').extend('Base', {
 		// fluid attribute is being checked, on parentNode element data-fluid attr, it could be set by container.fluid()
 
 		var containerInfo = this.info,
-			parentNodeEl = d3.ma.$$(containerInfo.parentNode),
-			currentWindowSize = d3.ma.windowSize(),
+			parentNodeEl = d3.ma.$$(containerInfo.parentNode);
+
+		// If parentNodeEl is undefined, that means we need to unbind the resize event
+		// in this case, simply just return false
+		if ( !parentNodeEl ) { return false; }
+
+		var currentWindowSize = d3.ma.windowSize(),
 			fluid = parentNodeEl.getAttribute('data-fluid'),
 
 			widthOffset = ( d3.ma.responsive ) ? parentNodeEl.offsetLeft : d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
@@ -1024,11 +1048,14 @@ d3.chart('Scale').extend('Base', {
 				oldClientH = containerInfo.containerH,
 				newClientH = parentNodeEl.clientHeight;
 
+			// canvasEl & clippathEl,
+			// When chart updated, containerOption Id value is not being updated,
+			// for the current bug fixes, it just goes down the dom tree to find the element by structure
 			if ( oldClientW < newClientW || oldClientH < newClientH ) {
 				var viewBoxValue = '0 0 ' + newClientW + ' ' + newClientH,
 					svgEl = parentNodeEl.children[0],
-					canvasEl = d3.ma.$$(containerInfo.id),
-					clippathEl = d3.ma.$$(containerInfo.cid + ' rect');
+					canvasEl = d3.ma.$$(containerInfo.id) || d3.ma.$$('#summaryChart').children[0].children[1],
+					clippathEl = d3.ma.$$(containerInfo.cid + ' rect') || d3.ma.$$('#summaryChart').children[0].children[0].children[0].children[0];
 
 				// update svg element width & height property
 				svgEl.setAttribute('width', newClientW);
@@ -1070,6 +1097,17 @@ d3.chart('Scale').extend('Base', {
 				this.dispatch.d3maOffWindowResize(offObj);
 			}
 		}
+	},
+
+	// Currently did not use in the app, but need hook to the unBind Resize event
+	// @todo has a global on, off, in the framework to handle all the event binding, unbinding
+	_unbindResize: function() {
+		var containerInfo = this.info,
+			offObj = {
+				width: containerInfo.canvasW,
+				height: containerInfo.canvasH
+			};
+		this.dispatch.d3maOffWindowResize(offObj);
 	},
 
 	// it is the handler for the internal _resize() which definied above this one
@@ -1269,6 +1307,8 @@ d3.chart('Base').extend("Axis", {
 			.call( this.yAxis);
 
 		if(this.options.y1) {
+			var _w = +(this.base.attr('width'));
+			this.yPos( _w, true);
 
 			this.y1AxisG
 				.transition()
@@ -1306,17 +1346,24 @@ d3.chart('Base').extend("Axis", {
 
 	// Update Scale, Box Size, and attr values
 	_update: function( _width, _height, chart ) {
-		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
+		if(this.update) {
+			this.update( _width, _height, chart );
+		}
 
 		if(this.ticksOnResize) this._redrawTicksOnResize();
 
+		this.xAxisG.attr({'transform': 'translate(0,' + _height + ')'});
+
+		// Those updates need to handle by the update method
+		// Otherwise, constructor update won't be able to override this setting
+		//
 		if(this.guide) {
 			this.xAxis
-				.tickPadding(5)
+				//.tickPadding(5)
 				.tickSize(-this.height, 0, 6); //axis.tickSize([major[‚Äã[, minor], end]])
 
 			this.yAxis
-				.tickPadding(5)
+				//.tickPadding(5)
 				.tickSize(-this.width, 0, 6);
 		}
 
@@ -1556,20 +1603,31 @@ d3.chart('Base').extend('Bars', {
 
 		var self = this;
 
-		this.layer('bars', this.base, {
+		this.barsGroup = this.base.selectAll('.group');
+
+		this.layer('bars', this.barsGroup, {
 
 			// select the elements we wish to bind to and bind the data to them.
 			dataBind: function(data) {
 				var chart = this.chart();
-				if(chart.onDataBind) { chart.onDataBind(data, chart); }
-				return this.selectAll('.group').data(data);
+				if (chart.onDataBind) {
+					chart.onDataBind(data, chart);
+				}
+				return (chart.rectsGroup) ? chart.rectsGroup.data(data) : this.data(data);
 			},
 
 			// insert actual bars, defined its own attrs
 			insert: function() {
 				var chart = this.chart();
-				if(chart.onInsert) { chart.onInsert(chart); }
-				return this.append('g').classed('group', true).append('rect');
+				if (chart.onInsert) {
+					chart.onInsert(chart);
+				}
+
+				if (!chart.rectsGroup) {
+					chart.rectsGroup = this.append('g').classed('group', true).append('rect');
+				}
+
+				return chart.rectsGroup;
 			},
 
 			// define lifecycle events
@@ -1580,21 +1638,27 @@ d3.chart('Base').extend('Bars', {
 					// onEnter fn will take two args
 					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
 					// this   # refer to each individual group just appended by insert command
-					if(chart.onEnter) { chart.onEnter(chart, this); }
+					if (chart.onEnter) {
+						chart.onEnter(chart, this);
+					}
 
 					// Used for animation the fill opacity property, work with enter:transition
-					this.style('opacity', 1e-6);
+					//this.style('opacity', 1e-6);
 				},
 
 				'enter:transition': function() {
 					var chart = this.chart();
-					return this
-							.duration(1000)
-							.style('opacity', 0.8);
+					if (chart.onEnterTransition) {
+						chart.onEnterTransition(chart, this);
+					}
 				},
 
 				'merge': function() {
 					var chart = this.chart();
+
+					if (chart.onMerge) {
+						chart.onMerge(chart, this);
+					}
 
 					chart._onWindowResize(chart, this);
 					self._bindMouseEnterOutEvents(chart, this);
@@ -1605,7 +1669,7 @@ d3.chart('Base').extend('Bars', {
 					this
 						.duration(400)
 						.ease('cubic-in')
-						.style( 'opacity', 1e-6)
+						.style('opacity', 1e-6)
 						.remove();
 				}
 			}
@@ -1656,7 +1720,7 @@ d3.chart('Base').extend('Line', {
 					.x(function(d) { return chart.xScale(d.x); })
 					.y(function(d) { return chart.yScale(d.y);  });
 
-				if(chart.onDataBind) { chart.onDataBind( data, chart, (options.data) ? options.data : undefined ); }
+				if(chart.onDataBind) { chart.onDataBind( data, chart ); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
@@ -1703,6 +1767,10 @@ d3.chart('Base').extend('Line', {
 				}
 			}
 		});
+	},
+
+	_update: function( _width, _height, chart, single ) {
+		this.linePath.attr({ 'd': chart.line });
 	}
 
 	// 	if(this.onDataBind) { this.onDataBind(); }
@@ -1747,7 +1815,7 @@ d3.chart('Base').extend('Area', {
 					.y1(function(d) { return chart.yScale(d.y);  })
 					.y0( chart.height );
 
-				if(chart.onDataBind) { chart.onDataBind(data, chart, (options.data) ? options.data : undefined ); }
+				if(chart.onDataBind) { chart.onDataBind(data, chart); }
 
 				// data[options.data]  will return a single array, data will bind path element to each array index,
 				// by pushing options array into an anonymous array, ONLY one path element will be created
@@ -1794,6 +1862,13 @@ d3.chart('Base').extend('Area', {
 				}
 			}
 		});
+	},
+
+	_update: function( _width, _height, chart, single ) {
+		if(this.update) {
+			this.update( _width, _height, chart, single );
+		}
+		this.areaPath.attr({ 'd': chart.area });
 	}
 });
 /*
@@ -1852,6 +1927,69 @@ d3.chart('Base').extend('Circle', {
 				}
 			}
 		});
+	},
+
+	_update: function( _width, _height, chart, single ) {
+		if(this.update) {
+			this.update( _width, _height, chart, single );
+		}
+	}
+});
+/*
+ */
+d3.chart('Base').extend('SimpleLine', {
+
+	initialize: function(options) {
+		this.options = options = options || {};
+		var self = this;
+
+		this.layer('simpleLine', this.base, {
+			dataBind: function(data) {
+				var chart = this.chart();
+
+				if(chart.onDataBind) { chart.onDataBind( data, chart ); }
+
+				return this.classed('simple-lines', true).selectAll('line').data(data);
+			},
+
+			insert: function(){
+				var chart = this.chart();
+				if(chart.onInsert) { chart.onInsert(chart); }
+				return this.append('line');
+			},
+
+			events: {
+				'enter': function() {
+					var chart = this.chart();
+
+					// chart  # refer to this context, used it to access xScale, yScale, width, height, etc. chart property
+					// this   # refer to each individual group just appended by insert command
+					if(chart.onEnter) { chart.onEnter(chart, this); }
+				},
+
+				'merge': function() {
+					var chart = this.chart();
+
+					chart._onWindowResize(chart, this);
+					self._bindMouseEnterOutEvents(chart, this);
+				},
+
+				'exit:transition': function() {
+					var chart = this.chart();
+					this
+						.duration(400)
+						.ease('cubic-in')
+						.style( 'opacity', 1e-6)
+						.remove();
+				}
+			}
+		});
+	},
+
+	_update: function( _width, _height, chart, single ) {
+		if(this.update) {
+			this.update( _width, _height, chart, single );
+		}
 	}
 });
 })();
