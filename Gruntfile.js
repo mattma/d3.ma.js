@@ -16,7 +16,7 @@ module.exports = function( grunt ) {
 			BUILD: 'build',
 			TMP: 'tmp',
 			HOSTNAME: 'file:///Users/mma',
-			PATH: '<%= CONFIGS.HOSTNAME %>/Desktop/repo/bitbucket/d3.ma/examples/basic-bars.html'
+			PATH: '<%= CONFIGS.HOSTNAME %>/Desktop/repo/bitbucket/d3.ma/index.html'
 		},
 
 		pkg: grunt.file.readJSON('package.json'),
