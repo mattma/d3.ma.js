@@ -6,8 +6,14 @@
 
 'use strict';
 
+var previousD3Chart = window.d3Chart;
 var d3Chart = window.d3Chart = {};
 var d3 = window.d3;
+
+d3Chart.noConflict = function() {
+	window.d3Chart = previousD3Chart;
+	return d3Chart;
+};
 
 d3Chart.assert = function(test, message) {
 	if (test) {
