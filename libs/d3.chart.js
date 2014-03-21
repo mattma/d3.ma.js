@@ -1,62 +1,93 @@
-/*! d3.chart - v0.1.3
- *  License: MIT Expat
- *  Date: 2013-10-07
+/*! d3.chart - v0.2.0
+ *  Modified based on v0.2.0 - Home Baked
+ *  Date: 2014-02-21
  */
 (function(window, undefined) {
-
+/*jshint unused: false */
 'use strict';
 
 var d3Chart = window.d3Chart = {};
 var d3 = window.d3;
+var hasOwnProp = Object.hasOwnProperty;
 
-d3Chart.assert = function(test, message) {
+var d3cAssert = function(test, message) {
 	if (test) {
 		return;
 	}
 	throw new Error("[d3.chart] " + message);
 };
 
-d3Chart.assert(d3, "d3.js is required");
-d3Chart.assert(typeof d3.version === "string" && d3.version.match(/^3/),
+d3cAssert(d3, "d3.js is required");
+d3cAssert(typeof d3.version === "string" && d3.version.match(/^3/),
 	"d3.js version 3 is required");
 
-}(this));
+// @todo file break line
 
-(function(window, undefined) {
+var lifecycleRe = /^(enter|update|merge|exit)(:transition)?$/;
 
-	"use strict";
+/**
+ * Create a layer using the provided `base`. The layer instance is *not*
+ * exposed to d3.chart users. Instead, its instance methods are mixed in to the
+ * `base` selection it describes; users interact with the instance via these
+ * bound methods.
+ *
+ * @private
+ * @constructor
+ *
+ * @param {d3.selection} base The containing DOM node for the layer.
+ */
+var Layer = function(base) {
+	d3cAssert(base, "Layers must be initialized with a base.");
+	this._base = base;
+	this._handlers = {};
+};
 
-	var d3Chart = window.d3Chart;
-	var d3 = window.d3;
+/**
+ * Invoked by {@link Layer#draw} to join data with this layer's DOM nodes. This
+ * implementation is "virtual"--it *must* be overridden by Layer instances.
+ *
+ * @param {Array} data Value passed to {@link Layer#draw}
+ */
+Layer.prototype.dataBind = function() {
+	d3cAssert(false, "Layers must specify a `dataBind` method.");
+};
 
-	var Layer = function(base) {
-		d3Chart.assert(base, "Layers must be initialized with a base.");
-		this._base = base;
-		this._handlers = {};
-	};
+/**
+ * Invoked by {@link Layer#draw} in order to insert new DOM nodes into this
+ * layer's `base`. This implementation is "virtual"--it *must* be overridden by
+ * Layer instances.
+ */
+Layer.prototype.insert = function() {
+	d3cAssert(false, "Layers must specify an `insert` method.");
+};
 
-	// dataBind
-	Layer.prototype.dataBind = function() {
-		d3Chart.assert(false, "Layers must specify a `dataBind` method.");
-	};
-
-	// insert
-	Layer.prototype.insert = function() {
-		d3Chart.assert(false, "Layers must specify an `insert` method.");
-	};
-
-	// on
-	// Attach the specified handler to the specified event type.
-	Layer.prototype.on = function(eventName, handler, options) {
-		options = options || {};
-		if (!(eventName in this._handlers)) {
-			this._handlers[eventName] = [];
-		}
-		this._handlers[eventName].push({
-			callback: handler,
-			chart: options.chart || null
-		});
-	};
+/**
+ * Subscribe a handler to a "lifecycle event". These events (and only these
+ * events) are triggered when {@link Layer#draw} is invoked--see that method
+ * for more details on lifecycle events.
+ *
+ * @param {String} eventName Identifier for the lifecycle event for which to
+ *        subscribe.
+ * @param {Function} handler Callback function
+ *
+ * @returns {d3.selection} Reference to the layer's base.
+ */
+Layer.prototype.on = function(eventName, handler, options) {
+	options = options || {};
+      d3cAssert(
+            lifecycleRe.test(eventName),
+            "Unrecognized lifecycle event name specified to `Layer#on`: '" +
+            eventName + "'."
+      );
+	if (!(eventName in this._handlers)) {
+		this._handlers[eventName] = [];
+	}
+	this._handlers[eventName].push({
+		callback: handler,
+		chart: options.chart || null
+	});
+      return this._base;
+};
 
 	// off
 	// Remove the specified handler. If no handler is supplied, remove *all*
@@ -92,9 +123,9 @@ d3Chart.assert(typeof d3.version === "string" && d3.version.match(/^3/),
 
 		// Although `bound instanceof d3.selection` is more explicit, it fails
 		// in IE8, so we use duck typing to maintain compatability.
-		d3Chart.assert(bound && bound.call === d3.selection.prototype.call,
+		d3cAssert(bound && bound.call === d3.selection.prototype.call,
 			"Invalid selection defined by `Layer#dataBind` method.");
-		d3Chart.assert(bound.enter, "Layer selection not properly bound.");
+		d3cAssert(bound.enter, "Layer selection not properly bound.");
 
 		entering = bound.enter();
 		entering._chart = this._base._chart;
@@ -135,7 +166,7 @@ d3Chart.assert(typeof d3.version === "string" && d3.version.match(/^3/),
 			// Although `selection instanceof d3.selection` is more explicit,
 			// it fails in IE8, so we use duck typing to maintain
 			// compatability.
-			d3Chart.assert(selection &&
+			d3cAssert(selection &&
 				selection.call === d3.selection.prototype.call,
 				"Invalid selection defined for '" + eventName +
 				"' lifecycle event.");
@@ -185,16 +216,6 @@ d3Chart.assert(typeof d3.version === "string" && d3.version.match(/^3/),
 
 		return this;
 	};
-
-}(this));
-
-(function(window, undefined) {
-
-	"use strict";
-
-	var d3Chart = window.d3Chart;
-	var d3 = window.d3;
-	var hasOwnProp = Object.hasOwnProperty;
 
 	var Surrogate = function(ctor) { this.constructor = ctor; };
 	var variadicNew = function(Ctor, args) {
@@ -275,7 +296,7 @@ d3Chart.assert(typeof d3.version === "string" && d3.version.match(/^3/),
 				return this._layers[name];
 
 			} else {
-				d3Chart.assert(false, "When reattaching a layer, the second argument "+
+				d3cAssert(false, "When reattaching a layer, the second argument "+
 					"must be a d3.chart layer");
 			}
 		}
@@ -447,7 +468,7 @@ d3Chart.assert(typeof d3.version === "string" && d3.version.match(/^3/),
 		}
 		var ChartCtor = Chart[chartName];
 		var chartArgs;
-		d3Chart.assert(ChartCtor, "No chart registered with name '" +
+		d3cAssert(ChartCtor, "No chart registered with name '" +
 			chartName + "'");
 
 		chartArgs = Array.prototype.slice.call(arguments, 1);
