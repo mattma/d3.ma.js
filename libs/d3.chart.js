@@ -6,7 +6,6 @@
 	/*jshint unused: false */
 	'use strict';
 
-	var d3Chart = window.d3Chart = {};
 	var d3 = window.d3;
 	var hasOwnProp = Object.hasOwnProperty;
 
