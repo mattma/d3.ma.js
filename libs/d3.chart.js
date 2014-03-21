@@ -4,7 +4,7 @@
  */
 (function(window, undefined) {
 
-"use strict";
+'use strict';
 
 var previousD3Chart = window.d3Chart;
 var d3Chart = window.d3Chart = {};
