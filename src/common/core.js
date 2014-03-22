@@ -1,13 +1,6 @@
 var d3 = window.d3;
 
-var previousD3ma = window.d3.ma;
-
 var d3ma = d3.ma = {version: '0.2.0'}; // semver;
-
-d3ma.noConflict = function() {
-	window.d3ma= previousD3ma;
-	return d3ma;
-};
 
 d3ma.assert = function(test, message) {
 	if(test) { return; }
