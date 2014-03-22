@@ -258,11 +258,12 @@
 		return this;
 	};
 
-	var Surrogate = function(ctor) {
-		this.constructor = ctor;
-	};
 	var variadicNew = function(Ctor, args) {
-		var inst;
+		var inst,
+			// Set the prototype chain to inherit from parent, without calling parent‘s constructor function.
+			Surrogate = function(ctor) {
+				this.constructor = ctor;
+			};
 		Surrogate.prototype = Ctor.prototype;
 		inst = new Surrogate(Ctor);
 		Ctor.apply(inst, args);
