@@ -2,14 +2,14 @@
 	return element: Most of methods return svg canvas object for easy chaining
 
 	Initalization:
-		var container = d3.ma.container('#vis').margin({top: 80, left: 80}).box(1400, 600);
+		var container = d3ma.container('#vis').margin({top: 80, left: 80}).box(1400, 600);
 		var canvas = container.canvas().chart("FinalChart", container.info() );
 		canvas.draw(data);
 
 		Note: container.info() as 2nd parameter is absolutely the core required. It allows each individual layer to know what is the context of the current canvas, passing an object of dataset like container width, height, canvas info including its id, clippath id, width, height, and other info
 
 	Syntax:
-		d3.ma.container(selector)    // is absolutely required, others are optional.
+		d3ma.container(selector)    // is absolutely required, others are optional.
 		# container(selector) will take a css selector, which will be the container to append the svg element
 
 	Note:
@@ -54,13 +54,13 @@
 // Context is very important here. When dealing with backbone itemview.
 // try to limit the current context of the selector, so need to apply the context to limit the selector scope
 // context is an optional param, ignore it as needed
-d3.ma.container = function(selector, context) {
+d3ma.container = function(selector, context) {
 
 	var selection = (context) ? d3.select(context).select(selector) : d3.select(selector);
 
 	var margin = { top: 30, right: 10, bottom: 20, left: 40 },
-		containerW = (context) ? d3.ma.$$(context + ' '+ selector).clientWidth : d3.ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
-		containerH = (context) ? d3.ma.$$(context + ' '+ selector).clientHeight : d3.ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
+		containerW = (context) ? d3ma.$$(context + ' '+ selector).clientWidth : d3ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
+		containerH = (context) ? d3ma.$$(context + ' '+ selector).clientHeight : d3ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
 		canvasW,
 		canvasH,
 		container = selection.append('svg'),  // Create container, append svg element to the selection
@@ -199,12 +199,12 @@ d3.ma.container = function(selector, context) {
 
 	// e.g container.resize().box(1400, 600);
 	// container.resize() fn could be called from container object, it is chainable
-	// d3.ma.resize() should be used all the time. This resize() is the old implementation
+	// d3ma.resize() should be used all the time. This resize() is the old implementation
 	container.resize = function() {
 		//The Graph will auto scale itself when resize
-		d3.ma.onResize( function() {
+		d3ma.onResize( function() {
 
-			var windowWidth = d3.ma.windowSize().width;
+			var windowWidth = d3ma.windowSize().width;
 
 			if ( windowWidth < containerW ) {
 				container.attr({
@@ -234,16 +234,16 @@ d3.ma.container = function(selector, context) {
 	// step 1: set svg's parent element ( container ) css box style   ex: +box(100%, 360)
 	// step 2: when/where initialize the container, calling fluid function.
 	// Ex:
-	// 	var clientW = d3.ma.$$('#summaryChart').clientWidth,
-	// 		clientH = d3.ma.$$('#summaryChart').clientHeight;
+	// 	var clientW = d3ma.$$('#summaryChart').clientWidth,
+	// 		clientH = d3ma.$$('#summaryChart').clientHeight;
 	// 	container.box( clientW, clientH ).fluid();
 	// step 3: at the finalChart rendering function, calling the resize function
-	// Ex: 	d3.ma.resize(key1Line, axis);
+	// Ex: 	d3ma.resize(key1Line, axis);
 	//
 	// It will set parentNode data-fluid attribute on individual chart, then framework will check each chart on this custom value, if it match 'responsive' value, then it will do all the calculation to make a responsive chart. By default, it will expect data-fluid as an empty value, then it will do the fixed layout resizing
 	container.fluid = function() {
 		var info = container.info(),
-			svgEl = d3.ma.$$(info.parentNode);
+			svgEl = d3ma.$$(info.parentNode);
 
 		svgEl.setAttribute('data-fluid', 'responsive');
 		return container;

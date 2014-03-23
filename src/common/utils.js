@@ -1,7 +1,7 @@
 // Pull Straight out of nvd3 library
 // get the current windowSize() out of the DOM
 // return and object has width value and height value
-d3.ma.windowSize = function() {
+d3ma.windowSize = function() {
 	// Sane defaults
 	var size = {width: 640, height: 480};
 
@@ -29,7 +29,7 @@ d3.ma.windowSize = function() {
 
 
 // Default color chooser uses the index of an object as before.
-d3.ma.Color = function() {
+d3ma.Color = function() {
 	var colors = d3.scale.category20().range();
 	return function(d, i) { return d.color || colors[i % colors.length] };
 };
@@ -39,7 +39,7 @@ d3.ma.Color = function() {
 Most common instance is when the element is in a display:none; container.
 Forumla is : text.length * font-size * constant_factor
 */
-d3.ma.calcTextWidth = function (svgTextElem) {
+d3ma.calcTextWidth = function (svgTextElem) {
 	if (svgTextElem instanceof d3.selection) {
 		var fontSize = parseInt(svgTextElem.style('font-size').replace('px',''));
 		var textLength = svgTextElem.text().length;
@@ -51,7 +51,7 @@ d3.ma.calcTextWidth = function (svgTextElem) {
 
 
 // Work the same way how underscore.js signiture each method
-d3.ma.each = function(obj, iterator, context) {
+d3ma.each = function(obj, iterator, context) {
 
 	if (obj == null) return;
 
@@ -76,7 +76,7 @@ d3.ma.each = function(obj, iterator, context) {
 // Pull Straight out of nvd3 library
 // Easy way to bind multiple functions to window.onresize
 // TODO: give a way to remove a function after its bound, other than removing all of them
-d3.ma.onResize = function(fun, context){
+d3ma.onResize = function(fun, context){
 	// var oldresize = window.onresize;
 
 	// window.onresize = function(e) {
@@ -95,34 +95,34 @@ d3.ma.onResize = function(fun, context){
 };
 
 // Convinient method to call onResize() bind to the right context
-// E.G  d3.ma.onResize(line._resize, line);
-// E.G  d3.ma.onResize(area._resize, area);
-// New Approach:  d3.ma.resize(line, area);  //actually, bind the right context to execute the onResize()
+// E.G  d3ma.onResize(line._resize, line);
+// E.G  d3ma.onResize(area._resize, area);
+// New Approach:  d3ma.resize(line, area);  //actually, bind the right context to execute the onResize()
 //
 // This function will return an array of the elements which will need to bind resize event
 // @todo currently handle by the view layer, need to do it in the framework level
-d3.ma.resize = function(array)  {
+d3ma.resize = function(array)  {
 	array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
 	var listenters = [];
 
 	if( array.length ){
-		d3.ma.each(array, function(context, index){
-			listenters.push( d3.ma.onResize(context._resize, context) );
+		d3ma.each(array, function(context, index){
+			listenters.push( d3ma.onResize(context._resize, context) );
 		});
 	}
 
 	return listenters;
 };
 
-d3.ma.reloadResize = function(array)  {
+d3ma.reloadResize = function(array)  {
 	array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
 
 	if( array.length ){
 		var e = {
-			width: d3.ma.windowSize().width,
-			height: d3.ma.windowSize().height
+			width: d3ma.windowSize().width,
+			height: d3ma.windowSize().height
 		};
-		d3.ma.each(array, function(context, index){
+		d3ma.each(array, function(context, index){
 			context._resize.call(context || this);
 			context._redraw(e);
 		});
@@ -134,7 +134,7 @@ d3.ma.reloadResize = function(array)  {
 // In general, you do not need to apply 2nd arg. by default, element is document
 // selector could be any string, it is required. e.g:  id, class, tagName, any css selector
 // return  an array representation of DOM objects.
-d3.ma.$ = function(selector, element) {
+d3ma.$ = function(selector, element) {
 
 	var found,
 		element = element || document,
@@ -157,18 +157,18 @@ d3.ma.$ = function(selector, element) {
 		);
 };
 
-// variation of d3.ma.$(selector). return a single DOM object, the first index of the array
+// variation of d3ma.$(selector). return a single DOM object, the first index of the array
 // Works best with id selection. selector could be any string, it is required. e.g:  id, class, tagName, any css selector
-// Use case:  when dealing with d3.ma.tooltip(), 3rd arg would expect to have a DOM element e.g:  d3.ma.$$('#vis')
-d3.ma.$$ = function(selector, element) {
-	var ret = d3.ma.$(selector, element);
+// Use case:  when dealing with d3ma.tooltip(), 3rd arg would expect to have a DOM element e.g:  d3ma.$$('#vis')
+d3ma.$$ = function(selector, element) {
+	var ret = d3ma.$(selector, element);
 	return ret[0];
 };
 
 
 /*
-	Works like a constructor, initialize the tooltip object. e.g var tooltip = d3.ma.tooltip()
-	Argument:  context.  optional, by passing the current context of my function to detemine which DOM element should be append the tooltip HTML markup. In general, d3.ma.tooltip(this.base). Tooltip block should be the siblings of the svg element
+	Works like a constructor, initialize the tooltip object. e.g var tooltip = d3ma.tooltip()
+	Argument:  context.  optional, by passing the current context of my function to detemine which DOM element should be append the tooltip HTML markup. In general, d3ma.tooltip(this.base). Tooltip block should be the siblings of the svg element
 
 	tooltip.show()  # show tooltip markup like switch the display property on.
 		pos: Array, required. expect [x, y] to detemine tooltip position left, and top pixel value. The value should be set without tooltip obj to figure out where it should be positioned to.
@@ -176,12 +176,12 @@ d3.ma.$$ = function(selector, element) {
 		parentContainer: optional. single DOM object, the element which need to contain the tooltip block. By default, it will add to the body element
 		classes: optional, by default, tooltip has d3maTooltip class, add more classes if needed
 
-		E.G  tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'))
+		E.G  tooltip.show([e.pos[0], e.pos[1]], html, d3ma.$$('#vis'))
 
 	tooltip.close()   # suppress the current tooltip block. turn the visiblity of tooltip off. can have 'd3maTooltip-pending-removal' class to show something interesting before it is being removed.
  */
 
-d3.ma.tooltip = function(context) {
+d3ma.tooltip = function(context) {
 	var tooltip = {},
 		context = context || tooltip;
 
@@ -206,8 +206,8 @@ d3.ma.tooltip = function(context) {
 
 		// var height = parseInt(tooltipContainer.offsetHeight),
 		// 	width = parseInt(tooltipContainer.offsetWidth),
-		// 	windowWidth = d3.ma.windowSize().width,
-		// 	windowHeight = d3.ma.windowSize().height,
+		// 	windowWidth = d3ma.windowSize().width,
+		// 	windowHeight = d3ma.windowSize().height,
 		// 	scrollTop = window.scrollY,
 		// 	scrollLeft = window.scrollX,
 
@@ -258,7 +258,7 @@ d3.ma.tooltip = function(context) {
 };
 
 // TODO: Implement zoom feature here
-d3.ma.zoom = function() {
+d3ma.zoom = function() {
 	var zoom = {};
 
 	return zoom;
