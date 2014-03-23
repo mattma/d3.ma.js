@@ -17,7 +17,7 @@ define([
 			var vis = document.body.appendChild(div);
 			vis.id='vis';
 
-			var visContainer = d3.ma.container('#vis').box(1400, 600);
+			var visContainer = d3ma.container('#vis').box(1400, 600);
 
 			var scaleChart = d3.chart('TestBase', {
 				initialize: function(containerInfo) {
@@ -147,10 +147,10 @@ define([
 		// @todo, need to rewrite this test since we change the API, 11/12/13
 		// Step 1 _resize() to be triggered by onResize() or custom resize()
 		// it('should have a private fn _resize which will be triggered by onResize', function(done){
-		// 	var spy = sinon.spy( d3.ma, 'onResize');
+		// 	var spy = sinon.spy( d3ma, 'onResize');
 		// 	var barsSpy = sinon.spy( bars, '_resize');
 
-		// 	d3.ma.resize(bars);
+		// 	d3ma.resize(bars);
 		// 	spy.should.have.been.calledOnce;
 
 		// 	// Only happens when onResize event triggered

@@ -43,7 +43,7 @@
 		linear, ordinal, log, pow, sqrt, identity, quantile, quantize, threshold
 
 	Example:
-		var container = d3.ma.container('#vis');
+		var container = d3ma.container('#vis');
 		container.resize().box(1400, 600);
 
 		// Important, to pass the container.info() as a 2nd param

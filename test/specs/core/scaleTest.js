@@ -15,7 +15,7 @@ define([
 			var vis = document.body.appendChild(div);
 			vis.id='vis';
 
-			var visContainer = d3.ma.container('#vis').box(1400, 600);
+			var visContainer = d3ma.container('#vis').box(1400, 600);
 			info = visContainer.info();
 
 			var scaleChart = d3.chart('TestScale', {

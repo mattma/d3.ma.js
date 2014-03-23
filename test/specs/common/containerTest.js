@@ -17,7 +17,7 @@ define([
 				var defaultDiv = document.body.appendChild(div);
 				defaultDiv.id='default';
 
-				defaultContainer = d3.ma.container('#default').box(960, 540);
+				defaultContainer = d3ma.container('#default').box(960, 540);
 				box = defaultContainer.box();
 
 				done();
@@ -52,7 +52,7 @@ define([
 				var vis = document.body.appendChild(div);
 				vis.id='vis';
 
-				container = d3.ma.container('#vis').margin({top: 80, left: 60}).box(1400, 600);
+				container = d3ma.container('#vis').margin({top: 80, left: 60}).box(1400, 600);
 				box = container.box();
 				info = container.info();
 				done();
