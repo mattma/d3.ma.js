@@ -26,12 +26,11 @@ require.config({
 	},
 
 	shim: {
-		d3: {
-			exports : 'd3'
-		},
+		// d3: {
+		// 	exports : 'd3'
+		// },
 		d3ma: {
-			exports : 'd3.ma',
-			deps : ['d3chart']
+			deps : ['d3']
 		},
 		sinon: {
 			exports: 'sinon'
