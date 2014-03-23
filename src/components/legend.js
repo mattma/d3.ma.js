@@ -9,7 +9,7 @@ d3.chart('Legend', {
 		options = options || {};
 		var info = options.info;
 
-		var color = d3.ma.Color();
+		var color = d3ma.Color();
 
 		this.dispatch = d3.dispatch('d3maLegendMouseenter', 'd3maLegendMouseout', 'd3maLegendClick');
 
@@ -74,7 +74,7 @@ d3.chart('Legend', {
 						this.each(function(d,i) {
 							var legendText = d3.select(this).select('text'),
 								svgComputedTextLength = legendText.node().getComputedTextLength()
-																	|| d3.ma.calcTextWidth(legendText);
+																	|| d3ma.calcTextWidth(legendText);
 
 							// 28 is ~ the width of the circle plus some padding
 							eachLegendWidthArray.push(svgComputedTextLength + 28);
