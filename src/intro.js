@@ -8,5 +8,3 @@
 } (this, function (d3) {
 
 'use strict';
-
-console.log('fire me');

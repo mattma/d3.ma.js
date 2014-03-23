@@ -32,18 +32,11 @@ define([
 	});
 
 	describe('d3.ma core - common/core.js', function(){
-		it('should have a fn called d3.ma.assert', function(done){
-			d3ma.assert.should.be.a('function');
-			done();
-		});
 
 		it('should have d3ma object and d3.ma object', function(done){
 			d3.should.be.an('object');
 			d3ma.should.be.an('object');
 			d3ma.should.be.exist;
-			window.d3.should.be.exist;
-			window.d3Chart.should.be.exist;
-			window.d3.ma.should.be.exist;
 			done();
 		});
 	});
