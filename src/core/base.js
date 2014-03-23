@@ -35,7 +35,7 @@
 			# when it is entering, binding datum with each element, single element will bind 'mouseenter' event with our custom 'd3maMouseenter', bind 'mouseout' with our custom event 'd3maMouseout'.
 			For example, quick internal binding to reduce duplicated code in modules like circle.js, bars.js etc
 
-		1. _resize()  # called from d3.ma.onResize() or d3.ma.resize()
+		1. _resize()  # called from d3ma.onResize() or d3ma.resize()
 		2. _onWindowResize(chart, single)  # called from each individual module. It has to defined in each module basis. Since it has to pass the chart, single info in this.layer lifeevent enter event. No way to know its context in base.js level.
 		3. _redraw(e, chart, single)  # called from each individual module
 		4. _unbind(e, chart, single) # called from each individual module
@@ -43,14 +43,14 @@
 		6. _update(_width, _height, chart, single)  # this methods should be handled by each module, normally defined for special cases
 
 		Here is the logic on those private methods above.
-		When each instance attach an function of resize(context, context ...), E.G. d3.ma.onResize(line._resize, line); `1. _resize()` is called automatically, it will figure it out current width and height, dispatch 'd3maOnWindowResize' or 'd3maOffWindowResize' accordingly, passing the correct data object to the handlers.
+		When each instance attach an function of resize(context, context ...), E.G. d3ma.onResize(line._resize, line); `1. _resize()` is called automatically, it will figure it out current width and height, dispatch 'd3maOnWindowResize' or 'd3maOffWindowResize' accordingly, passing the correct data object to the handlers.
 
 		Each module ( like line, bar, circle etc ) will handle it to trigger `2. _onWindowResize()` this._onWindowResize() like Line, Axis or chart._onWindowResize(chart, this) inside this.layer enter lifeevent. _onWindowResize defined the global handler on 'd3maOnWindowResize' or 'd3maOffWindowResize', passing three arguments (e, chart, single).
 		e is the object received from 'd3maOnWindowResize' or 'd3maOffWindowResize'.
 		chart refer to this context, used it to access xScale, yScale, width, height, etc. chart property.
 		single refer to each individual group just appended by insert command.
 
-		`3. _redraw(e, chart, single)` will be triggered on 'd3maOnWindowResize'. First, it will trigger `5. _updateScale(_width, _height)`, based on the current xScale string value, yScale string value, update the xScale, yScale range array. ( defined in scale.js ) and update the module box width and height attribute.  Second, it will dispatch another global d3.ma event. 'd3maSingleWindowResize', passing (chart, single) as its arguments.  Third, defined a recommended method called `6. update()`. E.G. this.update( _width, _height, chart, single ).  so any module could hook into this method and attach its own custom updates based on current context and its useful values like width, height, chart info and single info
+		`3. _redraw(e, chart, single)` will be triggered on 'd3maOnWindowResize'. First, it will trigger `5. _updateScale(_width, _height)`, based on the current xScale string value, yScale string value, update the xScale, yScale range array. ( defined in scale.js ) and update the module box width and height attribute.  Second, it will dispatch another global d3ma event. 'd3maSingleWindowResize', passing (chart, single) as its arguments.  Third, defined a recommended method called `6. update()`. E.G. this.update( _width, _height, chart, single ).  so any module could hook into this method and attach its own custom updates based on current context and its useful values like width, height, chart info and single info
 
 		`4. _unbind(e, chart, single)` will be triggered on 'd3maOffWindowResize'. It will auto trigger `5. _updateScale(_width, _height)` and `6. update( _width, _height, chart, single )` for modifying the scale range and domain
 
@@ -147,24 +147,24 @@ d3.chart('Scale').extend('Base', {
 
 	_resize: function() {
 		// NOTE: this here is the context where you definied in the 2nd param when initialized
-		// ex: d3.ma.onResize(line._resize, line);
+		// ex: d3ma.onResize(line._resize, line);
 		// in this case, the context here is  line
 		//
 		// fluid attribute is being checked, on parentNode element data-fluid attr, it could be set by container.fluid()
 
 		var containerInfo = this.info,
-			parentNodeEl = d3.ma.$$(containerInfo.parentNode);
+			parentNodeEl = d3ma.$$(containerInfo.parentNode);
 
 		// If parentNodeEl is undefined, that means we need to unbind the resize event
 		// in this case, simply just return false
 		if ( !parentNodeEl ) { return false; }
 
-		var currentWindowSize = d3.ma.windowSize(),
+		var currentWindowSize = d3ma.windowSize(),
 			fluid = parentNodeEl.getAttribute('data-fluid'),
 
-			widthOffset = ( d3.ma.responsive ) ? parentNodeEl.offsetLeft : d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
+			widthOffset = ( d3ma.responsive ) ? parentNodeEl.offsetLeft : d3ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
 
-			heightOffset =  ( d3.ma.responsive ) ? parentNodeEl.offsetTop : parentNodeEl.offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
+			heightOffset =  ( d3ma.responsive ) ? parentNodeEl.offsetTop : parentNodeEl.offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
 
 			windowWidth = currentWindowSize.width - widthOffset,
 			windowHeight = currentWindowSize.height - heightOffset;
@@ -181,8 +181,8 @@ d3.chart('Scale').extend('Base', {
 			if ( oldClientW < newClientW || oldClientH < newClientH ) {
 				var viewBoxValue = '0 0 ' + newClientW + ' ' + newClientH,
 					svgEl = parentNodeEl.children[0],
-					canvasEl = d3.ma.$$(containerInfo.id) || d3.ma.$$('#summaryChart').children[0].children[1],
-					clippathEl = d3.ma.$$(containerInfo.cid + ' rect') || d3.ma.$$('#summaryChart').children[0].children[0].children[0].children[0];
+					canvasEl = d3ma.$$(containerInfo.id) || d3ma.$$('#summaryChart').children[0].children[1],
+					clippathEl = d3ma.$$(containerInfo.cid + ' rect') || d3ma.$$('#summaryChart').children[0].children[0].children[0].children[0];
 
 				// update svg element width & height property
 				svgEl.setAttribute('width', newClientW);
