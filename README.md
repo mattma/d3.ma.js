@@ -48,3 +48,23 @@ It contains all the basic chart modules which could be mixin and extend. For exa
 # bars.js
 
 It is used for displaying the bar chart. It extended from scale.js and base.js
+
+
+## how AMD works with d3.ma.js
+
+	require.config({
+		paths: {
+			'd3': '../../libs/d3.v3',
+			'd3ma': '../../build/d3.ma',
+		},
+
+		shim: {
+			d3ma: {
+				deps : ['d3']
+			}
+		}
+	});
+
+By default, d3.js does not [export global](https://github.com/mbostock/d3/issues/1693) window.d3 anymore after the version 3.4.0 release. So if you define the d3 name anything other than 'd3', for example, 'd3v3' or 'd3js' or whatever, it won't work. It has to define as `'d3': 'path/to/d3.v3.js' ` in your configuration mapping. Otherwise, it won't load up d3.ma.js correctly. 
+
+Now, window.d3, window.d3.ma, window.d3ma would be **undefinied** value. Everything has to work internally.
