@@ -107,11 +107,11 @@
 			# syntax: bars.dispatch.on('d3maMouseenter', function(e){ });
 			# arg, e: it should be the return data obj which you defined in the constrcutor level fn, onDataMouseenter()
 			E.G
-				var tooltip = d3.ma.tooltip(this.base);
+				var tooltip = d3ma.tooltip(this.base);
 				bars.dispatch.on('d3maMouseenter', function(e){
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
-					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+					//tooltip.show([e.pos[0], e.pos[1]], html, d3ma.$$('#vis'));
 					tooltip.show([e.pos[0], e.pos[1]], html);
 				});
 
