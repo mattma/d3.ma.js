@@ -26,9 +26,6 @@ require.config({
 	},
 
 	shim: {
-		// d3: {
-		// 	exports : 'd3'
-		// },
 		d3ma: {
 			deps : ['d3']
 		},
