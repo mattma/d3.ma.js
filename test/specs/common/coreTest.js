@@ -1,10 +1,9 @@
 define([
-	'chai', 'd3', 'd3chart', 'd3ma'
-], function(Chai, d3, d3chart, d3ma) {
+	'chai', 'd3', 'd3ma'
+], function(Chai, d3, d3ma) {
 
 	// Test 1, check d3 library is loaded
-	// Test 2, check d3.chart library is loaded
-	// Test 3, check d3.ma library is loaded
+	// Test 2, check d3.ma library is loaded
 
 	var expect = Chai.expect,
 		should = Chai.should();
@@ -16,15 +15,6 @@ define([
 			console.log('d3 version: ', d3version);
 
 			d3version.should.not.to.be.null;
-			done();
-		});
-	});
-
-	describe('d3.chart library - common/core.js', function() {
-		it('should be loaded from browser', function(done) {
-			var d3chartObject = typeof d3chart;
-
-			d3chartObject.should.not.to.be.undefined;
 			done();
 		});
 	});

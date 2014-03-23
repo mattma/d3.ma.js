@@ -1,6 +1,6 @@
 define([
-	'chai', 'd3', 'd3chart', 'd3ma', 'sinon-chai', 'sinon'
-], function(Chai, d3, d3chart, d3ma, sinonChai, sinon) {
+	'chai', 'd3',  'd3ma', 'sinon-chai', 'sinon'
+], function(Chai, d3,  d3ma, sinonChai, sinon) {
 
 	// Read sinon-chai doc here
 	// http://chaijs.com/plugins/sinon-chai
