@@ -5,15 +5,17 @@
 (function(window) {
 	/*jshint unused: false */
 	'use strict';
-
 	var d3 = window.d3;
+	console.log(d3.version);
+	var d3Chart = window.d3Chart = {};
 	var hasOwnProp = Object.hasOwnProperty;
 
 	var d3cAssert = function(test, message) {
 		if (test) {
 			return;
 		}
-		throw new Error("[d3.chart] " + message);
+		console.log('matt ma');
+		//throw new Error("[d3.chart] " + message);
 	};
 
 	d3cAssert(d3, "d3.js is required");

@@ -167,7 +167,7 @@ module.exports = function( grunt ) {
 		karma: {
 			options: {
 				configFile: 'karma.conf.js',
-				browsers: ['Firefox'],
+				browsers: ['Chrome'],
 				reporters: 'dots'
 			},
 			watch: {
