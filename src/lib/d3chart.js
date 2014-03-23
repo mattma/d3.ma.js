@@ -3,7 +3,7 @@
 *  Date: 2014-02-21
 */
 
-var d3 = window.d3;
+//var d3 = window.d3;
 var hasOwnProp = Object.hasOwnProperty;
 
 var d3cAssert = function(test, message) {
