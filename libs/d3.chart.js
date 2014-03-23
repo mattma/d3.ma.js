@@ -14,8 +14,7 @@
 		if (test) {
 			return;
 		}
-		console.log('matt ma');
-		//throw new Error("[d3.chart] " + message);
+		throw new Error("[d3.chart] " + message);
 	};
 
 	d3cAssert(d3, "d3.js is required");
