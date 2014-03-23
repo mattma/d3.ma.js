@@ -7,6 +7,6 @@
 	} else {
 		factory( window.d3 );
 	}
-} (typeof window !== "undefined" ? window : this, function (d3) {
+} (typeof window !== 'undefined' ? window : this, function (d3) {
 
 'use strict';
