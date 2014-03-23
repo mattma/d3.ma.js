@@ -72,6 +72,7 @@ module.exports = function( grunt ) {
 			build: {
 				src: [
 					'src/intro.js',
+					'src/libs/d3chart.js',
 					'src/common/core.js',
 					'src/common/utils.js',
 					'src/common/container.js',
