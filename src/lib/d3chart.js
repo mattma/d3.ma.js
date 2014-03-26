@@ -452,13 +452,35 @@ Chart.prototype.transform = function(data) {
 	return data;
 };
 
-Chart.prototype.mixin = function(chartName, selection) {
+/**
+ * options can take a demux function. So it could manipulate the data
+ * demux will take an argument, data as one and only param
+
+this.mixin("Line", d3.select('#vis1').append('svg').append('g').classed('lines', true), {
+	info: containerInfo,
+	demux: function(data){
+		var ret= [];
+		d3ma.each(data, function(val, ind) {
+			ret.push( { x: val.x * Math.random() * 5 , y: val.y } );
+			return ret;
+		});
+		return ret;
+	}
+});
+*/
+Chart.prototype.mixin = function(chartName, selection, options) {
 	var args = Array.prototype.slice.call(arguments, 2);
 	args.unshift(selection);
 	var ctor = Chart[chartName];
 	var chart = variadicNew(ctor, args);
 
-	this._mixins.push(chart);
+	var obj = {
+		chart: chart,
+		demux: (options.demux) ? options.demux : false
+	};
+
+	//this._mixins.push(chart);
+	this._mixins.push(obj);
 	return chart;
 };
 
@@ -470,28 +492,28 @@ Chart.prototype.mixin = function(chartName, selection) {
  *        this cart's {@link Layer|layers} (if any) and the {@link
  *        Chart#draw|draw method} of this chart's attachments (if any).
  *
- * fn: now you could pass a callback function to manipulate the data before it draw onto the screen
+ * this._mixins is still an Array. It contains an array of objects
+ * Look for Chart.prototype.mixin for details
+ * Try to simulate the new implementation of d3.chart.js v0.2.0
+ *
  */
-Chart.prototype.draw = function(_data, fn) {
+Chart.prototype.draw = function(data) {
 
-	var layerName, idx, len;
-	var data = this.transform(_data);
+	var layerName, mixin;
 
-	if( fn && typeof fn === 'function') {
-		// take two params. after transformedData, original dataset
-		data = fn(data, _data);
-		d3cAssert( !!data ,'data does not return by draw(data,fn)');
-	}
+	data = this.transform(data);
 
 	for (layerName in this._layers) {
 		this._layers[layerName].draw(data);
 	}
 
-	for (idx = 0, len = this._mixins.length; idx < len; idx++) {
-		if( fn && typeof fn === 'function') {
-			this._mixins[idx].draw(data, fn);
+	for ( mixin in this._mixins) {
+		// demux fn should return the set of data that would be appropriate for that chart
+		var fn = this._mixins[mixin].demux;
+		if(fn && typeof fn === 'function'){
+			this._mixins[mixin].chart.draw(fn(data));
 		} else {
-			this._mixins[idx].draw(data);
+			this._mixins[mixin].chart.draw(data);
 		}
 	}
 };

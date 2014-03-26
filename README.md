@@ -6,13 +6,22 @@ TODO:
 
 Modified Chart.prototype.draw
 
-Chart.prototype.draw = function(_data, fn) {}
+this.mixin(chartName, selection, options)
 
-Now, you could have a callback function as second parameter to manipulate the data before it draws onto the screen.
+options.demux function is a new addition to simulate the new d3.chart api attach.
+You could define a demux function with one param of data, you could manipulate the data
+for this instance.
 
-**fn** can take two params. after transformedData, original dataset.
-
-	fn(transformedData, originalData)
+	this.mixin("Line", d3.select('#vis1').append('svg').append('g').classed('lines', true), {
+		info: containerInfo,
+		demux: function(data){
+			var ret= [];
+			d3ma.each(data, function(val, ind) {
+				ret.push( { x: val.x * Math.random() * 5 , y: val.y } );
+				return ret;
+			});
+			return ret;
+		}
 
 1.  common folder
 
