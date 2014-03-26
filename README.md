@@ -2,6 +2,18 @@ TODO:
 1. refactor container with handle multiple data
 2. legend
 
+1. lib   d3chart
+
+Modified Chart.prototype.draw
+
+Chart.prototype.draw = function(_data, fn) {}
+
+Now, you could have a callback function as second parameter to manipulate the data before it draws onto the screen.
+
+**fn** can take two params. after transformedData, original dataset.
+
+	fn(transformedData, originalData)
+
 1.  common folder
 
 It could be used in all cases, or all general use cases including setup base container with margin values
@@ -65,6 +77,6 @@ It is used for displaying the bar chart. It extended from scale.js and base.js
 		}
 	});
 
-By default, d3.js does not [export global](https://github.com/mbostock/d3/issues/1693) window.d3 anymore after the version 3.4.0 release. So if you define the d3 name anything other than 'd3', for example, 'd3v3' or 'd3js' or whatever, it won't work. It has to define as `'d3': 'path/to/d3.v3.js' ` in your configuration mapping. Otherwise, it won't load up d3.ma.js correctly. 
+By default, d3.js does not [export global](https://github.com/mbostock/d3/issues/1693) window.d3 anymore after the version 3.4.0 release. So if you define the d3 name anything other than 'd3', for example, 'd3v3' or 'd3js' or whatever, it won't work. It has to define as `'d3': 'path/to/d3.v3.js' ` in your configuration mapping. Otherwise, it won't load up d3.ma.js correctly.
 
 Now, window.d3, window.d3.ma, window.d3ma would be **undefinied** value. Everything has to work internally.

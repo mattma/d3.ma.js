@@ -469,19 +469,30 @@ Chart.prototype.mixin = function(chartName, selection) {
  * @param {Object} data Data to pass to the {@link Layer#draw|draw method} of
  *        this cart's {@link Layer|layers} (if any) and the {@link
  *        Chart#draw|draw method} of this chart's attachments (if any).
+ *
+ * fn: now you could pass a callback function to manipulate the data before it draw onto the screen
  */
-Chart.prototype.draw = function(data) {
+Chart.prototype.draw = function(_data, fn) {
 
 	var layerName, idx, len;
+	var data = this.transform(_data);
 
-	data = this.transform(data);
+	if( fn && typeof fn === 'function') {
+		// take two params. after transformedData, original dataset
+		data = fn(data, _data);
+		d3cAssert( !!data ,'data does not return by draw(data,fn)');
+	}
 
 	for (layerName in this._layers) {
 		this._layers[layerName].draw(data);
 	}
 
 	for (idx = 0, len = this._mixins.length; idx < len; idx++) {
-		this._mixins[idx].draw(data);
+		if( fn && typeof fn === 'function') {
+			this._mixins[idx].draw(data, fn);
+		} else {
+			this._mixins[idx].draw(data);
+		}
 	}
 };
 

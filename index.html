@@ -170,7 +170,7 @@
 		var canvas = container.canvas().chart("FinalChart", container.info() );
 
 		//render it with some data
-		canvas.draw(data);
+		canvas.draw(data, function(data) { return data } );
 
 		// In plain d3, this works too
 		//d3.select('.canvas').chart("FinalChart", container.info() ).draw(data);
