@@ -172,6 +172,9 @@
 		//render it with some data
 		canvas.draw(data);
 
+		// In plain d3, this works too
+		//d3.select('.canvas').chart("FinalChart", container.info() ).draw(data);
+
 		var data1 = d3.range(60).map(function(i) {
 			return {x: i / 60, y: (Math.sin(i / 3) + 2) / 20};
 		});

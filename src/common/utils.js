@@ -165,6 +165,13 @@ d3ma.$$ = function(selector, element) {
 	return ret[0];
 };
 
+d3ma.isNull = function(obj) {
+    return obj === null;
+};
+
+d3ma.isUndefined = function(obj) {
+    return obj === void 0;
+};
 
 /*
 	Works like a constructor, initialize the tooltip object. e.g var tooltip = d3ma.tooltip()
