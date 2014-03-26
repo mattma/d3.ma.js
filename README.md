@@ -23,6 +23,14 @@ for this instance.
 			return ret;
 		}
 
+
+adding the d3ma.setCanvas and d3ma.canvas to the core.js section
+used to manage how many different instances currently on the page
+quickly retrieve it and redraw the chart with new dataset
+
+** @TODO write test for  d3chart draw, d3chart ingeneral, new d3ma canvas function
+
+
 1.  common folder
 
 It could be used in all cases, or all general use cases including setup base container with margin values

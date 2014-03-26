@@ -134,8 +134,13 @@
 
 		var canvas = container.canvas().chart("FinalChart", container.info() );
 
-		//render it with some data
-		canvas.draw(data);
+		// render it with some data
+		// canvas.draw(data);
+
+        console.log('container.allCanvas: ', d3ma.setCanvas());
+        d3ma.setCanvas(canvas);
+        console.log('contaainer.allCanvas: ', d3ma.setCanvas() );
+        d3ma.canvas[0].draw(data);
 
 		// In plain d3, this works too
 		//d3.select('.canvas').chart("FinalChart", container.info() ).draw(data);
