@@ -33,6 +33,7 @@ build/
 tmp/
 
 docs/
+server/
 
 # Application Ignore file
 compass_app_log.txt
