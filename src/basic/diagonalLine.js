@@ -24,11 +24,11 @@ d3.chart('Base').extend('DiagonalLine', {
         chart.nodes = tree.nodes(data).reverse();
         var links = tree.links(chart.nodes);
 
-        // Stash the old positions for transition.
+        // Normalize for fixed-depth.
         chart.nodes.forEach(function (d) {
-          d.x0 = d.x;
-          d.y0 = d.y;
+          d.y = d.depth * 180;
         });
+
 
         if (chart.onDataBind) {
           chart.onDataBind(data, chart);
@@ -61,11 +61,18 @@ d3.chart('Base').extend('DiagonalLine', {
           }
 
           this.attr("d", function (d) {
+            // from the center of the tree, animate to the point
             var o = {
               x: options.info.canvasH / 2,
               y: 0
             };
             return chart.diagonal({source: o, target: o});
+          });
+
+          // Stash the old positions for transition.
+          chart.nodes.forEach(function (d) {
+            d.x0 = d.x;
+            d.y0 = d.y;
           });
         },
 
@@ -73,8 +80,8 @@ d3.chart('Base').extend('DiagonalLine', {
           var chart = this.chart();
           this
             .duration(750)
-            .ease('cubic-out')
-            .attr({'d': chart.diagonal})
+            // .ease('cubic-out')
+            .attr({'d': chart.diagonal});
         },
 
         'merge': function () {
