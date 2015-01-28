@@ -2,33 +2,42 @@ d3.chart('Base').extend('DiagonalLine', {
   initialize: function (options) {
     this.options = options = options || {};
 
-    this.linePath = this.base.append('svg:path').classed('diagonalLine', true);
+    this.linePath = this.base.append('svg:g').classed('diagonalLine', true);
 
     this.diagonal = d3.svg.diagonal()
       .projection(function (d) {
         return [d.y, d.x];
       });
 
+    var tree = d3.layout.tree()
+      .size([options.info.canvasH, options.info.canvasW]);
+
     this.layer('diagonalLine', this.linePath, {
       dataBind: function (data) {
         var chart = this.chart();
 
         // Setup the auto resize to handle the on resize event
-        chart.dispatch.on('d3maSingleWindowResize', function (chart, single) {
-          single.attr({'d': chart.diagonal});
-        });
+        //chart.dispatch.on('d3maSingleWindowResize', function (chart, single) {
+        //  single.attr({'d': chart.diagonal});
+        //});
 
-        this.setupBaseLine(data);
+        chart.nodes = tree.nodes(data).reverse();
+        var links = tree.links(chart.nodes);
+
+        // Stash the old positions for transition.
+        chart.nodes.forEach(function (d) {
+          d.x0 = d.x;
+          d.y0 = d.y;
+        });
 
         if (chart.onDataBind) {
           chart.onDataBind(data, chart);
         }
 
-        // data[options.data]  will return a single array, data will bind path element to each
-        // array index, by pushing options array into an anonymous array, ONLY one path element
-        // will be created return this.selectAll('path').data( (options.data) ? [
-        // data[options.data] ]: data );
-        return this.data([data]);
+        return this.selectAll("path.link")
+          .data(links, function (d) {
+            return d.target.id;
+          });
       },
 
       insert: function () {
@@ -36,7 +45,9 @@ d3.chart('Base').extend('DiagonalLine', {
         if (chart.onInsert) {
           chart.onInsert(chart);
         }
-        return chart.linePath;
+
+        return this.insert("path", "g")
+          .attr("class", "link");
       },
 
       events: {
@@ -48,14 +59,22 @@ d3.chart('Base').extend('DiagonalLine', {
           if (chart.onEnter) {
             chart.onEnter(chart, this);
           }
+
+          this.attr("d", function (d) {
+            var o = {
+              x: options.info.canvasH / 2,
+              y: 0
+            };
+            return chart.diagonal({source: o, target: o});
+          });
         },
 
         'enter:transition': function () {
           var chart = this.chart();
           this
-            .duration(700)
+            .duration(750)
             .ease('cubic-out')
-            .attr({'d': chart.baseLine})
+            .attr({'d': chart.diagonal})
         },
 
         'merge': function () {

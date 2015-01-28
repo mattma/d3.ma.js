@@ -32,7 +32,7 @@ d3.chart('Base').extend('Tree', {
         }
 
         chart.nodes = tree.nodes(data).reverse();
-        chart.links = tree.links(chart.nodes);
+        // chart.links = tree.links(chart.nodes);
 
         // Normalize for fixed-depth.
         chart.nodes.forEach(function (d) {

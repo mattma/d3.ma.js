@@ -464,9 +464,9 @@
 //    }
   });
 
-//  d3.chart('DiagonalLine').extend('ConnectPath', {
-//
-//  });
+  d3.chart('DiagonalLine').extend('ConnectPath', {
+
+  });
 
   d3.chart("FinalChart", {
     initialize: function (containerInfo) {
@@ -478,9 +478,9 @@
         info: containerInfo
       });
 
-//      this.mixin("ConnectPath", this.base.append('g').classed('path', true), {
-//        info: containerInfo
-//      });
+      this.mixin("ConnectPath", this.base.append('g').classed('path', true), {
+        info: containerInfo
+      });
 
       // Handle resize in utils.js
       // convininent methods to recall onResize()
