@@ -76,64 +76,20 @@ d3.chart('Base').extend('Tree', {
         'enter': function () {
           var chart = this.chart();
 
-          this.append("circle")
-            .attr("r", 1e-6)
-            // .attr("r", 8)
-            .style("fill", function (d) {
-              return d._children ? "lightsteelblue" : "#fff";
-            });
-
-          this.append("text")
-            .attr("x", function (d) {
-              return d.children || d._children ? -10 : 10;
-            })
-            .attr("dy", ".35em")
-            .attr("text-anchor", function (d) {
-              return d.children || d._children ? "end" : "start";
-            })
-            .text(function (d) {
-              return d.name;
-            })
-            .style("fill-opacity", 1e-6);
-          // .style("fill-opacity", 1);
-
           // onEnter fn will take two args
           // chart  # refer to this context, used it to access xScale, yScale, width, height, etc.
           // chart property this   # refer to each individual group just appended by insert command
           if (chart.onEnter) {
             chart.onEnter(chart, this);
           }
-
-          // Stash the old positions for transition.
-          chart.nodes.forEach(function(d) {
-            d.x0 = d.x;
-            d.y0 = d.y;
-          });
-
-          // Used for animation the fill opacity property, work with enter:transition
-          //this.style('opacity', 1e-6);
         },
 
         'enter:transition': function () {
           var chart = this.chart();
+
           if (chart.onEnterTransition) {
             chart.onEnterTransition(chart, this);
           }
-
-          this
-            .duration(750)
-            .attr("transform", function (d) {
-              return "translate(" + d.y + "," + d.x + ")";
-            });
-
-          this.select("circle")
-            .attr("r", 4.5)
-            .style("fill", function (d) {
-              return d._children ? "lightsteelblue" : "#fff";
-            });
-
-          this.select("text")
-            .style("fill-opacity", 1);
         },
 
         'merge': function () {
@@ -149,20 +105,18 @@ d3.chart('Base').extend('Tree', {
 
         'exit:transition': function () {
           var chart = this.chart();
-          this
-            .duration(400)
-            .attr("transform", function (d) {
-              return "translate(" + d.y + "," + d.x + ")";
-            })
-            // .ease('cubic-in')
-            // .style('opacity', 1e-6)
-            .remove();
+          var duration = chart.options.animationDurationRemove || 400;
+          var easing = chart.options.animationEasing || 'cubic-in-out';
 
-          this.select("circle")
-            .attr("r", 1e-6);
-
-          this.select("text")
-            .style("fill-opacity", 1e-6);
+          if (chart.onRemove && typeof chart.onRemove === 'function') {
+            chart.onRemove(chart, this);
+          } else {
+            this
+              .duration(duration)
+              .ease(easing)
+              .style('opacity', 1e-6)
+              .remove();
+          }
         }
       }
     });
