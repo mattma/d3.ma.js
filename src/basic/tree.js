@@ -11,16 +11,6 @@ d3.chart('Base').extend('Tree', {
         var chart = this.chart();
 
         if (chart.onDataBind) {
-          function collapse (d) {
-            if (d.children) {
-              d._children = d.children;
-              d._children.forEach(collapse);
-              d.children = null;
-            }
-          }
-
-          data.children.forEach(collapse);
-
           data = chart.onDataBind(data, chart);
         }
         if (chart.onDataTransform) {

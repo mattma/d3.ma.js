@@ -517,19 +517,6 @@
       var chart = chart || this;
       var height = chart.info.canvasH;
 
-      // Toggle children on click.
-      function click(d) {
-        console.log('clicking on me');
-        if (d.children) {
-          d._children = d.children;
-          d.children = null;
-        } else {
-          d.children = d._children;
-          d._children = null;
-        }
-        //update(d);
-      }
-
       // Enter any new nodes at the parent's previous position.
       var treeNode = single.append("g")
         .attr("class", "node")
@@ -596,21 +583,21 @@
       var chart = chart || this;
       setLineStartLocation(chart, single, this);
       stashOldPosition(chart);
-    },
-
-    onRemove: function (chart, single) {
-      var chart = chart || this;
-
-      // Note done yet. @TODO
-      single
-        .duration(400)
-        .ease('cubic-in-out')
-        .attr("d", function (d) {
-          var o = {x: source.x, y: source.y};
-          return diagonal({source: o, target: o});
-        })
-        .remove();
     }
+
+//    onRemove: function (chart, single) {
+//      var chart = chart || this;
+//
+//      // Note done yet. @TODO
+//      single
+//        .duration(400)
+//        .ease('cubic-in-out')
+//        .attr("d", function (d) {
+//          var o = {x: source.x, y: source.y};
+//          return diagonal({source: o, target: o});
+//        })
+//        .remove();
+//    }
   });
 
   d3.chart("FinalChart", {
@@ -654,6 +641,16 @@
 
   var canvas = container.canvas().chart("FinalChart", container.info());
 
+  function collapse (d) {
+    if (d.children) {
+      d._children = d.children;
+      d._children.forEach(collapse);
+      d.children = null;
+    }
+  }
+
+  data.children.forEach(collapse);
+
   //render it with some data
   canvas.draw(data);
 
@@ -665,6 +662,21 @@
   // }, function(error, rows) {
   //   console.log(rows);
   // });
+
+  // Toggle children on click.
+  function click(d) {
+    console.log('clicked d: ', d.children);
+    if (d.children) {
+      d._children = d.children;
+      d.children = null;
+    } else {
+      d.children = d._children;
+      d._children = null;
+    }
+    console.log('d: ', d);
+    console.log('data: ', data);
+    canvas.draw(data);
+  }
 </script>
 
 <!-- livereload snippet  -->
