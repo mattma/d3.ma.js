@@ -434,30 +434,33 @@
 </script>
 
 <script>
-  function domain (data, context) {
-    console.log('data: ', data);
-    var xRange = [];
-    d3.map(data).forEach(function (index, d) {
-      xRange.push(d.label)
-    });
-
-    // Setup xScale domain range
-    context.xScale.domain(xRange);
-    // Setup yScale domain range
-    var maxY = Math.round(d3.max(data.map(function (val, ind) {
-      return val.value;
-    })));
-    context.yScale.domain([0, maxY]);
-  }
+//  function domain (data, context) {
+//    console.log('data: ', data);
+//    var xRange = [];
+//    d3.map(data).forEach(function (index, d) {
+//      xRange.push(d.label)
+//    });
+//
+//    // Setup xScale domain range
+//    context.xScale.domain(xRange);
+//    // Setup yScale domain range
+//    var maxY = Math.round(d3.max(data.map(function (val, ind) {
+//      return val.value;
+//    })));
+//    context.yScale.domain([0, maxY]);
+//  }
 
   d3.chart('Tree').extend('MyTree', {
     onDataBind: function (data, chart) {
       var chart = chart || this;
     },
 
-    onEnterTransition: function (chart, single) {
+    onEnter: function (chart, single) {
+      console.log('calling me sirt');
       var chart = chart || this,
         color = d3.scale.category10();
+
+      console.log('single: ', single);
     }
   });
 
@@ -467,7 +470,7 @@
       // var clip =  this.mixin("Clip",  this.base);
       // clip.box(300, 600).xy(0, 50);
 
-      var bars = this.mixin("MyTree", this.base.append('g').classed('tree', true), {
+      this.mixin("MyTree", this.base.append('g').classed('tree', true), {
         info: containerInfo
       });
 
