@@ -5,29 +5,46 @@ d3.chart('Base').extend('Tree', {
 
     var self = this;
 
+    var tree = this.tree = d3.layout.tree()
+      .size([options.info.canvasH, options.info.canvasW]);
+
+    this.diagonal = d3.svg.diagonal()
+      .projection(function (d) {
+        return [d.y, d.x];
+      });
+
     this.layer('tree', this.base, {
       // select the elements we wish to bind to and bind the data to them.
       dataBind: function (data) {
         var chart = this.chart();
-        console.log('data bind data : ', data);
         if (chart.onDataBind) {
           chart.onDataBind(data, chart);
         }
-        return (chart.rectsGroup) ? chart.rectsGroup.data(data) : this.data(data);
+        if (chart.onDataTransform) {
+          data = chart.onDataTransform(data, chart);
+        }
+
+        chart.nodes = tree.nodes(data).reverse();
+        chart.links = tree.links(chart.nodes);
+
+        return this.data(data);
       },
 
-      // insert actual bars, defined its own attrs
+      // insert actual element, defined its own attrs
       insert:   function () {
         var chart = this.chart();
         if (chart.onInsert) {
           chart.onInsert(chart);
         }
 
-        if (!chart.rectsGroup) {
-          chart.rectsGroup = this.append('g').classed('group', true).append('rect');
-        }
+        var i = 0;
+        // Update the nodes…
+        chart.node = chart.base.selectAll("g.node")
+          .data(chart.nodes, function (d) {
+            return d.id || (d.id = ++i);
+          });
 
-        return chart.rectsGroup;
+        return chart.node;
       },
 
       // define lifecycle events
