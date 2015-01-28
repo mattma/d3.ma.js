@@ -1,6 +1,6 @@
 d3.chart('Base').extend('DiagonalLine', {
   initialize: function (options) {
-    this.options = options = options || {};
+    this.options = options || {};
 
     this.linePath = this.base.append('svg:g').classed('diagonalLine', true);
 
@@ -9,33 +9,24 @@ d3.chart('Base').extend('DiagonalLine', {
         return [d.y, d.x];
       });
 
-    var tree = d3.layout.tree()
-      .size([options.info.canvasH, options.info.canvasW]);
-
     this.layer('diagonalLine', this.linePath, {
       dataBind: function (data) {
         var chart = this.chart();
 
         // Setup the auto resize to handle the on resize event
-        //chart.dispatch.on('d3maSingleWindowResize', function (chart, single) {
-        //  single.attr({'d': chart.diagonal});
-        //});
-
-        chart.nodes = tree.nodes(data).reverse();
-        var links = tree.links(chart.nodes);
-
-        // Normalize for fixed-depth.
-        chart.nodes.forEach(function (d) {
-          d.y = d.depth * 180;
+        chart.dispatch.on('d3maSingleWindowResize', function (chart, single) {
+          single.attr({'d': chart.diagonal});
         });
 
-
         if (chart.onDataBind) {
-          chart.onDataBind(data, chart);
+          // in case onDataBind return a new data set
+          // we need to assign back to data which contain the new data set
+          // or if it is no return, it would undefined, stay what it is
+          data = chart.onDataBind(data, chart) || data;
         }
 
         return this.selectAll("path.link")
-          .data(links, function (d) {
+          .data(data, function (d) {
             return d.target.id;
           });
       },
@@ -59,28 +50,15 @@ d3.chart('Base').extend('DiagonalLine', {
           if (chart.onEnter) {
             chart.onEnter(chart, this);
           }
-
-          this.attr("d", function (d) {
-            // from the center of the tree, animate to the point
-            var o = {
-              x: options.info.canvasH / 2,
-              y: 0
-            };
-            return chart.diagonal({source: o, target: o});
-          });
-
-          // Stash the old positions for transition.
-          chart.nodes.forEach(function (d) {
-            d.x0 = d.x;
-            d.y0 = d.y;
-          });
         },
 
         'enter:transition': function () {
           var chart = this.chart();
+          var duration = chart.options.animationDuration || 400;
+          var easing = chart.options.animationEasing || 'cubic-in-out';
           this
-            .duration(750)
-            // .ease('cubic-out')
+            .duration(duration)
+            .ease(easing)
             .attr({'d': chart.diagonal});
         },
 
@@ -92,32 +70,24 @@ d3.chart('Base').extend('DiagonalLine', {
 
         'exit:transition': function () {
           var chart = this.chart();
-          this
-            .duration(400)
-            .ease('cubic-in')
-            .style('opacity', 1e-6)
-            .remove();
+          var duration = chart.options.animationDurationRemove || 400;
+          var easing = chart.options.animationEasing || 'cubic-in-out';
+
+          if (chart.onRemove && typeof chart.onRemove === 'function') {
+            chart.onRemove(chart, this);
+          } else {
+            this
+              .duration(duration)
+              .ease(easing)
+              .style('opacity', 1e-6)
+              .remove();
+          }
         }
       }
     });
   },
 
   _update: function (_width, _height, chart, single) {
-    this.linePath.attr({'d': chart.baseLine});
+    this.linePath.attr({'d': chart.diagonal});
   }
-
-  // 	if(this.onDataBind) { this.onDataBind(); }
-
-  // 	this.linePath.datum(data).attr('d', this.line);
-
-  // 	// Define this fn where the data is manipulated
-  // 	// after all the data var has the correct value, then call it on Window resize
-  // 	// Normally, after calling this fn, need to define the _update to handle the Scale change,
-  // box size changes, attr updates this._onWindowResize();
-
-  // 	return data;
-  // }
-
-  // Update Scale, Box Size, and attr values
-  // _update: function(_width, _height) {
 });

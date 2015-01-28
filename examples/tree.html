@@ -435,43 +435,93 @@
 </script>
 
 <script>
-//  function domain (data, context) {
-//    console.log('data: ', data);
-//    var xRange = [];
-//    d3.map(data).forEach(function (index, d) {
-//      xRange.push(d.label)
-//    });
-//
-//    // Setup xScale domain range
-//    context.xScale.domain(xRange);
-//    // Setup yScale domain range
-//    var maxY = Math.round(d3.max(data.map(function (val, ind) {
-//      return val.value;
-//    })));
-//    context.yScale.domain([0, maxY]);
-//  }
-
   d3.chart('Tree').extend('MyTree', {
     onDataBind: function (data, chart) {
       var chart = chart || this;
     }
 
-//    onEnter: function (chart, single) {
-//      var chart = chart || this,
-//        color = d3.scale.category10();
-//
-//      console.log('single: ', single);
-//    }
+    //    onEnter: function (chart, single) {
+    //      var chart = chart || this,
+    //        color = d3.scale.category10();
+    //
+    //      console.log('single: ', single);
+    //    }
   });
 
-  d3.chart('DiagonalLine').extend('ConnectPath', {
+  function setupTreeData (data, chart, context) {
+    var info = context.info;
+    var tree = d3.layout.tree()
+      .size([info.canvasH, info.canvasW]);
+    var nodes = tree.nodes(data).reverse();
+    var links = tree.links(nodes);
 
+    // Normalize for fixed-depth.
+    nodes.forEach(function (d) {
+      d.y = d.depth * 180;
+    });
+
+    // attach nodes to the context, so it could be reused
+    // inside other methods like `onEnter`
+    chart.nodes = nodes;
+
+    return links;
+  }
+
+  function stashOldPosition (context) {
+    // Stash the old positions for transition.
+    context.nodes.forEach(function (d) {
+      d.x0 = d.x;
+      d.y0 = d.y;
+    });
+  }
+
+  function setLineStartLocation (chart, single, context) {
+    var height = context.info.canvasH;
+
+    single.attr("d", function (d) {
+      // from the center of the tree, animate to the point
+      var originalPosition = {
+        x: height / 2,
+        y: 0
+      };
+      return chart.diagonal({
+        source: originalPosition,
+        target: originalPosition
+      });
+    });
+
+  }
+
+  d3.chart('DiagonalLine').extend('ConnectPath', {
+    onDataBind: function (data, chart) {
+      var chart = chart || this;
+      return setupTreeData(data, chart, this);
+    },
+
+    onEnter: function (chart, single) {
+      var chart = chart || this;
+      setLineStartLocation(chart, single, this);
+      stashOldPosition(chart);
+    },
+
+    onRemove: function (chart, single) {
+      var chart = chart || this;
+
+      chart
+        .duration(400)
+        .ease('cubic-in-out')
+        .attr("d", function (d) {
+          var o = {x: source.x, y: source.y};
+          return diagonal({source: o, target: o});
+        })
+        .remove();
+    }
   });
 
   d3.chart("FinalChart", {
     initialize: function (containerInfo) {
       // Used for the clipPath object
-      // var clip =  this.mixin("Clip",  this.base);
+      // var clip =  this.mixin("Clip", this.base);
       // clip.box(300, 600).xy(0, 50);
 
       this.mixin("MyTree", this.base.append('g').classed('tree', true), {
@@ -479,7 +529,8 @@
       });
 
       this.mixin("ConnectPath", this.base.append('g').classed('path', true), {
-        info: containerInfo
+        info:              containerInfo,
+        animationDuration: 750
       });
 
       // Handle resize in utils.js
