@@ -38,37 +38,11 @@ d3.chart('Base').extend('Tree', {
       insert:   function () {
         var chart = this.chart();
         if (chart.onInsert) {
-          chart.onInsert(chart);
+          chart.onInsert(chart, this);
         }
 
-        // Toggle children on click.
-        function click(d) {
-          console.log('clicking on me');
-          if (d.children) {
-            d._children = d.children;
-            d.children = null;
-          } else {
-            d.children = d._children;
-            d._children = null;
-          }
-          //update(d);
-        }
-
-        // Enter any new nodes at the parent's previous position.
-        var treeNode = this.append("g")
-          .attr("class", "node")
-          .attr("transform", function (d) {
-            if(!d.x0) {
-              d.x0 = options.info.canvasH / 2;
-            }
-            if(!d.y0) {
-              d.y0 = 0;
-            }
-            return "translate(" + d.y0 + "," + d.x0 + ")";
-          })
-          .on("click", click);
-
-        return treeNode;
+        // have to set a treeNode, default to noOps
+        return chart.treeNode || this.append("g").attr("class", "node");
       },
 
       // define lifecycle events
