@@ -39,6 +39,7 @@
   <script src="../src/core/scale.js"></script>
   <script src="../src/core/base.js"></script>
 
+  <script src="../src/basic/diagonalLine.js"></script>
   <script src="../src/basic/tree.js"></script>
 
   <!-- NEVER EVER INCLUDE THIS FILE IN THE BUILD -->
@@ -463,6 +464,10 @@
 //    }
   });
 
+//  d3.chart('DiagonalLine').extend('ConnectPath', {
+//
+//  });
+
   d3.chart("FinalChart", {
     initialize: function (containerInfo) {
       // Used for the clipPath object
@@ -472,6 +477,10 @@
       this.mixin("MyTree", this.base.append('g').classed('tree', true), {
         info: containerInfo
       });
+
+//      this.mixin("ConnectPath", this.base.append('g').classed('path', true), {
+//        info: containerInfo
+//      });
 
       // Handle resize in utils.js
       // convininent methods to recall onResize()

@@ -8,15 +8,11 @@ d3.chart('Base').extend('Tree', {
     var tree = this.tree = d3.layout.tree()
       .size([options.info.canvasH, options.info.canvasW]);
 
-    this.diagonal = d3.svg.diagonal()
-      .projection(function (d) {
-        return [d.y, d.x];
-      });
-
     this.layer('tree', this.base, {
       // select the elements we wish to bind to and bind the data to them.
       dataBind: function (data) {
         var chart = this.chart();
+
         if (chart.onDataBind) {
           chart.onDataBind(data, chart);
 
@@ -30,6 +26,7 @@ d3.chart('Base').extend('Tree', {
 
           data.children.forEach(collapse);
         }
+
         if (chart.onDataTransform) {
           data = chart.onDataTransform(data, chart);
         }
@@ -56,13 +53,32 @@ d3.chart('Base').extend('Tree', {
           chart.onInsert(chart);
         }
 
+        // Toggle children on click.
+        function click(d) {
+          console.log('clicking on me');
+          if (d.children) {
+            d._children = d.children;
+            d.children = null;
+          } else {
+            d.children = d._children;
+            d._children = null;
+          }
+          //update(d);
+        }
+
         // Enter any new nodes at the parent's previous position.
         var treeNode = this.append("g")
           .attr("class", "node")
           .attr("transform", function (d) {
-            return "translate(" + d.y + "," + d.x + ")";
-          });
-        //.on("click", click);
+            if(!d.x0) {
+              d.x0 = options.info.canvasH / 2;
+            }
+            if(!d.y0) {
+              d.y0 = 0;
+            }
+            return "translate(" + d.y0 + "," + d.x0 + ")";
+          })
+          .on("click", click);
 
         return treeNode;
       },
@@ -99,6 +115,12 @@ d3.chart('Base').extend('Tree', {
           if (chart.onEnter) {
             chart.onEnter(chart, this);
           }
+
+          // Stash the old positions for transition.
+          chart.nodes.forEach(function(d) {
+            d.x0 = d.x;
+            d.y0 = d.y;
+          });
 
           // Used for animation the fill opacity property, work with enter:transition
           //this.style('opacity', 1e-6);
