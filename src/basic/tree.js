@@ -57,22 +57,30 @@ d3.chart('Base').extend('Tree', {
         }
 
         // Enter any new nodes at the parent's previous position.
-        this.append("g")
+        var treeNode = this.append("g")
           .attr("class", "node")
           .attr("transform", function (d) {
             return "translate(" + d.y + "," + d.x + ")";
           });
         //.on("click", click);
 
-        //nodeEnter.append("circle")
-        //  .attr("r", 1e-6)
-        //  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
-        //
-        //nodeEnter.append("text")
-        //  .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-        //  .attr("dy", ".35em")
-        //  .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start";
-        // }) .text(function(d) { return d.name; }) .style("fill-opacity", 1e-6);
+        treeNode.append("circle")
+          //.attr("r", 1e-6)
+          .attr("r", 3)
+          .style("fill", function(d) {
+            return d._children ? "lightsteelblue" : "#fff";
+          });
+
+        treeNode.append("text")
+          .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+          .attr("dy", ".35em")
+          .attr("text-anchor", function(d) {
+            return d.children || d._children ? "end" : "start";
+          })
+          .text(function(d) { return d.name; })
+          //.style("fill-opacity", 1e-6);
+          .style("fill-opacity", 1);
+
         return chart.node;
       },
 
