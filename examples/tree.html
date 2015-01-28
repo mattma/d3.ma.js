@@ -641,6 +641,7 @@
   container.box(1400, 600);  //.resize()
 
   var canvas = container.canvas().chart("FinalChart", container.info());
+  var dataset;
 
   function collapse (d) {
     if (d.children) {
@@ -648,29 +649,31 @@
       d._children.forEach(collapse);
       d.children = null;
     }
+    return d;
   }
 
-  //  var source = {
-  //    children: [{
-  //      a: 1,
-  //      depth: 1,
+  //    var source = {
   //      children: [{
-  //        b:     1,
-  //        depth: 2,
+  //        a: 1,
+  //        depth: 1,
   //        children: [{
-  //          c:     1,
-  //          depth: 3
+  //          b:     1,
+  //          depth: 2,
+  //          children: [{
+  //            c:     1,
+  //            depth: 3
+  //          }]
   //        }]
   //      }]
-  //    }]
-  //  };
-  var origiinalData = data;
-  console.log('origiinalData: ', origiinalData);
-  d3ma.each(data.children, collapse);
-  console.log('data: ', data);
+  //    };
+
+  var children = d3ma.map(data.children, collapse);
+  var dataSet = data;
+  // getting the update data with collapse operation
+  dataSet.children = children;
 
   //render it with some data
-  canvas.draw(data);
+  canvas.draw(dataSet);
 
   // d3.csv("/api/gov.csv", function(d) {
   //   // console.log('d: ', d);
@@ -682,28 +685,33 @@
   // });
 
   // Toggle children on click.
-  function click (currentD) {
-    //    if (d.children) {
-    //      d._children = d.children;
-    //      d.children = null;
-    //    } else {
-    //      d.children = d._children;
-    //      d._children = null;
-    //    }
-    console.log('currentD: ', currentD);
-    console.log('data: ', data);
-    var n = d3ma.map(data.children, function (d, i) {
-      if (d.children && i !== 9) {
-        d._children = d.children;
-        d._children.forEach(collapse);
-        d.children = null;
-      }
-      return d;
-    });
+  function click (d) {
 
-    console.log('n: ', n);
+//    _.each(dataSet.children, function (d, i) {
+//      if (d.name === dp.name) {
+//        console.log('fire me');
+//        if (d.children) {
+//          d._children = d.children;
+//          d.children = null;
+//        } else {
+//          d.children = d._children;
+//          d._children = null;
+//        }
+//        console.log('d: ', d);
+//      }
+//    });
 
-    canvas.draw(data);
+    if (d.children) {
+      d._children = d.children;
+      d.children = null;
+    } else {
+      d.children = d._children;
+      d._children = null;
+    }
+
+    console.log('dataSet: ', d);
+
+    canvas.draw(d);
   }
 </script>
 
