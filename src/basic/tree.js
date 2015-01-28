@@ -28,9 +28,6 @@ d3.chart('Base').extend('Tree', {
             }
           }
 
-          data.x0 = options.info.canvasH / 2;
-          data.y0 = 0;
-
           data.children.forEach(collapse);
         }
         if (chart.onDataTransform) {
@@ -61,11 +58,10 @@ d3.chart('Base').extend('Tree', {
 
         // Enter any new nodes at the parent's previous position.
         this.append("g")
-          .attr("class", "node");
-          //.attr("transform", function (d) {
-          //  return d;
-          //  //return "translate(" + d.y0 + "," + d.x0 + ")";
-          //});
+          .attr("class", "node")
+          .attr("transform", function (d) {
+            return "translate(" + d.y + "," + d.x + ")";
+          });
         //.on("click", click);
 
         //nodeEnter.append("circle")
