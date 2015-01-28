@@ -31,6 +31,7 @@
   <script src="../libs/d3.v3.js"></script>
 
   <script src="../src/lib/d3chart.js"></script>
+  <script src="../libs/lodash.js"></script>
   <script src="../src/common/core.js"></script>
   <script src="../src/common/utils.js"></script>
   <script src="../src/common/container.js"></script>
@@ -649,8 +650,6 @@
     }
   }
 
-  console.log('data: ', data);
-
   //  var source = {
   //    children: [{
   //      a: 1,
@@ -665,8 +664,10 @@
   //      }]
   //    }]
   //  };
-
-  data.children.forEach(collapse);
+  var origiinalData = data;
+  console.log('origiinalData: ', origiinalData);
+  d3ma.each(data.children, collapse);
+  console.log('data: ', data);
 
   //render it with some data
   canvas.draw(data);
@@ -691,14 +692,16 @@
     //    }
     console.log('currentD: ', currentD);
     console.log('data: ', data);
-    d3ma.each(data.children, function (d, i) {
+    var n = d3ma.map(data.children, function (d, i) {
       if (d.children && i !== 9) {
-        console.log('fire me');
         d._children = d.children;
         d._children.forEach(collapse);
         d.children = null;
       }
+      return d;
     });
+
+    console.log('n: ', n);
 
     canvas.draw(data);
   }
