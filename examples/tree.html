@@ -521,7 +521,7 @@
       var treeNode = single.append("g")
         .attr("class", "node")
         .attr("transform", function (d) {
-          if(!d.x0 && !d.y0) {
+          if (!d.x0 && !d.y0) {
             d.x0 = height / 2;
             d.y0 = 0;
           }
@@ -585,19 +585,19 @@
       stashOldPosition(chart);
     }
 
-//    onRemove: function (chart, single) {
-//      var chart = chart || this;
-//
-//      // Note done yet. @TODO
-//      single
-//        .duration(400)
-//        .ease('cubic-in-out')
-//        .attr("d", function (d) {
-//          var o = {x: source.x, y: source.y};
-//          return diagonal({source: o, target: o});
-//        })
-//        .remove();
-//    }
+    //    onRemove: function (chart, single) {
+    //      var chart = chart || this;
+    //
+    //      // Note done yet. @TODO
+    //      single
+    //        .duration(400)
+    //        .ease('cubic-in-out')
+    //        .attr("d", function (d) {
+    //          var o = {x: source.x, y: source.y};
+    //          return diagonal({source: o, target: o});
+    //        })
+    //        .remove();
+    //    }
   });
 
   d3.chart("FinalChart", {
@@ -649,6 +649,23 @@
     }
   }
 
+  console.log('data: ', data);
+
+  //  var source = {
+  //    children: [{
+  //      a: 1,
+  //      depth: 1,
+  //      children: [{
+  //        b:     1,
+  //        depth: 2,
+  //        children: [{
+  //          c:     1,
+  //          depth: 3
+  //        }]
+  //      }]
+  //    }]
+  //  };
+
   data.children.forEach(collapse);
 
   //render it with some data
@@ -664,17 +681,25 @@
   // });
 
   // Toggle children on click.
-  function click(d) {
-    console.log('clicked d: ', d.children);
-    if (d.children) {
-      d._children = d.children;
-      d.children = null;
-    } else {
-      d.children = d._children;
-      d._children = null;
-    }
-    console.log('d: ', d);
+  function click (currentD) {
+    //    if (d.children) {
+    //      d._children = d.children;
+    //      d.children = null;
+    //    } else {
+    //      d.children = d._children;
+    //      d._children = null;
+    //    }
+    console.log('currentD: ', currentD);
     console.log('data: ', data);
+    d3ma.each(data.children, function (d, i) {
+      if (d.children && i !== 9) {
+        console.log('fire me');
+        d._children = d.children;
+        d._children.forEach(collapse);
+        d.children = null;
+      }
+    });
+
     canvas.draw(data);
   }
 </script>
