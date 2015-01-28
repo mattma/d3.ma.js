@@ -453,15 +453,14 @@
   d3.chart('Tree').extend('MyTree', {
     onDataBind: function (data, chart) {
       var chart = chart || this;
-    },
-
-    onEnter: function (chart, single) {
-      console.log('calling me sirt');
-      var chart = chart || this,
-        color = d3.scale.category10();
-
-      console.log('single: ', single);
     }
+
+//    onEnter: function (chart, single) {
+//      var chart = chart || this,
+//        color = d3.scale.category10();
+//
+//      console.log('single: ', single);
+//    }
   });
 
   d3.chart("FinalChart", {
