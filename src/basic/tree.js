@@ -5,17 +5,12 @@ d3.chart('Base').extend('Tree', {
 
     var self = this;
 
-    var tree = this.tree = d3.layout.tree()
-      .size([options.info.canvasH, options.info.canvasW]);
-
     this.layer('tree', this.base, {
       // select the elements we wish to bind to and bind the data to them.
       dataBind: function (data) {
         var chart = this.chart();
 
         if (chart.onDataBind) {
-          chart.onDataBind(data, chart);
-
           function collapse (d) {
             if (d.children) {
               d._children = d.children;
@@ -25,23 +20,16 @@ d3.chart('Base').extend('Tree', {
           }
 
           data.children.forEach(collapse);
-        }
 
+          data = chart.onDataBind(data, chart);
+        }
         if (chart.onDataTransform) {
-          data = chart.onDataTransform(data, chart);
+          chart.onDataTransform(data, chart);
         }
 
-        chart.nodes = tree.nodes(data).reverse();
-        // chart.links = tree.links(chart.nodes);
-
-        // Normalize for fixed-depth.
-        chart.nodes.forEach(function (d) {
-          d.y = d.depth * 180;
-        });
-
+        // give each individual node a "id" for easy targeting
         var i = 0;
-
-        return this.selectAll("g.node").data(chart.nodes, function (d) {
+        return this.selectAll("g.node").data(data, function (d) {
           return d.id || (d.id = ++i);
         });
       },

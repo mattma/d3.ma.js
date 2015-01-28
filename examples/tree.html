@@ -435,19 +435,6 @@
 </script>
 
 <script>
-  d3.chart('Tree').extend('MyTree', {
-    onDataBind: function (data, chart) {
-      var chart = chart || this;
-    }
-
-    //    onEnter: function (chart, single) {
-    //      var chart = chart || this,
-    //        color = d3.scale.category10();
-    //
-    //      console.log('single: ', single);
-    //    }
-  });
-
   function setupTreeData (data, chart, context) {
     var info = context.info;
     var tree = d3.layout.tree()
@@ -464,7 +451,10 @@
     // inside other methods like `onEnter`
     chart.nodes = nodes;
 
-    return links;
+    return {
+      nodes: nodes,
+      links: links
+    };
   }
 
   function stashOldPosition (context) {
@@ -489,13 +479,27 @@
         target: originalPosition
       });
     });
-
   }
+
+  d3.chart('Tree').extend('MyTree', {
+    onDataBind: function (data, chart) {
+      var chart = chart || this;
+      var dataSet = setupTreeData(data, chart, this);
+      return dataSet.nodes;
+    },
+
+    onEnter: function (chart, single) {
+      var chart = chart || this,
+        color = d3.scale.category10();
+      console.log('single: ', single);
+    }
+  });
 
   d3.chart('DiagonalLine').extend('ConnectPath', {
     onDataBind: function (data, chart) {
       var chart = chart || this;
-      return setupTreeData(data, chart, this);
+      var dataSet = setupTreeData(data, chart, this);
+      return dataSet.links;
     },
 
     onEnter: function (chart, single) {
@@ -507,6 +511,7 @@
     onRemove: function (chart, single) {
       var chart = chart || this;
 
+      // Note done yet. @TODO
       chart
         .duration(400)
         .ease('cubic-in-out')
@@ -525,7 +530,8 @@
       // clip.box(300, 600).xy(0, 50);
 
       this.mixin("MyTree", this.base.append('g').classed('tree', true), {
-        info: containerInfo
+        info:              containerInfo,
+        animationDuration: 750
       });
 
       this.mixin("ConnectPath", this.base.append('g').classed('path', true), {
