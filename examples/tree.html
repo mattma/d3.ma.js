@@ -253,10 +253,8 @@
   function stashOldPosition (context) {
     // Stash the old positions for transition.
     context.nodes.forEach(function (d) {
-      if (!d.x0 && !d.y0) {
-        d.x0 = d.x;
-        d.y0 = d.y;
-      }
+      d.x0 = d.x;
+      d.y0 = d.y;
     });
   }
 
@@ -276,10 +274,16 @@
     });
   }
 
+  function setupStartAnimationPoint (data, chart) {
+    chart.curX = (data.clickedElement) ? data.clickedElement.x0 : data.x0;
+    chart.curY = (data.clickedElement) ? data.clickedElement.y0 : data.y0;
+  }
+
   d3.chart('Tree').extend('MyTree', {
     onDataBind: function (data, chart) {
       var chart = chart || this;
       var dataSet = setupTreeData(data, chart, this);
+      setupStartAnimationPoint(data, chart);
       return dataSet.nodes;
     },
 
@@ -291,13 +295,7 @@
       // controlling animate the content from left to right
       node
         .attr("transform", function (d) {
-          //console.log('d: ', d);
-          //@TODO update the new data points
-          if (!d.x0 && !d.y0) {
-            d.x0 = height / 2;
-            d.y0 = 0;
-          }
-          return "translate(" + d.y0 + "," + d.x0 + ")";
+          return "translate(" + chart.curY + "," + chart.curX + ")";
         })
         .on("click", click);
     },
@@ -371,6 +369,7 @@
     onDataBind: function (data, chart) {
       var chart = chart || this;
       var dataSet = setupTreeData(data, chart, this);
+      setupStartAnimationPoint(data, chart);
       return dataSet.links;
     },
 
@@ -436,7 +435,6 @@
   container.box(1400, 600);  //.resize()
 
   var canvas = container.canvas().chart("FinalChart", container.info());
-  var dataset;
 
   function collapse (d) {
     if (d.children) {
@@ -447,39 +445,13 @@
     return d;
   }
 
-  //    var source = {
-  //      children: [{
-  //        a: 1,
-  //        depth: 1,
-  //        children: [{
-  //          b:     1,
-  //          depth: 2,
-  //          children: [{
-  //            c:     1,
-  //            depth: 3
-  //          }]
-  //        }]
-  //      }]
-  //    };
-
-  //  var children = d3ma.map(data.children, collapse);
-  //  var dataSet = data;
-  //  // getting the update data with collapse operation
-  //  dataSet.children = children;
-
   d3ma.map(data.children, collapse);
+
+  data.x0 = container.info().canvasH / 2;
+  data.y0 = 0;
 
   //render it with some data
   canvas.draw(data);
-
-  // d3.csv("/api/gov.csv", function(d) {
-  //   // console.log('d: ', d);
-  //   return {
-
-  //   };
-  // }, function(error, rows) {
-  //   console.log(rows);
-  // });
 
   function uncollapse (d) {
     if (d._children) {
@@ -491,8 +463,13 @@
 
   // Toggle children on click.
   function click (d) {
-    //console.log('d: ', d);
+    var clickedElement = {
+      name: d.name,
+      x0:   d.x0,
+      y0:   d.y0
+    };
     d3ma.map(data.children, uncollapse);
+    data['clickedElement'] = clickedElement;
 
     //    if (d.children) {
     //      d._children = d.children;
@@ -504,6 +481,16 @@
     //console.log('data: ', data);
     canvas.draw(data);
   }
+
+  // d3.csv("/api/gov.csv", function(d) {
+  //   // console.log('d: ', d);
+  //   return {
+
+  //   };
+  // }, function(error, rows) {
+  //   console.log(rows);
+  // });
+
 </script>
 
 <!-- livereload snippet  -->
