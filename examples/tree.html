@@ -258,22 +258,6 @@
     });
   }
 
-  function setLineStartLocation (chart, single, context) {
-    var height = context.info.canvasH;
-
-    single.attr("d", function (d) {
-      // from the center of the tree, animate to the point
-      var originalPosition = {
-        x: height / 2,
-        y: 0
-      };
-      return chart.diagonal({
-        source: originalPosition,
-        target: originalPosition
-      });
-    });
-  }
-
   function setupStartAnimationPoint (data, chart) {
     chart.curX = (data.clickedElement) ? data.clickedElement.x0 : data.x0;
     chart.curY = (data.clickedElement) ? data.clickedElement.y0 : data.y0;
@@ -365,6 +349,22 @@
     }
   });
 
+  function setLineStartLocation (chart, single, context) {
+    var chart = chart || this;
+
+    single.attr("d", function (d) {
+      // from the center of the tree, animate to the point
+      var originalPosition = {
+        x: chart.curX,
+        y: chart.curY
+      };
+      return chart.diagonal({
+        source: originalPosition,
+        target: originalPosition
+      });
+    });
+  }
+
   d3.chart('DiagonalLine').extend('ConnectPath', {
     onDataBind: function (data, chart) {
       var chart = chart || this;
@@ -373,9 +373,19 @@
       return dataSet.links;
     },
 
-    onEnter: function (chart, single) {
+    onInsert: function (chart, path) {
       var chart = chart || this;
-      setLineStartLocation(chart, single, this);
+      setLineStartLocation(chart, path, this);
+    },
+
+    onEnterTransition: function (chart, single) {
+      var duration = chart.options.animationDuration || 400;
+      var easing = chart.options.animationEasing || 'cubic-in-out';
+      this
+        .duration(duration)
+        .ease(easing)
+        .attr({'d': chart.diagonal});
+
       stashOldPosition(chart);
     },
 

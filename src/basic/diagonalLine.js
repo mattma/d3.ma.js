@@ -33,12 +33,13 @@ d3.chart('Base').extend('DiagonalLine', {
 
       insert: function () {
         var chart = this.chart();
+        var path = this.insert("path", "g").attr("class", "link");
+
         if (chart.onInsert) {
-          chart.onInsert(chart);
+          chart.onInsert(chart, path, this);
         }
 
-        return this.insert("path", "g")
-          .attr("class", "link");
+        return path;
       },
 
       events: {
@@ -54,12 +55,10 @@ d3.chart('Base').extend('DiagonalLine', {
 
         'enter:transition': function () {
           var chart = this.chart();
-          var duration = chart.options.animationDuration || 400;
-          var easing = chart.options.animationEasing || 'cubic-in-out';
-          this
-            .duration(duration)
-            .ease(easing)
-            .attr({'d': chart.diagonal});
+
+          if (chart.onEnterTransition) {
+            chart.onEnterTransition(chart, this);
+          }
         },
 
         'merge': function () {
