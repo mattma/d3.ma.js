@@ -27,12 +27,14 @@ d3.chart('Base').extend('Tree', {
       // insert actual element, defined its own attrs
       insert:   function () {
         var chart = this.chart();
+        var node = this.append("g").attr("class", "node");
+
         if (chart.onInsert) {
-          chart.onInsert(chart, this);
+          chart.onInsert(chart, node, this);
         }
 
-        // have to set a treeNode, default to noOps
-        return chart.treeNode || this.append("g").attr("class", "node");
+        // add any property to each "node", and return itself
+        return node;
       },
 
       // define lifecycle events
