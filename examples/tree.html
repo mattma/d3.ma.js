@@ -379,10 +379,12 @@
     },
 
     onEnterTransition: function (chart, single) {
+      var chart = chart || this;
       var duration = chart.options.animationDuration || 400;
       var easing = chart.options.animationEasing || 'cubic-in-out';
-      this
-        .duration(duration)
+
+      single
+        .duration(400)
         .ease(easing)
         .attr({'d': chart.diagonal});
 
