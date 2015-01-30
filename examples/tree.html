@@ -454,15 +454,8 @@
   container.box(1400, 600);  //.resize()
 
   var canvas = container.canvas().chart("FinalChart", container.info());
-  
-  data.children = d3ma.map(data.children, function(d) {
-    if (d.children) {
-      d._children = d.children;
-      d.children = null;
-      d._children.forEach(collapse);
-    }
-    return d;
-  });
+
+  data.children = swapChildren(data.children);
 
   data.x0 = container.info().canvasH / 2;
   data.y0 = 0;
@@ -473,15 +466,24 @@
   // recursive replace the children nodes to show its elements
   function swapChildren(arr, d) {
     return d3ma.map(arr, function(eachD) {
-      if(eachD.name === d.name) {
-        if (eachD._children) {
-          eachD.children = eachD._children;
-          eachD._children = null;
-        } else {
-          console.log('no ops');
+      // initial loading does not contain "d" argument
+      // "d" should be fulfilled when user clicked on a node
+      if(!d) {
+        if (eachD.children) {
+          eachD._children = eachD.children;
+          eachD.children = null;
+          // recursive calling its children to collapse its children
+          swapChildren(eachD._children);
         }
-      } else if (eachD.name === d.parent.name) {
-        swapChildren(eachD.children, d);
+      } else {
+        if(eachD.name === d.name) {
+          if (eachD._children) {
+            eachD.children = eachD._children;
+            eachD._children = null;
+          }
+        } else if (eachD.name === d.parent.name) {
+          swapChildren(eachD.children, d);
+        }
       }
       return eachD;
     });
