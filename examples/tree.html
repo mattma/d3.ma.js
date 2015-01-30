@@ -227,6 +227,29 @@
 
 <script>
   var i = 0;
+  
+  // Compute the new height, function counts total children of root node and sets tree height accordingly.
+  // This prevents the layout looking squashed when new nodes are made visible or looking sparse when nodes are removed
+  // This makes the layout more consistent.
+  var levelWidth = [1];
+  var childCount = function(level, n) {
+    if (n.children && n.children.length > 0) {
+      if (levelWidth.length <= level + 1) levelWidth.push(0);
+
+      levelWidth[level + 1] += n.children.length;
+      n.children.forEach(function(d) {
+        childCount(level + 1, d);
+      });
+    }
+  };
+
+  // Ex: levelWidth value: [1,2,3,5]. // total have 4 depth; depth 3 has 5 child;
+
+  // get the highest value out of all depths
+  // then calculate a dynamic height
+  // 150 pixels per line
+  childCount(0, data);
+  var dynamicHeight = d3.max(levelWidth) * 150;
 
   function setupTreeData (data, chart, context) {
     var info = context.info;
@@ -244,6 +267,12 @@
     nodes.sort(function (a, b) {
       return a.id - b.id;
     });
+
+//
+//    Alternatively, you can pre-process your nodes, and then feed the root to
+//    tree.nodes(). In pseudo-code, something like
+//    nodes.forEach( function(node) {node.children.sort(cmp); return node;})
+//    tree.nodes(root)
 
     var links = tree.links(nodes);
 
@@ -473,8 +502,8 @@
   });
 
   var container = d3.ma.container('#vis').margin({left: 50});
-
-  container.box(1400, 600);  //.resize()
+  console.log('dynamicHeight: ', dynamicHeight);
+  container.box(1400, dynamicHeight);  //.resize()
 
   var canvas = container.canvas().chart("FinalChart", container.info());
 
