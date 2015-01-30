@@ -234,7 +234,7 @@
       .size([info.canvasH, info.canvasW]);
 
     var nodes = tree.nodes(data);
-    
+
     // Normalize for fixed-depth.
     nodes.forEach(function (d) {
       d.id = d.id || (d.id = ++i);
@@ -486,6 +486,23 @@
     }
   }
 
+  // recursive replace the children nodes to show its elements
+  function swapChildren(arr, d) {
+    return d3ma.map(arr, function(eachD) {
+      if(eachD.name === d.name) {
+        if (eachD._children) {
+          eachD.children = eachD._children;
+          eachD._children = null;
+        } else {
+          console.log('no ops');
+        }
+      } else if (eachD.name === d.parent.name) {
+        swapChildren(eachD.children, d);
+      }
+      return eachD;
+    });
+  }
+
   // Toggle children on click.
   function click (d) {
     var clickedElement = {
@@ -496,17 +513,7 @@
     // d3ma.map(data.children, uncollapse);
     data['clickedElement'] = clickedElement;
 
-    data.children = d3ma.map(data.children, function(eachD) {
-      if(eachD.name === d.name) {
-        if (eachD._children) {
-          eachD.children = eachD._children;
-          eachD._children = null;
-        } else {
-          console.log('no ops');
-        }
-      }
-      return eachD;
-    });
+    data.children = swapChildren(data.children, d);
 
     //    if (d.children) {
     //      d._children = d.children;
