@@ -20,7 +20,7 @@ d3.chart('Base').extend('Tree', {
       // insert actual element, defined its own attrs
       insert:   function () {
         var chart = this.chart();
-        var node = this.append("g").attr("class", "node");
+        var node = this.insert("g").attr("class", "node");
 
         if (chart.onInsert) {
           chart.onInsert(chart, node, this);
