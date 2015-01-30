@@ -351,8 +351,6 @@
 
       single.select("text")
         .style("fill-opacity", 1);
-
-      stashOldPosition(chart);
     },
 
     onMerge: function (chart, single) {
@@ -361,6 +359,8 @@
         .style("fill", function (d) {
           return d._children ? "lightsteelblue" : "#fff";
         });
+
+      stashOldPosition(chart);
     },
 
     onMergeTransition: function (chart, single) {
@@ -437,7 +437,11 @@
         .duration(duration)
         .ease(easing)
         .attr({'d': chart.diagonal});
+    },
 
+
+    onMerge: function (chart, single) {
+      var chart = chart || this;
       stashOldPosition(chart);
     },
 
