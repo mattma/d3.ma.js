@@ -250,13 +250,14 @@
   // 150 pixels per line
   childCount(0, data);
   var dynamicHeight = d3.max(levelWidth) * 150;
+  var dynamicWidth = (levelWidth.length + 2)  * 180;
 
   function setupTreeData (data, chart, context) {
     var info = context.info;
     var tree = d3.layout.tree()
       .size([info.canvasH, info.canvasW]);
 
-    var nodes = tree.nodes(data);
+    var nodes = tree.nodes(data).reverse();
 
     // Normalize for fixed-depth.
     nodes.forEach(function (d) {
@@ -502,8 +503,7 @@
   });
 
   var container = d3.ma.container('#vis').margin({left: 50});
-  console.log('dynamicHeight: ', dynamicHeight);
-  container.box(1400, dynamicHeight);  //.resize()
+  container.box(dynamicWidth, dynamicHeight);  //.resize()
 
   var canvas = container.canvas().chart("FinalChart", container.info());
 
