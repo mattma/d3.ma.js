@@ -233,16 +233,19 @@
     var tree = d3.layout.tree()
       .size([info.canvasH, info.canvasW]);
 
-    var nodes = tree.nodes(data).reverse();
-    // console.log('nodes: ', nodes);
-    var links = tree.links(nodes);
-
+    var nodes = tree.nodes(data);
+    
     // Normalize for fixed-depth.
     nodes.forEach(function (d) {
-      console.log('d: ', d);
       d.id = d.id || (d.id = ++i);
       d.y = d.depth * 180;
     });
+
+    nodes.sort(function(a, b){
+      return a.id - b.id;
+    });
+
+    var links = tree.links(nodes);
 
     // attach nodes to the context, so it could be reused
     // inside other methods like `onEnter`
