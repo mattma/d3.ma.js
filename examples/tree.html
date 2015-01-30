@@ -261,7 +261,7 @@
 
     // Normalize for fixed-depth.
     nodes.forEach(function (d) {
-      d.id = d.id || (d.id = ++i);
+      d.id = d.id || ++i;
       d.y = d.depth * 180;
     });
 
