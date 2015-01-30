@@ -13,15 +13,8 @@ d3.chart('Base').extend('Tree', {
         if (chart.onDataBind) {
           data = chart.onDataBind(data, chart);
         }
-        if (chart.onDataTransform) {
-          chart.onDataTransform(data, chart);
-        }
 
-        // give each individual node a "id" for easy targeting
-        var i = 0;
-        return this.selectAll("g.node").data(data, function (d) {
-          return d.id || (d.id = ++i);
-        });
+        return this.selectAll("g.node").data(data);
       },
 
       // insert actual element, defined its own attrs

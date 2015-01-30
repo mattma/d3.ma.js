@@ -226,6 +226,8 @@
 </script>
 
 <script>
+  var i = 0;
+
   function setupTreeData (data, chart, context) {
     var info = context.info;
     var tree = d3.layout.tree()
@@ -237,6 +239,8 @@
 
     // Normalize for fixed-depth.
     nodes.forEach(function (d) {
+      console.log('d: ', d);
+      d.id = d.id || (d.id = ++i);
       d.y = d.depth * 180;
     });
 
@@ -380,11 +384,11 @@
 
     onEnterTransition: function (chart, single) {
       var chart = chart || this;
-      var duration = chart.options.animationDuration || 400;
+      var duration = chart.options.animationDuration || 750;
       var easing = chart.options.animationEasing || 'cubic-in-out';
 
       single
-        .duration(400)
+        .duration(duration)
         .ease(easing)
         .attr({'d': chart.diagonal});
 
@@ -451,13 +455,19 @@
   function collapse (d) {
     if (d.children) {
       d._children = d.children;
-      d._children.forEach(collapse);
+      // d._children.forEach(collapse);
       d.children = null;
     }
-    return d;
   }
 
-  d3ma.map(data.children, collapse);
+  data.children = d3ma.map(data.children, function(d) {
+    if (d.children) {
+      d._children = d.children;
+      d.children = null;
+      d._children.forEach(collapse);
+    }
+    return d;
+  });
 
   data.x0 = container.info().canvasH / 2;
   data.y0 = 0;
@@ -480,8 +490,20 @@
       x0:   d.x0,
       y0:   d.y0
     };
-    d3ma.map(data.children, uncollapse);
+    // d3ma.map(data.children, uncollapse);
     data['clickedElement'] = clickedElement;
+
+    data.children = d3ma.map(data.children, function(eachD) {
+      if(eachD.name === d.name) {
+        if (eachD._children) {
+          eachD.children = eachD._children;
+          eachD._children = null;
+        } else {
+          console.log('no ops');
+        }
+      }
+      return eachD;
+    });
 
     //    if (d.children) {
     //      d._children = d.children;
@@ -490,7 +512,9 @@
     //      d.children = d._children;
     //      d._children = null;
     //    }
-    //console.log('data: ', data);
+
+    // console.log('data: ', data);
+
     canvas.draw(data);
   }
 
