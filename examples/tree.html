@@ -241,7 +241,7 @@
       d.y = d.depth * 180;
     });
 
-    nodes.sort(function(a, b){
+    nodes.sort(function (a, b) {
       return a.id - b.id;
     });
 
@@ -355,6 +355,19 @@
           return "translate(" + chart.curY + "," + chart.curX + ")";
         })
         .remove();
+    },
+
+    onDataMouseenter: function (d, i, chart) {
+      var chart = chart || this;
+      var obj = {
+        'label':      "Name: " + d.name,
+        'value':      "showing some value",
+        'pointIndex': i,
+        'd':          d,
+        'event':      d3.event,
+        'pos':        [d.y + 80, d.x + 20]
+      };
+      return obj;
     }
   });
 
@@ -436,7 +449,7 @@
         animationDuration: 750
       });
 
-      this.mixin("MyTree", this.base.append('g').classed('tree', true), {
+      var tree = this.mixin("MyTree", this.base.append('g').classed('tree', true), {
         info:              containerInfo,
         animationDuration: 750
       });
@@ -446,17 +459,16 @@
       // d3.ma.resize(axis, bars);
 
       // Tooltip section
-      // var tooltip = d3.ma.tooltip(this.base);
-      // bars.dispatch.on('d3maMouseenter', function(e){
-      //   e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
-      //   var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
-      //   //tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
-      //   tooltip.show([e.pos[0], e.pos[1]], html);
-      // });
+      var tooltip = d3.ma.tooltip(this.base);
+      tree.dispatch.on('d3maMouseenter', function (e) {
+        var html = "<div class='tips'>" + e.label + "<br><strong>" +
+          e.value + "</strong>" + "</div>";
+        tooltip.show([e.pos[0], e.pos[1]], html);
+      });
 
-      // bars.dispatch.on('d3maMouseout', function(e){
-      //   tooltip.close();
-      // });
+      tree.dispatch.on('d3maMouseout', function (e) {
+        tooltip.close();
+      });
     }
   });
 
@@ -475,11 +487,11 @@
   canvas.draw(data);
 
   // recursive replace the children nodes to show its elements
-  function swapChildren(arr, d) {
-    return d3ma.map(arr, function(eachD) {
+  function swapChildren (arr, d) {
+    return d3ma.map(arr, function (eachD) {
       // initial loading does not contain "d" argument
       // "d" should be fulfilled when user clicked on a node
-      if(!d) {
+      if (!d) {
         if (eachD.children) {
           eachD._children = eachD.children;
           eachD.children = null;
@@ -489,10 +501,10 @@
       } else {
         // Only manipulate the clicked on node, ignore the non-clicked nodes
         // but sometimes it could be the children of "eachD", check in "else" statement
-        if(d.name === eachD.name) {
+        if (d.name === eachD.name) {
           if (d._children) {
             // should expand the tree
-            if(eachD.name === d.name) {
+            if (eachD.name === d.name) {
               if (eachD._children) {
                 eachD.children = eachD._children;
                 eachD._children = null;
@@ -500,7 +512,7 @@
             } else if (eachD.name === d.parent.name) {
               swapChildren(eachD.children, d);
             }
-          } else if (d.children){
+          } else if (d.children) {
             // should collapse the tree
             eachD._children = eachD.children;
             eachD.children = null;
@@ -510,7 +522,7 @@
         } else {
           // if the "eachD" is already expanded, so we need to check
           // its children to see if it is the children of the "eachD"'s children
-          if(eachD.children) {
+          if (eachD.children) {
             swapChildren(eachD.children, d);
           }
         }
