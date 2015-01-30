@@ -355,6 +355,14 @@
       stashOldPosition(chart);
     },
 
+    onMerge: function (chart, single) {
+      var chart = chart || this;
+      single.select("circle")
+        .style("fill", function (d) {
+          return d._children ? "lightsteelblue" : "#fff";
+        });
+    },
+
     onMergeTransition: function (chart, single) {
       var chart = chart || this;
       var duration = chart.options.animationDuration || 750;
