@@ -431,12 +431,12 @@
       // var clip =  this.mixin("Clip", this.base);
       // clip.box(300, 600).xy(0, 50);
 
-      this.mixin("MyTree", this.base.append('g').classed('tree', true), {
+      this.mixin("ConnectPath", this.base.append('g').classed('path', true), {
         info:              containerInfo,
         animationDuration: 750
       });
 
-      this.mixin("ConnectPath", this.base.append('g').classed('path', true), {
+      this.mixin("MyTree", this.base.append('g').classed('tree', true), {
         info:              containerInfo,
         animationDuration: 750
       });
