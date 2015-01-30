@@ -337,22 +337,15 @@
     },
 
     onRemove: function (chart, single) {
-      // Note done yet. @TODO
       var chart = chart || this;
 
       single
         .duration(400)
+        .ease('cubic-in-out')
         .attr("transform", function (d) {
-          // @TODO here is the source value too.
-          return "translate(" + d.y + "," + d.x + ")";
+          return "translate(" + chart.curY + "," + chart.curX + ")";
         })
         .remove();
-
-      single.select("circle")
-        .attr("r", 1e-6);
-
-      single.select("text")
-        .style("fill-opacity", 1e-6);
     }
   });
 
@@ -401,15 +394,13 @@
     onRemove: function (chart, single) {
       var chart = chart || this;
 
-      // Note done yet. @TODO
       single
         .duration(400)
         .ease('cubic-in-out')
         .attr("d", function (d) {
           var o = {x: chart.curX, y: chart.curY};
-          return diagonal({source: o, target: o});
+          return chart.diagonal({source: o, target: o});
         })
-        // .style('opacity', 1e-6)
         .remove();
     }
   });
@@ -476,13 +467,32 @@
           swapChildren(eachD._children);
         }
       } else {
-        if(eachD.name === d.name) {
-          if (eachD._children) {
-            eachD.children = eachD._children;
-            eachD._children = null;
+        // Only manipulate the clicked on node, ignore the non-clicked nodes
+        // but sometimes it could be the children of "eachD", check in "else" statement
+        if(d.name === eachD.name) {
+          if (d._children) {
+            // should expand the tree
+            if(eachD.name === d.name) {
+              if (eachD._children) {
+                eachD.children = eachD._children;
+                eachD._children = null;
+              }
+            } else if (eachD.name === d.parent.name) {
+              swapChildren(eachD.children, d);
+            }
+          } else if (d.children){
+            // should collapse the tree
+            eachD._children = eachD.children;
+            eachD.children = null;
+            // recursive close all its own expanded children
+            // swapChildren(eachD.children);
           }
-        } else if (eachD.name === d.parent.name) {
-          swapChildren(eachD.children, d);
+        } else {
+          // if the "eachD" is already expanded, so we need to check
+          // its children to see if it is the children of the "eachD"'s children
+          if(eachD.children) {
+            swapChildren(eachD.children, d);
+          }
         }
       }
       return eachD;
