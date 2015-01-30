@@ -454,15 +454,7 @@
   container.box(1400, 600);  //.resize()
 
   var canvas = container.canvas().chart("FinalChart", container.info());
-
-  function collapse (d) {
-    if (d.children) {
-      d._children = d.children;
-      // d._children.forEach(collapse);
-      d.children = null;
-    }
-  }
-
+  
   data.children = d3ma.map(data.children, function(d) {
     if (d.children) {
       d._children = d.children;
@@ -477,14 +469,6 @@
 
   //render it with some data
   canvas.draw(data);
-
-  function uncollapse (d) {
-    if (d._children) {
-      d.children = d._children;
-      d.children.forEach(uncollapse);
-      d._children = null;
-    }
-  }
 
   // recursive replace the children nodes to show its elements
   function swapChildren(arr, d) {
@@ -510,20 +494,9 @@
       x0:   d.x0,
       y0:   d.y0
     };
-    // d3ma.map(data.children, uncollapse);
     data['clickedElement'] = clickedElement;
 
     data.children = swapChildren(data.children, d);
-
-    //    if (d.children) {
-    //      d._children = d.children;
-    //      d.children = null;
-    //    } else {
-    //      d.children = d._children;
-    //      d._children = null;
-    //    }
-
-    // console.log('data: ', data);
 
     canvas.draw(data);
   }
