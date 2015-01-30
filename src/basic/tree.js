@@ -14,7 +14,9 @@ d3.chart('Base').extend('Tree', {
           data = chart.onDataBind(data, chart);
         }
 
-        return this.selectAll("g.node").data(data);
+        return this.selectAll("g.node").data(data, function(d){
+          return d.id;
+        });
       },
 
       // insert actual element, defined its own attrs

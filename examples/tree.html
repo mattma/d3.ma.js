@@ -265,16 +265,6 @@
       d.y = d.depth * 180;
     });
 
-    nodes.sort(function (a, b) {
-      return a.id - b.id;
-    });
-
-//
-//    Alternatively, you can pre-process your nodes, and then feed the root to
-//    tree.nodes(). In pseudo-code, something like
-//    nodes.forEach( function(node) {node.children.sort(cmp); return node;})
-//    tree.nodes(root)
-
     var links = tree.links(nodes);
 
     // attach nodes to the context, so it could be reused
