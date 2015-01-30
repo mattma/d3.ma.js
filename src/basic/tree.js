@@ -62,6 +62,14 @@ d3.chart('Base').extend('Tree', {
           self._bindMouseEnterOutEvents(chart, this);
         },
 
+        'merge:transition': function () {
+          var chart = this.chart();
+
+          if (chart.onMergeTransition) {
+            chart.onMergeTransition(chart, this);
+          }
+        },
+
         'exit:transition': function () {
           var chart = this.chart();
           var duration = chart.options.animationDurationRemove || 400;

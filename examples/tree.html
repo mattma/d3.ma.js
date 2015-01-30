@@ -320,7 +320,6 @@
       single
         .duration(duration)
         .attr("transform", function (d) {
-          // @TODO matt Where all modification should be making
           return "translate(" + d.y + "," + d.x + ")";
         });
 
@@ -334,6 +333,16 @@
         .style("fill-opacity", 1);
 
       stashOldPosition(chart);
+    },
+
+    onMergeTransition: function (chart, single) {
+      var chart = chart || this;
+      var duration = chart.options.animationDuration || 750;
+      single
+        .duration(duration)
+        .attr("transform", function (d) {
+          return "translate(" + d.y + "," + d.x + ")";
+        });
     },
 
     onRemove: function (chart, single) {
@@ -389,6 +398,17 @@
         .attr({'d': chart.diagonal});
 
       stashOldPosition(chart);
+    },
+
+    onMergeTransition: function (chart, single) {
+      var chart = chart || this;
+      var duration = chart.options.animationDuration || 750;
+      var easing = chart.options.animationEasing || 'cubic-in-out';
+
+      single
+        .duration(duration)
+        .ease(easing)
+        .attr({'d': chart.diagonal});
     },
 
     onRemove: function (chart, single) {
