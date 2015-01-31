@@ -15,7 +15,7 @@
     }
 
     .node text {
-      font: 10px sans-serif;
+      font: 14px sans-serif;
     }
 
     .link {
@@ -27,6 +27,7 @@
     /* ======================= */
     /* = d3.ma.js Style Start from here = */
     /* ======================= */
+
     .d3maTooltip-pending-removal {
       position: absolute;
       pointer-events: none;
@@ -34,8 +35,10 @@
 
     .d3maTooltip {
       position: absolute;
-      background-color: rgba(255,255,255,0.75);
-      padding: 3px 5px;
+      background-color: rgba(255,255,255,0.85);
+      min-width: 180px;
+      padding: 7px 12px;
+      overflow: hidden;
       text-align: center;
       border: 1px solid rgba(0,0,0,.2);
       z-index: 10000;
@@ -85,6 +88,10 @@
 
     .circles {
       stroke: steelblue;
+    }
+
+    p {
+      margin: 0;
     }
   </style>
 
@@ -274,6 +281,11 @@
         var obj = {
           'label':      "Name: " + d.name,
           'value':      "showing some value",
+          'state': (d['State']) ? d['State'] : void 0,
+          'operating': (d['Operating']) ? d['Operating'] : void 0,
+          'ftaRegion': (d['FTA Region']) ? d['FTA Region'] : void 0,
+          'capital': (d['Capital']) ? d['Capital'] : void 0,
+          'agencyType': (d['Agency Type']) ? d['Agency Type'] : void 0,
           'pointIndex': i,
           'd':          d,
           'event':      d3.event,
@@ -323,7 +335,6 @@
           .attr({'d': chart.diagonal});
       },
 
-
       onMerge: function (chart, single) {
         var chart = chart || this;
         stashOldPosition(chart);
@@ -356,10 +367,6 @@
 
     d3.chart("FinalChart", {
       initialize: function (containerInfo) {
-        // Used for the clipPath object
-        // var clip =  this.mixin("Clip", this.base);
-        // clip.box(300, 600).xy(0, 50);
-
         this.mixin("ConnectPath", this.base.append('g').classed('path', true), {
           info:              containerInfo,
           animationDuration: 750
@@ -370,15 +377,20 @@
           animationDuration: 750
         });
 
-        // Handle resize in utils.js
-        // convininent methods to recall onResize()
-        // d3.ma.resize(axis, bars);
-
         // Tooltip section
         var tooltip = d3.ma.tooltip(this.base);
         tree.dispatch.on('d3maMouseenter', function (e) {
-          var html = "<div class='tips'>" + e.label + "<br><strong>" +
-            e.value + "</strong>" + "</div>";
+          var html = "<div class='tips'>" +
+            e.label + "<br> <p>" + e.value + "</p>";
+
+          html += (e.state) ? "<br> <p> State: <strong>" + e.state + "</strong></p>" : '';
+          html += (e.operating) ? "<br> <p> Operating: <strong>" + e.operating + "</strong></p>" : '';
+          html += (e.ftaRegion) ? "<br> <p> FTA Region: <strong>" + e.ftaRegion + "</strong></p>" : '';
+          html += (e.capital) ? "<br><p> Capital: <strong>" + e.capital + "</strong></p>" : '';
+          html += (e.agencyType) ? "<br> <p> Agency Type: <strong>" + e.agencyType + "</strong></p>" : '';
+
+          var closeHTML = "</div>";
+          html += closeHTML;
           tooltip.show([e.pos[0], e.pos[1]], html);
         });
 
@@ -398,7 +410,6 @@
     data.x0 = container.info().canvasH / 2;
     data.y0 = 0;
 
-    //render it with some data
     canvas.draw(data);
 
     // recursive replace the children nodes to show its elements
@@ -431,8 +442,6 @@
               // should collapse the tree
               eachD._children = eachD.children;
               eachD.children = null;
-              // recursive close all its own expanded children
-              // swapChildren(eachD.children);
             }
           } else {
             // if the "eachD" is already expanded, so we need to check
@@ -460,8 +469,6 @@
       canvas.draw(data);
     }
   });
-
-
 </script>
 </body>
 </html>
