@@ -87,7 +87,9 @@ module.exports = function( grunt ) {
 					'src/basic/line.js',
 					'src/basic/area.js',
 					'src/basic/circle.js',
+					'src/basic/tree.js',
 					'src/basic/simpleLine.js',
+					'src/basic/diagonalLine.js',
 
 					'src/outro.js'
 				],
