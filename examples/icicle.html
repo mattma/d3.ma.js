@@ -435,112 +435,45 @@
 </script>
 
 <script>
-  function setupTreeData (data, chart, context) {
+  function setupIcicleData (data, chart, context) {
     var info = context.info;
-    var tree = d3.layout.tree()
-      .size([info.canvasH, info.canvasW]);
 
-    var nodes = tree.nodes(data).reverse();
+    var partition = d3.layout.partition()
+      .size([info.canvasH, info.canvasW])
+      .value(function(d) { return d.size; });
 
-    // Normalize for fixed-depth.
-    nodes.forEach(function (d) {
-      d.id = d.id || ++i;
-      d.y = d.depth * 180;
-    });
-
-    var links = tree.links(nodes);
+    var nodes = partition.nodes(data);
 
     // attach nodes to the context, so it could be reused
     // inside other methods like `onEnter`
     chart.nodes = nodes;
 
-    return {
-      nodes: nodes,
-      links: links
-    };
+    return nodes;
   }
 
   d3.chart('Icicle').extend('MyIcicle', {
     onDataBind: function (data, chart) {
       var chart = chart || this;
-      var dataSet = setupTreeData(data, chart, this);
-      setupStartAnimationPoint(data, chart);
-      return dataSet.nodes;
-    },
-
-    onInsert: function (chart, node) {
-      var chart = chart || this;
-      var height = chart.info.canvasH;
-
-      // Enter any new nodes at the parent's previous position.
-      // controlling animate the content from left to right
-      node
-        .attr("transform", function (d) {
-          return "translate(" + chart.curY + "," + chart.curX + ")";
-        })
-        .on("click", click);
+      var nodes = setupIcicleData(data, chart, this);
+      return nodes;
     },
 
     onEnter: function (chart, single) {
       var chart = chart || this;
 
-      single.append("circle")
-        .attr("r", 1e-6)
-        .style("fill", function (d) {
-          return d._children ? "lightsteelblue" : "#fff";
-        });
+      single.append("rect")
+        .attr("class", "node")
+        .attr("x", function(d) { return d.x; })
+        .attr("y", function(d) { return d.y; })
+        .attr("width", function(d) { return d.dx; })
+        .attr("height", function(d) { return d.dy; })
+        .style("fill", function(d) { return color((d.children ? d : d.parent).name); });
 
       single.append("text")
-        .attr("x", function (d) {
-          return d.children || d._children ? -10 : 10;
-        })
+        .attr("class", "label")
         .attr("dy", ".35em")
-        .attr("text-anchor", function (d) {
-          return d.children || d._children ? "end" : "start";
-        })
-        .text(function (d) {
-          return d.name;
-        })
-        .style("fill-opacity", 1e-6);
-    },
-
-    onEnterTransition: function (chart, single) {
-      var chart = chart || this;
-      var duration = chart.options.animationDuration || 750;
-      single
-        .duration(duration)
-        .attr("transform", function (d) {
-          return "translate(" + d.y + "," + d.x + ")";
-        });
-
-      single.select("circle")
-        .attr("r", 5)
-        .style("fill", function (d) {
-          return d._children ? "lightsteelblue" : "#fff";
-        });
-
-      single.select("text")
-        .style("fill-opacity", 1);
-    },
-
-    onMerge: function (chart, single) {
-      var chart = chart || this;
-      single.select("circle")
-        .style("fill", function (d) {
-          return d._children ? "lightsteelblue" : "#fff";
-        });
-
-      stashOldPosition(chart);
-    },
-
-    onMergeTransition: function (chart, single) {
-      var chart = chart || this;
-      var duration = chart.options.animationDuration || 750;
-      single
-        .duration(duration)
-        .attr("transform", function (d) {
-          return "translate(" + d.y + "," + d.x + ")";
-        });
+        .attr("transform", function(d) { return "translate(" + (d.x + d.dx / 2) + "," + (d.y + d.dy / 2) + ")rotate(90)"; })
+        .text(function(d) { return d.name; });
     },
 
     onRemove: function (chart, single) {
@@ -553,20 +486,20 @@
           return "translate(" + chart.curY + "," + chart.curX + ")";
         })
         .remove();
-    },
-
-    onDataMouseenter: function (d, i, chart) {
-      var chart = chart || this;
-      var obj = {
-        'label':      "Name: " + d.name,
-        'value':      "showing some value",
-        'pointIndex': i,
-        'd':          d,
-        'event':      d3.event,
-        'pos':        [d.y + 80, d.x + 20]
-      };
-      return obj;
     }
+
+//    onDataMouseenter: function (d, i, chart) {
+//      var chart = chart || this;
+//      var obj = {
+//        'label':      "Name: " + d.name,
+//        'value':      "showing some value",
+//        'pointIndex': i,
+//        'd':          d,
+//        'event':      d3.event,
+//        'pos':        [d.y + 80, d.x + 20]
+//      };
+//      return obj;
+//    }
   });
 
   d3.chart("FinalChart", {
