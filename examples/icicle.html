@@ -474,18 +474,25 @@
         .text(function(d) { return d.name; });
     },
 
+//    onEnterTransition: function (chart, single) {
+//      var chart = chart || this;
+//
+//      console.log('enter transition action received');
+//    },
+
     onMergeTransition: function (chart, single) {
       var chart = chart || this;
 
-//      chart.x.domain([d.x, d.x + d.dx]);
+      console.log('merge action received');
+
+      //      chart.x.domain([d.x, d.x + d.dx]);
 //      chart.y.domain([d.y, 1]).range([d.y ? 20 : 0, height]);
 
-      single.transition()
-        .duration(750)
-        .attr("x", function(d) { return x(d.x); })
-        .attr("y", function(d) { return y(d.y); })
-        .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
-        .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
+//      single
+//        .attr("x", function(d) { return x(d.x); })
+//        .attr("y", function(d) { return y(d.y); })
+//        .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
+//        .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
     },
 
     onRemove: function (chart, single) {
