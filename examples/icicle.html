@@ -552,7 +552,8 @@
 
   function click(d) {
     console.log('click one rect: ', d);
-    canvas.draw(data);
+    // check `d.parent` value, exist is the root, otherwise, it is the leaf
+    canvas.draw(d);
   }
 </script>
 
