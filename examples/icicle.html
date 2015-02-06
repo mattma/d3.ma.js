@@ -491,17 +491,22 @@
       var chart = chart || this;
 
       console.log('merge action received');
-      
+
       if(chart.x && chart.y) {
         var x = chart.x;
         var y = chart.y;
-        var d = chart.clickedData;
+        var clickD = chart.clickedData;
 
-        x.domain([d.x, d.x + d.dx]);
-        y.domain([d.y, 1]).range([d.y ? 20 : 0, chart.info.canvasH]);
+        x.domain([clickD.x, clickD.x + clickD.dx]);
+        y.domain([clickD.y, 1]).range([clickD.y ? 20 : 0, chart.info.canvasH]);
 
         single
-          .attr("x", function(d) { return x(d.x); })
+          .duration(750)
+          .attr("x", function(d) {
+            var a = x(d.x);
+            console.log('a: ', a);
+            return a;
+          })
           .attr("y", function(d) { return y(d.y); })
           .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
           .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
@@ -564,7 +569,6 @@
   canvas.draw(data);
 
   function click(d) {
-    console.log('click one rect: ', d);
     // check `d.parent` value, exist is the root, otherwise, it is the leaf
     canvas.draw(d);
   }
