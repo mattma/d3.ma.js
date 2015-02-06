@@ -39,7 +39,7 @@
 
   <script src="../src/core/scale.js"></script>
   <script src="../src/core/base.js"></script>
-  
+
   <script src="../src/basic/icicle.js"></script>
 
   <!-- NEVER EVER INCLUDE THIS FILE IN THE BUILD -->
@@ -435,32 +435,6 @@
 </script>
 
 <script>
-  var i = 0;
-
-  // Compute the new height, function counts total children of root node and sets tree height accordingly.
-  // This prevents the layout looking squashed when new nodes are made visible or looking sparse when nodes are removed
-  // This makes the layout more consistent.
-  var levelWidth = [1];
-  var childCount = function(level, n) {
-    if (n.children && n.children.length > 0) {
-      if (levelWidth.length <= level + 1) levelWidth.push(0);
-
-      levelWidth[level + 1] += n.children.length;
-      n.children.forEach(function(d) {
-        childCount(level + 1, d);
-      });
-    }
-  };
-
-  // Ex: levelWidth value: [1,2,3,5]. // total have 4 depth; depth 3 has 5 child;
-
-  // get the highest value out of all depths
-  // then calculate a dynamic height
-  // 150 pixels per line
-  childCount(0, data);
-  var dynamicHeight = d3.max(levelWidth) * 10;
-  var dynamicWidth = (levelWidth.length + 2)  * 180;
-
   function setupTreeData (data, chart, context) {
     var info = context.info;
     var tree = d3.layout.tree()
@@ -486,20 +460,7 @@
     };
   }
 
-  function stashOldPosition (context) {
-    // Stash the old positions for transition.
-    context.nodes.forEach(function (d) {
-      d.x0 = d.x;
-      d.y0 = d.y;
-    });
-  }
-
-  function setupStartAnimationPoint (data, chart) {
-    chart.curX = (data.clickedElement) ? data.clickedElement.x0 : data.x0;
-    chart.curY = (data.clickedElement) ? data.clickedElement.y0 : data.y0;
-  }
-
-  d3.chart('Tree').extend('MyTree', {
+  d3.chart('Icicle').extend('MyIcicle', {
     onDataBind: function (data, chart) {
       var chart = chart || this;
       var dataSet = setupTreeData(data, chart, this);
@@ -608,192 +569,34 @@
     }
   });
 
-  function setLineStartLocation (chart, single, context) {
-    var chart = chart || this;
-
-    single.attr("d", function (d) {
-      // from the center of the tree, animate to the point
-      var originalPosition = {
-        x: chart.curX,
-        y: chart.curY
-      };
-      return chart.diagonal({
-        source: originalPosition,
-        target: originalPosition
-      });
-    });
-  }
-
-  d3.chart('DiagonalLine').extend('ConnectPath', {
-    onDataBind: function (data, chart) {
-      var chart = chart || this;
-      var dataSet = setupTreeData(data, chart, this);
-      setupStartAnimationPoint(data, chart);
-      return dataSet.links;
-    },
-
-    onInsert: function (chart, path) {
-      var chart = chart || this;
-      setLineStartLocation(chart, path, this);
-    },
-
-    onEnterTransition: function (chart, single) {
-      var chart = chart || this;
-      var duration = chart.options.animationDuration || 750;
-      var easing = chart.options.animationEasing || 'cubic-in-out';
-
-      single
-        .duration(duration)
-        .ease(easing)
-        .attr({'d': chart.diagonal});
-    },
-
-
-    onMerge: function (chart, single) {
-      var chart = chart || this;
-      stashOldPosition(chart);
-    },
-
-    onMergeTransition: function (chart, single) {
-      var chart = chart || this;
-      var duration = chart.options.animationDuration || 750;
-      var easing = chart.options.animationEasing || 'cubic-in-out';
-
-      single
-        .duration(duration)
-        .ease(easing)
-        .attr({'d': chart.diagonal});
-    },
-
-    onRemove: function (chart, single) {
-      var chart = chart || this;
-
-      single
-        .duration(300)
-        .ease('cubic-in-out')
-        .attr("d", function (d) {
-          var o = {x: chart.curX, y: chart.curY};
-          return chart.diagonal({source: o, target: o});
-        })
-        .remove();
-    }
-  });
-
   d3.chart("FinalChart", {
     initialize: function (containerInfo) {
-      // Used for the clipPath object
-      // var clip =  this.mixin("Clip", this.base);
-      // clip.box(300, 600).xy(0, 50);
-
-      this.mixin("ConnectPath", this.base.append('g').classed('path', true), {
+      var tree = this.mixin("MyIcicle", this.base.append('g').classed('icicle', true), {
         info:              containerInfo,
         animationDuration: 750
       });
-
-      var tree = this.mixin("MyTree", this.base.append('g').classed('tree', true), {
-        info:              containerInfo,
-        animationDuration: 750
-      });
-
-      // Handle resize in utils.js
-      // convininent methods to recall onResize()
-      // d3.ma.resize(axis, bars);
 
       // Tooltip section
-      var tooltip = d3.ma.tooltip(this.base);
-      tree.dispatch.on('d3maMouseenter', function (e) {
-        var html = "<div class='tips'>" + e.label + "<br><strong>" +
-          e.value + "</strong>" + "</div>";
-        tooltip.show([e.pos[0], e.pos[1]], html);
-      });
-
-      tree.dispatch.on('d3maMouseout', function (e) {
-        tooltip.close();
-      });
+//      var tooltip = d3.ma.tooltip(this.base);
+//      tree.dispatch.on('d3maMouseenter', function (e) {
+//        var html = "<div class='tips'>" + e.label + "<br><strong>" +
+//          e.value + "</strong>" + "</div>";
+//        tooltip.show([e.pos[0], e.pos[1]], html);
+//      });
+//
+//      tree.dispatch.on('d3maMouseout', function (e) {
+//        tooltip.close();
+//      });
     }
   });
 
   var container = d3.ma.container('#vis').margin({left: 50});
-  container.box(dynamicWidth, dynamicHeight);  //.resize()
+  container.box(960, 500);  //.resize()
 
   var canvas = container.canvas().chart("FinalChart", container.info());
 
-  data.children = swapChildren(data.children);
-
-  data.x0 = container.info().canvasH / 2;
-  data.y0 = 0;
-
   //render it with some data
   canvas.draw(data);
-
-  // recursive replace the children nodes to show its elements
-  function swapChildren (arr, d) {
-    return d3ma.map(arr, function (eachD) {
-      // initial loading does not contain "d" argument
-      // "d" should be fulfilled when user clicked on a node
-      if (!d) {
-        if (eachD.children) {
-          eachD._children = eachD.children;
-          eachD.children = null;
-          // recursive calling its children to collapse its children
-          swapChildren(eachD._children);
-        }
-      } else {
-        // Only manipulate the clicked on node, ignore the non-clicked nodes
-        // but sometimes it could be the children of "eachD", check in "else" statement
-        if (d.name === eachD.name) {
-          if (d._children) {
-            // should expand the tree
-            if (eachD.name === d.name) {
-              if (eachD._children) {
-                eachD.children = eachD._children;
-                eachD._children = null;
-              }
-            } else if (eachD.name === d.parent.name) {
-              swapChildren(eachD.children, d);
-            }
-          } else if (d.children) {
-            // should collapse the tree
-            eachD._children = eachD.children;
-            eachD.children = null;
-            // recursive close all its own expanded children
-            // swapChildren(eachD.children);
-          }
-        } else {
-          // if the "eachD" is already expanded, so we need to check
-          // its children to see if it is the children of the "eachD"'s children
-          if (eachD.children) {
-            swapChildren(eachD.children, d);
-          }
-        }
-      }
-      return eachD;
-    });
-  }
-
-  // Toggle children on click.
-  function click (d) {
-    var clickedElement = {
-      name: d.name,
-      x0:   d.x0,
-      y0:   d.y0
-    };
-    data['clickedElement'] = clickedElement;
-
-    data.children = swapChildren(data.children, d);
-
-    canvas.draw(data);
-  }
-
-  // d3.csv("/api/gov.csv", function(d) {
-  //   // console.log('d: ', d);
-  //   return {
-
-  //   };
-  // }, function(error, rows) {
-  //   console.log(rows);
-  // });
-
 </script>
 
 <!-- livereload snippet  -->
