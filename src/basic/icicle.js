@@ -5,7 +5,7 @@ d3.chart('Base').extend('Icicle', {
 
     var self = this;
 
-    this.layer('tree', this.base, {
+    this.layer('icicle', this.base, {
       // select the elements we wish to bind to and bind the data to them.
       dataBind: function (data) {
         var chart = this.chart();
@@ -14,15 +14,13 @@ d3.chart('Base').extend('Icicle', {
           data = chart.onDataBind(data, chart);
         }
 
-        return this.selectAll("g.node").data(data, function(d){
-          return d.id;
-        });
+        return this.selectAll("g.icicle-node").data(data);
       },
 
       // insert actual element, defined its own attrs
       insert:   function () {
         var chart = this.chart();
-        var node = this.insert("g").attr("class", "node");
+        var node = this.insert("g").attr("class", "icicle-node");
 
         if (chart.onInsert) {
           chart.onInsert(chart, node, this);
