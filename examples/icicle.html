@@ -8,23 +8,13 @@
 
   <style>
     .node {
-      cursor: pointer;
+      fill: #ddd;
+      stroke: #fff;
     }
 
-    .node circle {
-      fill: #fff;
-      stroke: steelblue;
-      stroke-width: 1.5px;
-    }
-
-    .node text {
+    .label {
       font: 10px sans-serif;
-    }
-
-    .link {
-      fill: none;
-      stroke: #ccc;
-      stroke-width: 1.5px;
+      text-anchor: middle;
     }
   </style>
 
@@ -439,7 +429,7 @@
     var info = context.info;
 
     var partition = d3.layout.partition()
-      .size([info.canvasH, info.canvasW])
+      .size([info.canvasW, info.canvasH])
       .value(function(d) { return d.size; });
 
     var nodes = partition.nodes(data);
@@ -460,6 +450,7 @@
 
     onEnter: function (chart, single) {
       var chart = chart || this;
+      var color = d3.scale.category20();
 
       single.append("rect")
         .attr("class", "node")
@@ -524,7 +515,7 @@
   });
 
   var container = d3.ma.container('#vis').margin({left: 50});
-  container.box(960, 500);  //.resize()
+  container.box(1110, 500);  //.resize()
 
   var canvas = container.canvas().chart("FinalChart", container.info());
 
