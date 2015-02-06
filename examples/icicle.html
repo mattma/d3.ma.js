@@ -432,11 +432,18 @@
       .size([info.canvasW, info.canvasH])
       .value(function(d) { return d.size; });
 
-    chart.x = d3.scale.linear()
-      .range([0, info.canvasW]);
+    if(data.parent) {
+      // assign users' clicked data to a local property
+      chart.clickedData = data;
+      // assign the parent data object back to data
+      data = data.parent;
 
-    chart.y = d3.scale.linear()
-      .range([0, info.canvasH]);
+      chart.x = d3.scale.linear()
+        .range([0, info.canvasW]);
+
+      chart.y = d3.scale.linear()
+        .range([0, info.canvasH]);
+    }
 
     var nodes = partition.nodes(data);
 
@@ -484,15 +491,21 @@
       var chart = chart || this;
 
       console.log('merge action received');
+      
+      if(chart.x && chart.y) {
+        var x = chart.x;
+        var y = chart.y;
+        var d = chart.clickedData;
 
-      //      chart.x.domain([d.x, d.x + d.dx]);
-//      chart.y.domain([d.y, 1]).range([d.y ? 20 : 0, height]);
+        x.domain([d.x, d.x + d.dx]);
+        y.domain([d.y, 1]).range([d.y ? 20 : 0, chart.info.canvasH]);
 
-//      single
-//        .attr("x", function(d) { return x(d.x); })
-//        .attr("y", function(d) { return y(d.y); })
-//        .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
-//        .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
+        single
+          .attr("x", function(d) { return x(d.x); })
+          .attr("y", function(d) { return y(d.y); })
+          .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
+          .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
+      }
     },
 
     onRemove: function (chart, single) {
