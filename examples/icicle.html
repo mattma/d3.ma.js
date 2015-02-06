@@ -432,6 +432,12 @@
       .size([info.canvasW, info.canvasH])
       .value(function(d) { return d.size; });
 
+    chart.x = d3.scale.linear()
+      .range([0, info.canvasW]);
+
+    chart.y = d3.scale.linear()
+      .range([0, info.canvasH]);
+
     var nodes = partition.nodes(data);
 
     // attach nodes to the context, so it could be reused
@@ -466,6 +472,20 @@
         .attr("dy", ".35em")
         .attr("transform", function(d) { return "translate(" + (d.x + d.dx / 2) + "," + (d.y + d.dy / 2) + ")rotate(90)"; })
         .text(function(d) { return d.name; });
+    },
+
+    onMergeTransition: function (chart, single) {
+      var chart = chart || this;
+
+//      chart.x.domain([d.x, d.x + d.dx]);
+//      chart.y.domain([d.y, 1]).range([d.y ? 20 : 0, height]);
+
+      single.transition()
+        .duration(750)
+        .attr("x", function(d) { return x(d.x); })
+        .attr("y", function(d) { return y(d.y); })
+        .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
+        .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
     },
 
     onRemove: function (chart, single) {
@@ -524,16 +544,8 @@
   canvas.draw(data);
 
   function click(d) {
-    console.log('click one rect');
-    //    x.domain([d.x, d.x + d.dx]);
-//    y.domain([d.y, 1]).range([d.y ? 20 : 0, height]);
-//
-//    rect.transition()
-//      .duration(750)
-//      .attr("x", function(d) { return x(d.x); })
-//      .attr("y", function(d) { return y(d.y); })
-//      .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
-//      .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
+    console.log('click one rect: ', d);
+    canvas.draw(data);
   }
 </script>
 
