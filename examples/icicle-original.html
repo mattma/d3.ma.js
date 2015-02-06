@@ -325,7 +325,9 @@
     .attr("height", height);
 
   var partition = d3.layout.partition()
-    .children(function(d) { return isNaN(d.value) ? d3.entries(d.value) : null; })
+    .children(function(d) {
+      return isNaN(d.value) ? d3.entries(d.value) : null;
+    })
     .value(function(d) { return d.value; });
 
   // var nodes = partition.nodes(data);
