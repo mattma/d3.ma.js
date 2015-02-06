@@ -1,4 +1,4 @@
-d3.chart('Base').extend('Tree', {
+d3.chart('Base').extend('Icicle', {
 
   initialize: function (options) {
     this.options = options = options || {};
