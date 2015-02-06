@@ -511,18 +511,6 @@
           .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
           .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
       }
-    },
-
-    onRemove: function (chart, single) {
-      var chart = chart || this;
-
-      single
-        .duration(300)
-        .ease('cubic-in-out')
-        .attr("transform", function (d) {
-          return "translate(" + chart.curY + "," + chart.curX + ")";
-        })
-        .remove();
     }
 
 //    onDataMouseenter: function (d, i, chart) {
