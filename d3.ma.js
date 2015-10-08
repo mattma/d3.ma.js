@@ -1,314 +1,1109 @@
 /*! 
- 	d3.ma.js - v0.1.0
+ 	d3.ma.js - v0.2.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2014-03-03
+ 	Date: 2015-10-08
 */
-(function(){
+(function (root, factory) {
+	if (typeof exports === 'object') {
+		module.exports = factory( require('d3') );
+	} else if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(['d3'], factory);
+	} else {
+		factory( window.d3 );
+	}
+} (typeof window !== 'undefined' ? window : this, function (d3) {
 
 'use strict';
-
-var d3 = window.d3;
-
-var previousD3ma = window.d3.ma;
-
-var d3ma = d3.ma = {};
-
-d3ma.noConflict = function() {
-	window.d3ma= previousD3ma;
-	return d3ma;
-};
-
-d3ma.assert = function(test, message) {
-	if(test) { return; }
-	throw new Error('[d3.ma] ' + message);
-};
-
-d3ma.assert(d3, 'd3.js is required');
-
-d3ma.assert( typeof d3.version === 'string' && d3.version.match(/^3/), 'd3.js version 3 is required' );
-
-// Need to sync this version with package.json version
-d3ma.version = '0.1.0';
-
-
-
-// Pull Straight out of nvd3 library
-// get the current windowSize() out of the DOM
-// return and object has width value and height value
-d3.ma.windowSize = function() {
-	// Sane defaults
-	var size = {width: 640, height: 480};
-
-	// Earlier IE uses Doc.body
-	if (document.body && document.body.offsetWidth) {
-		size.width = document.body.offsetWidth;
-		size.height = document.body.offsetHeight;
-	}
-
-	// IE can use depending on mode it is in
-	if (document.compatMode=='CSS1Compat' &&
-		document.documentElement &&
-		document.documentElement.offsetWidth ) {
-		size.width = document.documentElement.offsetWidth;
-		size.height = document.documentElement.offsetHeight;
-	}
-
-	// Most recent browsers use
-	if (window.innerWidth && window.innerHeight) {
-		size.width = window.innerWidth;
-		size.height = window.innerHeight;
-	}
-	return (size);
-};
-
-
-// Default color chooser uses the index of an object as before.
-d3.ma.Color = function() {
-	var colors = d3.scale.category20().range();
-	return function(d, i) { return d.color || colors[i % colors.length] };
-};
-
-
-/* For situations where we want to approximate the width in pixels for an SVG:text element.
-Most common instance is when the element is in a display:none; container.
-Forumla is : text.length * font-size * constant_factor
+/*! d3.chart - v0.2.0
+*  Modified based on v0.2.0 - Home Baked
+*  Date: 2014-02-21
 */
-d3.ma.calcTextWidth = function (svgTextElem) {
-	if (svgTextElem instanceof d3.selection) {
-		var fontSize = parseInt(svgTextElem.style('font-size').replace('px',''));
-		var textLength = svgTextElem.text().length;
 
-		return textLength * fontSize * 0.5;
+var hasOwnProp = Object.hasOwnProperty;
+
+var d3cAssert = function(test, message) {
+	if (test) {
+		return;
 	}
-	return 0;
+	throw new Error("[d3.chart] " + message);
 };
 
+d3cAssert(d3, "d3.js is required");
+d3cAssert(typeof d3.version === "string" && d3.version.match(/^3/),
+	"d3.js version 3 is required");
 
-// Work the same way how underscore.js signiture each method
-d3.ma.each = function(obj, iterator, context) {
+// @todo file break line
 
-	if (obj == null) return;
+var lifecycleRe = /^(enter|update|merge|exit)(:transition)?$/;
 
-	var breaker = {},
-		nativeForEach = Array.prototype.forEach;
+/**
+ * Create a layer using the provided `base`. The layer instance is *not*
+ * exposed to d3.chart users. Instead, its instance methods are mixed in to the
+ * `base` selection it describes; users interact with the instance via these
+ * bound methods.
+ *
+ * @private
+ * @constructor
+ *
+ * @param {d3.selection} base The containing DOM node for the layer.
+ */
+var Layer = function(base) {
+	d3cAssert(base, "Layers must be initialized with a base.");
+	this._base = base;
+	this._handlers = {};
+};
 
-	if (nativeForEach && obj.forEach === nativeForEach) {
-		obj.forEach(iterator, context);
-	} else if (obj.length === +obj.length) {
-		for (var i = 0, l = obj.length; i < l; i++) {
-			if (iterator.call(context, obj[i], i, obj) === breaker) return;
+/**
+ * Invoked by {@link Layer#draw} to join data with this layer's DOM nodes. This
+ * implementation is "virtual"--it *must* be overridden by Layer instances.
+ *
+ * @param {Array} data Value passed to {@link Layer#draw}
+ */
+Layer.prototype.dataBind = function() {
+	d3cAssert(false, "Layers must specify a `dataBind` method.");
+};
+
+/**
+ * Invoked by {@link Layer#draw} in order to insert new DOM nodes into this
+ * layer's `base`. This implementation is "virtual"--it *must* be overridden by
+ * Layer instances.
+ */
+Layer.prototype.insert = function() {
+	d3cAssert(false, "Layers must specify an `insert` method.");
+};
+
+/**
+ * Subscribe a handler to a "lifecycle event". These events (and only these
+ * events) are triggered when {@link Layer#draw} is invoked--see that method
+ * for more details on lifecycle events.
+ *
+ * @param {String} eventName Identifier for the lifecycle event for which to
+ *        subscribe.
+ * @param {Function} handler Callback function
+ *
+ * @returns {d3.selection} Reference to the layer's base.
+ */
+Layer.prototype.on = function(eventName, handler, options) {
+	options = options || {};
+	d3cAssert(
+		lifecycleRe.test(eventName),
+		"Unrecognized lifecycle event name specified to `Layer#on`: '" +
+		eventName + "'."
+	);
+	if (!(eventName in this._handlers)) {
+		this._handlers[eventName] = [];
+	}
+	this._handlers[eventName].push({
+		callback: handler,
+		chart: options.chart || null
+	});
+	return this._base;
+};
+
+/**
+ * Unsubscribe the specified handler from the specified event. If no handler is
+ * supplied, remove *all* handlers from the event.
+ *
+ * @param {String} eventName Identifier for event from which to remove
+ *        unsubscribe
+ * @param {Function} handler Callback to remove from the specified event
+ *
+ * @returns {d3.selection} Reference to the layer's base.
+ */
+Layer.prototype.off = function(eventName, handler) {
+
+	var handlers = this._handlers[eventName];
+	var idx;
+
+	d3cAssert(
+		lifecycleRe.test(eventName),
+		"Unrecognized lifecycle event name specified to `Layer#off`: '" +
+		eventName + "'."
+	);
+
+	if (!handlers) {
+		return this._base;
+	}
+
+	if (arguments.length === 1) {
+		handlers.length = 0;
+		return this._base;
+	}
+
+	for (idx = handlers.length - 1; idx > -1; --idx) {
+		if (handlers[idx].callback === handler) {
+			handlers.splice(idx, 1);
 		}
-	} else {
-		for (var key in obj) {
-			if (Object.prototype.hasOwnProperty.call(obj, key)) {
-				if (iterator.call(context, obj[key], key, obj) === breaker) return;
+	}
+	return this._base;
+};
+
+/**
+ * Render the layer according to the input data: Bind the data to the layer
+ * (according to {@link Layer#dataBind}, insert new elements (according to
+ * {@link Layer#insert}, make lifecycle selections, and invoke all relevant
+ * handlers (as attached via {@link Layer#on}) with the lifecycle selections.
+ *
+ * - update
+ * - update:transition
+ * - enter
+ * - enter:transition
+ * - exit
+ * - exit:transition
+ *
+ * @param {Array} data Data to drive the rendering.
+ */
+Layer.prototype.draw = function(data) {
+	var bound, entering, events, selection, handlers, eventName, idx, len;
+
+	bound = this.dataBind.call(this._base, data);
+
+	// Although `bound instanceof d3.selection` is more explicit, it fails
+	// in IE8, so we use duck typing to maintain compatability.
+	d3cAssert(bound && bound.call === d3.selection.prototype.call,
+		"Invalid selection defined by `Layer#dataBind` method.");
+	d3cAssert(bound.enter, "Layer selection not properly bound.");
+
+	entering = bound.enter();
+	entering._chart = this._base._chart;
+
+	events = [{
+		name: "update",
+		selection: bound
+	}, {
+		name: "enter",
+		// Defer invocation of the `insert` method so that the previous
+		// `update` selection does not contain the new nodes.
+		selection: this.insert.bind(entering)
+	}, {
+		name: "merge",
+		// This selection will be modified when the previous selection
+		// is made.
+		selection: bound
+	}, {
+		name: "exit",
+		selection: bound.exit.bind(bound)
+	}];
+
+	for (var i = 0, l = events.length; i < l; ++i) {
+		eventName = events[i].name;
+		selection = events[i].selection;
+
+		// Some lifecycle selections are expressed as functions so that
+		// they may be delayed.
+		if (typeof selection === "function") {
+			selection = selection();
+		}
+
+		if (selection.empty()) {
+			continue;
+		}
+
+		// Although `selection instanceof d3.selection` is more explicit,
+		// it fails in IE8, so we use duck typing to maintain
+		// compatability.
+		d3cAssert(selection &&
+			selection.call === d3.selection.prototype.call,
+			"Invalid selection defined for '" + eventName +
+			"' lifecycle event.");
+
+		handlers = this._handlers[eventName];
+
+		if (handlers) {
+			for (idx = 0, len = handlers.length; idx < len; ++idx) {
+				// Attach a reference to the parent chart so the selection"s
+				// `chart` method will function correctly.
+				selection._chart = handlers[idx].chart || this._base._chart;
+				selection.call(handlers[idx].callback);
+			}
+		}
+
+		handlers = this._handlers[eventName + ":transition"];
+
+		if (handlers && handlers.length) {
+			selection = selection.transition();
+			for (idx = 0, len = handlers.length; idx < len; ++idx) {
+				selection._chart = handlers[idx].chart || this._base._chart;
+				selection.call(handlers[idx].callback);
 			}
 		}
 	}
+};
+
+// @todo file break line
+
+/**
+ * Create a new layer on the d3 selection from which it is called.
+ *
+ * @static
+ *
+ * @param {Object} [options] Options to be forwarded to {@link Layer|the Layer
+ *        constructor}
+ * @returns {d3.selection}
+ */
+d3.selection.prototype.layer = function(options) {
+	var layer = new Layer(this);
+	var eventName;
+
+	// Set layer methods (required)
+	layer.dataBind = options.dataBind;
+	layer.insert = options.insert;
+
+	// Bind events (optional)
+	if ("events" in options) {
+		for (eventName in options.events) {
+			layer.on(eventName, options.events[eventName]);
+		}
+	}
+
+	// Mix the public methods into the D3.js selection (bound appropriately)
+	this.on = function() {
+		return layer.on.apply(layer, arguments);
+	};
+	this.off = function() {
+		return layer.off.apply(layer, arguments);
+	};
+	this.draw = function() {
+		return layer.draw.apply(layer, arguments);
+	};
+
+	return this;
+};
+
+var variadicNew = function(Ctor, args) {
+	var inst,
+		// Set the prototype chain to inherit from parent, without calling parent‘s constructor function.
+		Surrogate = function(ctor) {
+			this.constructor = ctor;
+		};
+	Surrogate.prototype = Ctor.prototype;
+	inst = new Surrogate(Ctor);
+	Ctor.apply(inst, args);
+	return inst;
+};
+
+// extend
+// Borrowed from Underscore.js
+function extend(object) {
+	var argsIndex, argsLength, iteratee, key;
+	if (!object) {
+		return object;
+	}
+	argsLength = arguments.length;
+	for (argsIndex = 1; argsIndex < argsLength; argsIndex++) {
+		iteratee = arguments[argsIndex];
+		if (iteratee) {
+			for (key in iteratee) {
+				object[key] = iteratee[key];
+			}
+		}
+	}
+	return object;
+}
+
+/**
+ * Call the {@Chart#initialize} method up the inheritance chain, starting with
+ * the base class and continuing "downward".
+ *
+ * @private
+ */
+var initCascade = function(instance, args) {
+	var ctor = this.constructor;
+	var sup = ctor.__super__;
+	if (sup) {
+		initCascade.call(sup, instance, args);
+	}
+	// Do not invoke the `initialize` method on classes further up the
+	// prototype chain (again).
+	if (hasOwnProp.call(ctor.prototype, "initialize")) {
+		this.initialize.apply(instance, args);
+	}
+};
+
+/**
+ * Call the `transform` method down the inheritance chain, starting with the
+ * instance and continuing "upward". The result of each transformation should
+ * be supplied as input to the next.
+ *
+ * @private
+ */
+// var transformCascade = function(instance, data) {
+//  var ctor = this.constructor;
+//  var sup = ctor.__super__;
+
+//  // Unlike `initialize`, the `transform` method has significance when
+//  // attached directly to a chart instance. Ensure that this transform takes
+//  // first but is not invoked on later recursions.
+//  if (this === instance && hasOwnProp.call(this, "transform")) {
+//    data = this.transform(data);
+//  }
+
+//  // Do not invoke the `transform` method on classes further up the prototype
+//  // chain (yet).
+//  if (hasOwnProp.call(ctor.prototype, "transform")) {
+//    data = ctor.prototype.transform.call(instance, data);
+//  }
+
+//  if (sup) {
+//    data = transformCascade.call(sup, instance, data);
+//  }
+
+//  return data;
+// };
+
+/**
+ * Create a d3.chart
+ *
+ * @param {d3.selection} selection The chart's "base" DOM node. This should
+ *        contain any nodes that the chart generates.
+ * @param {mixed} chartOptions A value for controlling how the chart should be
+ *        created. This value will be forwarded to {@link Chart#initialize}, so
+ *        charts may define additional properties for consumers to modify their
+ *        behavior during initialization.
+ *
+ * @constructor
+ */
+var Chart = function(selection, chartOptions) {
+
+	this.base = selection;
+	this._layers = {};
+	this._mixins = [];
+	this._events = {};
+
+	if (chartOptions && chartOptions.transform) {
+		this.transform = chartOptions.transform;
+	}
+
+	initCascade.call(this, this, [chartOptions]);
+};
+
+/**
+ * Set up a chart instance. This method is intended to be overridden by Charts
+ * authored with this library. It will be invoked with a single argument: the
+ * `options` value supplied to the {@link Chart|constructor}.
+ *
+ * For charts that are defined as extensions of other charts using
+ * `Chart.extend`, each chart's `initilize` method will be invoked starting
+ * with the "oldest" ancestor (see the private {@link initCascade} function for
+ * more details).
+ */
+Chart.prototype.initialize = function() {};
+
+/**
+ * Remove a layer from the chart.
+ *
+ * @param {String} name The name of the layer to remove.
+ *
+ * @returns {Layer} The layer removed by this operation.
+ */
+Chart.prototype.unlayer = function(name) {
+	var layer = this.layer(name);
+
+	delete this._layers[name];
+	delete layer._chart;
+
+	return layer;
+};
+
+/**
+ * Interact with the chart's {@link Layer|layers}.
+ *
+ * If only a `name` is provided, simply return the layer registered to that
+ * name (if any).
+ *
+ * If a `name` and `selection` are provided, treat the `selection` as a
+ * previously-created layer and attach it to the chart with the specified
+ * `name`.
+ *
+ * If all three arguments are specified, initialize a new {@link Layer} using
+ * the specified `selection` as a base passing along the specified `options`.
+ *
+ * The {@link Layer.draw} method of attached layers will be invoked
+ * whenever this chart's {@link Chart#draw} is invoked and will receive the
+ * data (optionally modified by the chart's {@link Chart#transform} method.
+ *
+ * @param {String} name Name of the layer to attach or retrieve.
+ * @param {d3.selection|Layer} [selection] The layer's base or a
+ *        previously-created {@link Layer}.
+ * @param {Object} [options] Options to be forwarded to {@link Layer|the Layer
+ *        constructor}
+ *
+ * @returns {Layer}
+ */
+Chart.prototype.layer = function(name, selection, options) {
+	var layer;
+
+	if (arguments.length === 1) {
+		return this._layers[name];
+	}
+
+	// we are reattaching a previous layer, which the
+	// selection argument is now set to.
+	if (arguments.length === 2) {
+
+		if (typeof selection.draw === "function") {
+			selection._chart = this;
+			this._layers[name] = selection;
+			return this._layers[name];
+
+		} else {
+			d3cAssert(false, "When reattaching a layer, the second argument " +
+				"must be a d3.chart layer");
+		}
+	}
+
+	layer = selection.layer(options);
+
+	this._layers[name] = layer;
+
+	selection._chart = this;
+
+	return layer;
+};
+
+// @todo @matt cannot be removed due dependency
+// currently handled by Chart constructor init
+// draw method has been reimplemented too
+Chart.prototype.transform = function(data) {
+	return data;
+};
+
+/**
+ * options can take a demux function. So it could manipulate the data
+ * demux will take an argument, data as one and only param
+
+this.mixin("Line", d3.select('#vis1').append('svg').append('g').classed('lines', true), {
+	info: containerInfo,
+	demux: function(data){
+		var ret= [];
+		d3ma.each(data, function(val, ind) {
+			ret.push( { x: val.x * Math.random() * 5 , y: val.y } );
+			return ret;
+		});
+		return ret;
+	}
+});
+*/
+Chart.prototype.mixin = function(chartName, selection, options) {
+	var args = Array.prototype.slice.call(arguments, 2);
+	args.unshift(selection);
+	var ctor = Chart[chartName];
+	var chart = variadicNew(ctor, args);
+
+	var obj = {
+		chart: chart,
+		demux: (options.demux) ? options.demux : false
+	};
+
+	//this._mixins.push(chart);
+	this._mixins.push(obj);
+	return chart;
+};
+
+/**
+ * Update the chart's representation in the DOM, drawing all of its layers and
+ * any "attachment" charts (as attached via {@link Chart#attach}).
+ *
+ * @param {Object} data Data to pass to the {@link Layer#draw|draw method} of
+ *        this cart's {@link Layer|layers} (if any) and the {@link
+ *        Chart#draw|draw method} of this chart's attachments (if any).
+ *
+ * this._mixins is still an Array. It contains an array of objects
+ * Look for Chart.prototype.mixin for details
+ * Try to simulate the new implementation of d3.chart.js v0.2.0
+ *
+ */
+Chart.prototype.draw = function(data) {
+
+	var layerName, mixin;
+
+	data = this.transform(data);
+
+	for (layerName in this._layers) {
+		this._layers[layerName].draw(data);
+	}
+
+	for (mixin in this._mixins) {
+        if (this._mixins.hasOwnProperty(mixin)) {
+		// demux fn should return the set of data that would be appropriate for that chart
+		var fn = this._mixins[mixin].demux;
+		if(fn && typeof fn === 'function'){
+			this._mixins[mixin].chart.draw(fn(data));
+		} else {
+			this._mixins[mixin].chart.draw(data);
+		}
+        }
+	}
+};
+
+/**
+ * Function invoked with the context specified when the handler was bound (via
+ * {@link Chart#on} {@link Chart#once}).
+ *
+ * @callback ChartEventHandler
+ * @param {...*} arguments Invoked with the arguments passed to {@link
+ *         Chart#trigger}
+ */
+
+/**
+ * Subscribe a callback function to an event triggered on the chart. See {@link
+ * Chart#once} to subscribe a callback function to an event for one occurence.
+ *
+ * @param {String} name Name of the event
+ * @param {ChartEventHandler} callback Function to be invoked when the event
+ *        occurs
+ * @param {Object} [context] Value to set as `this` when invoking the
+ *        `callback`. Defaults to the chart instance.
+ *
+ * @returns {Chart} A reference to this chart (chainable).
+ */
+Chart.prototype.on = function(name, callback, context) {
+	var events = this._events[name] || (this._events[name] = []);
+	events.push({
+		callback: callback,
+		context: context || this,
+		_chart: this
+	});
+	return this;
+};
+
+/**
+ * Subscribe a callback function to an event triggered on the chart. This
+ * function will be invoked at the next occurance of the event and immediately
+ * unsubscribed. See {@link Chart#on} to subscribe a callback function to an
+ * event indefinitely.
+ *
+ * @param {String} name Name of the event
+ * @param {ChartEventHandler} callback Function to be invoked when the event
+ *        occurs
+ * @param {Object} [context] Value to set as `this` when invoking the
+ *        `callback`. Defaults to the chart instance
+ *
+ * @returns {Chart} A reference to this chart (chainable)
+ */
+Chart.prototype.once = function(name, callback, context) {
+	var self = this;
+	var once = function() {
+		self.off(name, once);
+		callback.apply(this, arguments);
+	};
+	return this.on(name, once, context);
+};
+
+/**
+ * Unsubscribe one or more callback functions from an event triggered on the
+ * chart. When no arguments are specified, *all* handlers will be unsubscribed.
+ * When only a `name` is specified, all handlers subscribed to that event will
+ * be unsubscribed. When a `name` and `callback` are specified, only that
+ * function will be unsubscribed from that event. When a `name` and `context`
+ * are specified (but `callback` is omitted), all events bound to the given
+ * event with the given context will be unsubscribed.
+ *
+ * @param {String} [name] Name of the event to be unsubscribed
+ * @param {ChartEventHandler} [callback] Function to be unsubscribed
+ * @param {Object} [context] Contexts to be unsubscribe
+ *
+ * @returns {Chart} A reference to this chart (chainable).
+ */
+Chart.prototype.off = function(name, callback, context) {
+	var names, n, events, event, i, j;
+
+	// remove all events
+	if (arguments.length === 0) {
+		for (name in this._events) {
+			this._events[name].length = 0;
+		}
+		return this;
+	}
+
+	// remove all events for a specific name
+	if (arguments.length === 1) {
+		events = this._events[name];
+		if (events) {
+			events.length = 0;
+		}
+		return this;
+	}
+
+	// remove all events that match whatever combination of name, context
+	// and callback.
+	names = name ? [name] : Object.keys(this._events);
+	for (i = 0; i < names.length; i++) {
+		n = names[i];
+		events = this._events[n];
+		j = events.length;
+		while (j--) {
+			event = events[j];
+			if ((callback && callback === event.callback) ||
+				(context && context === event.context)) {
+				events.splice(j, 1);
+			}
+		}
+	}
+
+	return this;
+};
+
+/**
+ * Publish an event on this chart with the given `name`.
+ *
+ * @param {String} name Name of the event to publish
+ * @param {...*} arguments Values with which to invoke the registered
+ *        callbacks.
+ *
+ * @returns {Chart} A reference to this chart (chainable).
+ */
+Chart.prototype.trigger = function(name) {
+	var args = Array.prototype.slice.call(arguments, 1);
+	var events = this._events[name];
+	var i, ev;
+
+	if (events !== undefined) {
+		for (i = 0; i < events.length; i++) {
+			ev = events[i];
+			ev.callback.apply(ev.context, args);
+		}
+	}
+
+	return this;
+};
+
+/**
+ * Create a new {@link Chart} constructor with the provided options acting as
+ * "overrides" for the default chart instance methods. Allows for basic
+ * inheritance so that new chart constructors may be defined in terms of
+ * existing chart constructors. Based on the `extend` function defined by
+ * {@link http://backbonejs.org/|Backbone.js}.
+ *
+ * @static
+ *
+ * @param {String} name Identifier for the new Chart constructor.
+ * @param {Object} protoProps Properties to set on the new chart's prototype.
+ * @param {Object} staticProps Properties to set on the chart constructor
+ *        itself.
+ *
+ * @returns {Function} A new Chart constructor
+ */
+Chart.extend = function(name, protoProps, staticProps) {
+	var parent = this;
+	var child;
+
+	// The constructor function for the new subclass is either defined by
+	// you (the "constructor" property in your `extend` definition), or
+	// defaulted by us to simply call the parent's constructor.
+	if (protoProps && hasOwnProp.call(protoProps, "constructor")) {
+		child = protoProps.constructor;
+	} else {
+		child = function() {
+			return parent.apply(this, arguments);
+		};
+	}
+
+	// Add static properties to the constructor function, if supplied.
+	extend(child, parent, staticProps);
+
+	// Set the prototype chain to inherit from `parent`, without calling
+	// `parent`'s constructor function.
+	var Surrogate = function() {
+		this.constructor = child;
+	};
+	Surrogate.prototype = parent.prototype;
+	child.prototype = new Surrogate();
+
+	// Add prototype properties (instance properties) to the subclass, if
+	// supplied.
+	if (protoProps) {
+		extend(child.prototype, protoProps);
+	}
+
+	// Set a convenience property in case the parent's prototype is needed
+	// later.
+	child.__super__ = parent.prototype;
+
+	Chart[name] = child;
+	return child;
+};
+
+// @todo file break line
+
+/**
+ * Create a new chart constructor or return a previously-created chart
+ * constructor.
+ *
+ * @static
+ *
+ * @param {String} name If no other arguments are specified, return the
+ *        previously-created chart with this name.
+ * @param {Object} protoProps If specified, this value will be forwarded to
+ *        {@link Chart.extend} and used to create a new chart.
+ * @param {Object} staticProps If specified, this value will be forwarded to
+ *        {@link Chart.extend} and used to create a new chart.
+ */
+d3.chart = function(name) {
+	if (arguments.length === 0) {
+		return Chart;
+	} else if (arguments.length === 1) {
+		return Chart[name];
+	}
+
+	return Chart.extend.apply(Chart, arguments);
+};
+
+/**
+ * Instantiate a chart or return the chart that the current selection belongs
+ * to.
+ *
+ * @static
+ *
+ * @param {String} [chartName] The name of the chart to instantiate. If the
+ *        name is unspecified, this method will return the chart that the
+ *        current selection belongs to.
+ * @param {mixed} options The options to use when instantiated the new chart.
+ *        See {@link Chart} for more information.
+ */
+d3.selection.prototype.chart = function(chartName) {
+	// Without an argument, attempt to resolve the current selection's
+	// containing d3.chart.
+	if (arguments.length === 0) {
+		return this._chart;
+	}
+	var ChartCtor = Chart[chartName];
+	var chartArgs;
+	d3cAssert(ChartCtor, "No chart registered with name '" +
+		chartName + "'");
+
+	chartArgs = Array.prototype.slice.call(arguments, 1);
+	chartArgs.unshift(this);
+	return variadicNew(ChartCtor, chartArgs);
+};
+
+// Implement the zero-argument signature of `d3.selection.prototype.chart`
+// for all selection types.
+d3.selection.enter.prototype.chart = function() {
+	return this._chart;
+};
+
+d3.transition.prototype.chart = d3.selection.enter.prototype.chart;
+var d3ma = {version: '0.2.0'}; // semver;
+
+// useful to figure out how many svg elements on the current page
+// track individual .canvas element
+// then retrieve cancas object, could call *draw* method to update its visualization
+d3ma.canvas = [];
+
+// getter & setter function
+// set the canvas object into the d3ma.canvas array, used to redraw the chart
+// optional param, if omit, it will simply retrieve the current d3ma.canvas status
+d3ma.setCanvas = function(canvas) {
+	if(!canvas && typeof canvas !== 'object') {
+		return d3ma.canvas;
+	}
+	d3ma.canvas.push(canvas);
+};// Pull Straight out of nvd3 library
+// get the current windowSize() out of the DOM
+// return and object has width value and height value
+d3ma.windowSize = function () {
+  // Sane defaults
+  var size = {width: 640, height: 480};
+
+  // Earlier IE uses Doc.body
+  if (document.body && document.body.offsetWidth) {
+    size.width = document.body.offsetWidth;
+    size.height = document.body.offsetHeight;
+  }
+
+  // IE can use depending on mode it is in
+  if (document.compatMode == 'CSS1Compat' &&
+    document.documentElement &&
+    document.documentElement.offsetWidth) {
+    size.width = document.documentElement.offsetWidth;
+    size.height = document.documentElement.offsetHeight;
+  }
+
+  // Most recent browsers use
+  if (window.innerWidth && window.innerHeight) {
+    size.width = window.innerWidth;
+    size.height = window.innerHeight;
+  }
+  return (size);
+};
+
+// Default color chooser uses the index of an object as before.
+d3ma.Color = function () {
+  var colors = d3.scale.category20().range();
+  return function (d, i) {
+    return d.color || colors[i % colors.length]
+  };
+};
+
+/* For situations where we want to approximate the width in pixels for an SVG:text element.
+ Most common instance is when the element is in a display:none; container.
+ Forumla is : text.length * font-size * constant_factor
+ */
+d3ma.calcTextWidth = function (svgTextElem) {
+  if (svgTextElem instanceof d3.selection) {
+    var fontSize = parseInt(svgTextElem.style('font-size').replace('px', ''));
+    var textLength = svgTextElem.text().length;
+
+    return textLength * fontSize * 0.5;
+  }
+  return 0;
+};
+
+// Work the same way how underscore.js signiture each method
+d3ma.each = function (obj, iterator, context) {
+
+  if (obj == null) return;
+
+  var breaker = {};
+  var nativeForEach = Array.prototype.forEach;
+
+  if (nativeForEach && obj.forEach === nativeForEach) {
+    obj.forEach(iterator, context);
+  } else if (obj.length === +obj.length) {
+    for (var i = 0, l = obj.length; i < l; i++) {
+      if (iterator.call(context, obj[i], i, obj) === breaker) return;
+    }
+  } else {
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        if (iterator.call(context, obj[key], key, obj) === breaker) return;
+      }
+    }
+  }
+};
+
+// Work the same way how underscore.js signiture each method
+d3ma.map = function (obj, iterator, context) {
+  if (obj == null) return;
+  var ret = [];
+  var nativeMap = Array.prototype.map;
+
+  if (nativeMap && obj.map === nativeMap) {
+    return obj.map(iterator, context);
+  } else if (obj.length === +obj.length) {
+    for (var i = 0, l = obj.length; i < l; i++) {
+      ret.push(iterator.call(context, obj[i], i, obj));
+    }
+  } else {
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        ret.push(iterator.call(context, obj[key], key, obj));
+      }
+    }
+  }
+  return ret;
 };
 
 // Pull Straight out of nvd3 library
 // Easy way to bind multiple functions to window.onresize
 // TODO: give a way to remove a function after its bound, other than removing all of them
-d3.ma.onResize = function(fun, context){
-	// var oldresize = window.onresize;
+d3ma.onResize = function (fun, context) {
+  // var oldresize = window.onresize;
 
-	// window.onresize = function(e) {
-	// 	if (typeof oldresize === 'function') oldresize.call(context || this, e);
-	// 	fun.call(context || this, e);
-	// }
+  // window.onresize = function(e) {
+  // 	if (typeof oldresize === 'function') oldresize.call(context || this, e);
+  // 	fun.call(context || this, e);
+  // }
 
-	// @todo merge it into the framework, handle it internally
-	// Not calling on resize event at all, send the functionalities to the view layer
+  // @todo merge it into the framework, handle it internally
+  // Not calling on resize event at all, send the functionalities to the view layer
 
-	// onResize() simply just binding the context to the function.
-	// it will call its own private method: _resize correctly
-	return function(e) {
-		fun.call(context || this, e);
-	}
+  // onResize() simply just binding the context to the function.
+  // it will call its own private method: _resize correctly
+  return function (e) {
+    fun.call(context || this, e);
+  }
 };
 
 // Convinient method to call onResize() bind to the right context
-// E.G  d3.ma.onResize(line._resize, line);
-// E.G  d3.ma.onResize(area._resize, area);
-// New Approach:  d3.ma.resize(line, area);  //actually, bind the right context to execute the onResize()
-//
-// This function will return an array of the elements which will need to bind resize event
-// @todo currently handle by the view layer, need to do it in the framework level
-d3.ma.resize = function(array)  {
-	array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
-	var listenters = [];
+// E.G  d3ma.onResize(line._resize, line);
+// E.G  d3ma.onResize(area._resize, area);
+// New Approach:  d3ma.resize(line, area);  //actually, bind the right context to execute the
+// onResize()  This function will return an array of the elements which will need to bind resize
+// event @todo currently handle by the view layer, need to do it in the framework level
+d3ma.resize = function (array) {
+  array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
+  var listenters = [];
 
-	if( array.length ){
-		d3.ma.each(array, function(context, index){
-			listenters.push( d3.ma.onResize(context._resize, context) );
-		});
-	}
+  if (array.length) {
+    d3ma.each(array, function (context, index) {
+      listenters.push(d3ma.onResize(context._resize, context));
+    });
+  }
 
-	return listenters;
+  return listenters;
 };
 
-d3.ma.reloadResize = function(array)  {
-	array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
+d3ma.reloadResize = function (array) {
+  array = ( Object.prototype.toString.call(array) === '[object Array]' ) ? array : Array.prototype.slice.call(arguments);
 
-	if( array.length ){
-		var e = {
-			width: d3.ma.windowSize().width,
-			height: d3.ma.windowSize().height
-		};
-		d3.ma.each(array, function(context, index){
-			context._resize.call(context || this);
-			context._redraw(e);
-		});
-	}
+  if (array.length) {
+    var e = {
+      width:  d3ma.windowSize().width,
+      height: d3ma.windowSize().height
+    };
+    d3ma.each(array, function (context, index) {
+      context._resize.call(context || this);
+      context._redraw(e);
+    });
+  }
 };
-
 
 // modified implementation from zepto.js library
 // In general, you do not need to apply 2nd arg. by default, element is document
 // selector could be any string, it is required. e.g:  id, class, tagName, any css selector
 // return  an array representation of DOM objects.
-d3.ma.$ = function(selector, element) {
+d3ma.$ = function (selector, element) {
 
-	var found,
-		element = element || document,
-		slice = Array.prototype.slice,
-		classSelectorRE = /^\.([\w-]+)$/,
-		tagSelectorRE = /^[\w-]+$/,
-		idSelectorRE = /^#([\w-]*)$/;
+  var found,
+    element = element || document,
+    slice = Array.prototype.slice,
+    classSelectorRE = /^\.([\w-]+)$/,
+    tagSelectorRE = /^[\w-]+$/,
+    idSelectorRE = /^#([\w-]*)$/;
 
-	function isDocument(obj)   {
-		return obj != null && obj.nodeType == obj.DOCUMENT_NODE;
-	}
+  function isDocument (obj) {
+    return obj != null && obj.nodeType == obj.DOCUMENT_NODE;
+  }
 
-	return (isDocument(element) && idSelectorRE.test(selector)) ?
-		( (found = element.getElementById(RegExp.$1)) ? [found] : [] ) :
-		(element.nodeType !== 1 && element.nodeType !== 9) ? [] :
-		slice.call(
-			classSelectorRE.test(selector) ? element.getElementsByClassName(RegExp.$1) :
-			tagSelectorRE.test(selector) ? element.getElementsByTagName(selector) :
-			element.querySelectorAll(selector)
-		);
+  return (isDocument(element) && idSelectorRE.test(selector)) ?
+    ( (found = element.getElementById(RegExp.$1)) ? [found] : [] ) :
+    (element.nodeType !== 1 && element.nodeType !== 9) ? [] :
+      slice.call(
+        classSelectorRE.test(selector) ? element.getElementsByClassName(RegExp.$1) :
+          tagSelectorRE.test(selector) ? element.getElementsByTagName(selector) :
+            element.querySelectorAll(selector)
+      );
 };
 
-// variation of d3.ma.$(selector). return a single DOM object, the first index of the array
-// Works best with id selection. selector could be any string, it is required. e.g:  id, class, tagName, any css selector
-// Use case:  when dealing with d3.ma.tooltip(), 3rd arg would expect to have a DOM element e.g:  d3.ma.$$('#vis')
-d3.ma.$$ = function(selector, element) {
-	var ret = d3.ma.$(selector, element);
-	return ret[0];
+// variation of d3ma.$(selector). return a single DOM object, the first index of the array
+// Works best with id selection. selector could be any string, it is required. e.g:  id, class,
+// tagName, any css selector Use case:  when dealing with d3ma.tooltip(), 3rd arg would expect to
+// have a DOM element e.g:  d3ma.$$('#vis')
+d3ma.$$ = function (selector, element) {
+  var ret = d3ma.$(selector, element);
+  return ret[0];
 };
 
+d3ma.isNull = function (obj) {
+  return obj === null;
+};
+
+d3ma.isUndefined = function (obj) {
+  return obj === void 0;
+};
 
 /*
-	Works like a constructor, initialize the tooltip object. e.g var tooltip = d3.ma.tooltip()
-	Argument:  context.  optional, by passing the current context of my function to detemine which DOM element should be append the tooltip HTML markup. In general, d3.ma.tooltip(this.base). Tooltip block should be the siblings of the svg element
+ Works like a constructor, initialize the tooltip object. e.g var tooltip = d3ma.tooltip()
+ Argument:  context.  optional, by passing the current context of my function to detemine which DOM element should be append the tooltip HTML markup. In general, d3ma.tooltip(this.base). Tooltip block should be the siblings of the svg element
 
-	tooltip.show()  # show tooltip markup like switch the display property on.
-		pos: Array, required. expect [x, y] to detemine tooltip position left, and top pixel value. The value should be set without tooltip obj to figure out where it should be positioned to.
-		content: required. HTML markup contains optional javascript variable data. content to show
-		parentContainer: optional. single DOM object, the element which need to contain the tooltip block. By default, it will add to the body element
-		classes: optional, by default, tooltip has d3maTooltip class, add more classes if needed
+ tooltip.show()  # show tooltip markup like switch the display property on.
+ pos: Array, required. expect [x, y] to detemine tooltip position left, and top pixel value. The value should be set without tooltip obj to figure out where it should be positioned to.
+ content: required. HTML markup contains optional javascript variable data. content to show
+ parentContainer: optional. single DOM object, the element which need to contain the tooltip block. By default, it will add to the body element
+ classes: optional, by default, tooltip has d3maTooltip class, add more classes if needed
 
-		E.G  tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'))
+ E.G  tooltip.show([e.pos[0], e.pos[1]], html, d3ma.$$('#vis'))
 
-	tooltip.close()   # suppress the current tooltip block. turn the visiblity of tooltip off. can have 'd3maTooltip-pending-removal' class to show something interesting before it is being removed.
+ tooltip.close()   # suppress the current tooltip block. turn the visiblity of tooltip off. can have 'd3maTooltip-pending-removal' class to show something interesting before it is being removed.
  */
 
-d3.ma.tooltip = function(context) {
-	var tooltip = {},
-		context = context || tooltip;
+d3ma.tooltip = function (context) {
+  var tooltip = {},
+    context = context || tooltip;
 
-	tooltip.show = function(pos, content, parentContainer, classes){
+  tooltip.show = function (pos, content, parentContainer, classes) {
 
-		var tooltipContainer = document.createElement('div');
+    var tooltipContainer = document.createElement('div');
 
-		tooltipContainer.className = 'd3maTooltip ' +  (classes ? classes : '');
+    tooltipContainer.className = 'd3maTooltip ' + (classes ? classes : '');
 
-		var body = parentContainer || document.getElementsByTagName('body')[0];
+    var body = parentContainer || document.getElementsByTagName('body')[0];
 
-		if(tooltip !== context) {
-			body = context[0][0].parentNode.parentElement;
-		}
+    if (tooltip !== context) {
+      body = context[0][0].parentNode.parentElement;
+    }
 
-		tooltipContainer.innerHTML = content;
-		tooltipContainer.style.left = 0;
-		tooltipContainer.style.top = 0;
-		tooltipContainer.style.opacity = 0;
+    tooltipContainer.innerHTML = content;
+    tooltipContainer.style.left = 0;
+    tooltipContainer.style.top = 0;
+    tooltipContainer.style.opacity = 0;
 
-		body.appendChild(tooltipContainer);
+    body.appendChild(tooltipContainer);
 
-		// var height = parseInt(tooltipContainer.offsetHeight),
-		// 	width = parseInt(tooltipContainer.offsetWidth),
-		// 	windowWidth = d3.ma.windowSize().width,
-		// 	windowHeight = d3.ma.windowSize().height,
-		// 	scrollTop = window.scrollY,
-		// 	scrollLeft = window.scrollX,
+    // var height = parseInt(tooltipContainer.offsetHeight),
+    // 	width = parseInt(tooltipContainer.offsetWidth),
+    // 	windowWidth = d3ma.windowSize().width,
+    // 	windowHeight = d3ma.windowSize().height,
+    // 	scrollTop = window.scrollY,
+    // 	scrollLeft = window.scrollX,
 
-		var left = pos[0],
-			top = pos[1];
+    var left = pos[0],
+      top = pos[1];
 
-		// windowHeight = window.innerWidth >= document.body.scrollWidth ? windowHeight : windowHeight - 16;
-		// windowWidth = window.innerHeight >= document.body.scrollHeight ? windowWidth : windowWidth - 16;
+    // windowHeight = window.innerWidth >= document.body.scrollWidth ? windowHeight : windowHeight
+    // - 16; windowWidth = window.innerHeight >= document.body.scrollHeight ? windowWidth :
+    // windowWidth - 16;
 
-		tooltipContainer.style.left = left+'px';
-		tooltipContainer.style.top = top+'px';
-		tooltipContainer.style.opacity = 1;
-		tooltipContainer.style.position = 'absolute'; //fix scroll bar issue
-		tooltipContainer.style.pointerEvents = 'none'; //fix scroll bar issue
+    tooltipContainer.style.left = left + 'px';
+    tooltipContainer.style.top = top + 'px';
+    tooltipContainer.style.opacity = 1;
+    tooltipContainer.style.position = 'absolute'; //fix scroll bar issue
+    tooltipContainer.style.pointerEvents = 'none'; //fix scroll bar issue
 
-		// d3.select('.d3maTooltip')
-		// 	.transition()
-		// 	.duration(200)
-		// 	.style('opacity', 1);
+    // d3.select('.d3maTooltip')
+    // 	.transition()
+    // 	.duration(200)
+    // 	.style('opacity', 1);
 
-		return tooltip;
-	};
+    return tooltip;
+  };
 
-	tooltip.close = function(){
-		var tooltips = document.getElementsByClassName('d3maTooltip');
-		var purging = [];
-		while(tooltips.length) {
-			purging.push(tooltips[0]);
-			tooltips[0].style.transitionDelay = '0 !important';
-			tooltips[0].style.opacity = 0;
-			tooltips[0].className = 'd3maTooltip-pending-removal';
-		}
+  tooltip.close = function () {
+    var tooltips = document.getElementsByClassName('d3maTooltip');
+    var purging = [];
+    while (tooltips.length) {
+      purging.push(tooltips[0]);
+      tooltips[0].style.transitionDelay = '0 !important';
+      tooltips[0].style.opacity = 0;
+      tooltips[0].className = 'd3maTooltip-pending-removal';
+    }
 
-		setTimeout(function() {
-			while (purging.length) {
-				var removeMe = purging.pop();
-				removeMe.parentNode.removeChild(removeMe);
-			}
-		}, 500);
+    setTimeout(function () {
+      while (purging.length) {
+        var removeMe = purging.pop();
+        removeMe.parentNode.removeChild(removeMe);
+      }
+    }, 500);
 
-		return tooltip;
-	};
+    return tooltip;
+  };
 
+  //var dispatch = d3.dispatch('tooltipShow', 'tooltipHide')
 
-	//var dispatch = d3.dispatch('tooltipShow', 'tooltipHide')
-
-	return tooltip;
+  return tooltip;
 };
 
 // TODO: Implement zoom feature here
-d3.ma.zoom = function() {
-	var zoom = {};
+d3ma.zoom = function () {
+  var zoom = {};
 
-	return zoom;
+  return zoom;
 };
 /*
 	return element: Most of methods return svg canvas object for easy chaining
 
 	Initalization:
-		var container = d3.ma.container('#vis').margin({top: 80, left: 80}).box(1400, 600);
+		var container = d3ma.container('#vis').margin({top: 80, left: 80}).box(1400, 600);
 		var canvas = container.canvas().chart("FinalChart", container.info() );
 		canvas.draw(data);
 
 		Note: container.info() as 2nd parameter is absolutely the core required. It allows each individual layer to know what is the context of the current canvas, passing an object of dataset like container width, height, canvas info including its id, clippath id, width, height, and other info
 
 	Syntax:
-		d3.ma.container(selector)    // is absolutely required, others are optional.
+		d3ma.container(selector)    // is absolutely required, others are optional.
 		# container(selector) will take a css selector, which will be the container to append the svg element
 
 	Note:
@@ -353,13 +1148,13 @@ d3.ma.zoom = function() {
 // Context is very important here. When dealing with backbone itemview.
 // try to limit the current context of the selector, so need to apply the context to limit the selector scope
 // context is an optional param, ignore it as needed
-d3.ma.container = function(selector, context) {
+d3ma.container = function(selector, context) {
 
 	var selection = (context) ? d3.select(context).select(selector) : d3.select(selector);
 
 	var margin = { top: 30, right: 10, bottom: 20, left: 40 },
-		containerW = (context) ? d3.ma.$$(context + ' '+ selector).clientWidth : d3.ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
-		containerH = (context) ? d3.ma.$$(context + ' '+ selector).clientHeight : d3.ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
+		containerW = (context) ? d3ma.$$(context + ' '+ selector).clientWidth : d3ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
+		containerH = (context) ? d3ma.$$(context + ' '+ selector).clientHeight : d3ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
 		canvasW,
 		canvasH,
 		container = selection.append('svg'),  // Create container, append svg element to the selection
@@ -498,12 +1293,12 @@ d3.ma.container = function(selector, context) {
 
 	// e.g container.resize().box(1400, 600);
 	// container.resize() fn could be called from container object, it is chainable
-	// d3.ma.resize() should be used all the time. This resize() is the old implementation
+	// d3ma.resize() should be used all the time. This resize() is the old implementation
 	container.resize = function() {
 		//The Graph will auto scale itself when resize
-		d3.ma.onResize( function() {
+		d3ma.onResize( function() {
 
-			var windowWidth = d3.ma.windowSize().width;
+			var windowWidth = d3ma.windowSize().width;
 
 			if ( windowWidth < containerW ) {
 				container.attr({
@@ -533,16 +1328,16 @@ d3.ma.container = function(selector, context) {
 	// step 1: set svg's parent element ( container ) css box style   ex: +box(100%, 360)
 	// step 2: when/where initialize the container, calling fluid function.
 	// Ex:
-	// 	var clientW = d3.ma.$$('#summaryChart').clientWidth,
-	// 		clientH = d3.ma.$$('#summaryChart').clientHeight;
+	// 	var clientW = d3ma.$$('#summaryChart').clientWidth,
+	// 		clientH = d3ma.$$('#summaryChart').clientHeight;
 	// 	container.box( clientW, clientH ).fluid();
 	// step 3: at the finalChart rendering function, calling the resize function
-	// Ex: 	d3.ma.resize(key1Line, axis);
+	// Ex: 	d3ma.resize(key1Line, axis);
 	//
 	// It will set parentNode data-fluid attribute on individual chart, then framework will check each chart on this custom value, if it match 'responsive' value, then it will do all the calculation to make a responsive chart. By default, it will expect data-fluid as an empty value, then it will do the fixed layout resizing
 	container.fluid = function() {
 		var info = container.info(),
-			svgEl = d3.ma.$$(info.parentNode);
+			svgEl = d3ma.$$(info.parentNode);
 
 		svgEl.setAttribute('data-fluid', 'responsive');
 		return container;
@@ -736,7 +1531,7 @@ d3.chart('Clip', {
 		linear, ordinal, log, pow, sqrt, identity, quantile, quantize, threshold
 
 	Example:
-		var container = d3.ma.container('#vis');
+		var container = d3ma.container('#vis');
 		container.resize().box(1400, 600);
 
 		// Important, to pass the container.info() as a 2nd param
@@ -908,7 +1703,7 @@ d3.chart('Scale', {
 			# when it is entering, binding datum with each element, single element will bind 'mouseenter' event with our custom 'd3maMouseenter', bind 'mouseout' with our custom event 'd3maMouseout'.
 			For example, quick internal binding to reduce duplicated code in modules like circle.js, bars.js etc
 
-		1. _resize()  # called from d3.ma.onResize() or d3.ma.resize()
+		1. _resize()  # called from d3ma.onResize() or d3ma.resize()
 		2. _onWindowResize(chart, single)  # called from each individual module. It has to defined in each module basis. Since it has to pass the chart, single info in this.layer lifeevent enter event. No way to know its context in base.js level.
 		3. _redraw(e, chart, single)  # called from each individual module
 		4. _unbind(e, chart, single) # called from each individual module
@@ -916,14 +1711,14 @@ d3.chart('Scale', {
 		6. _update(_width, _height, chart, single)  # this methods should be handled by each module, normally defined for special cases
 
 		Here is the logic on those private methods above.
-		When each instance attach an function of resize(context, context ...), E.G. d3.ma.onResize(line._resize, line); `1. _resize()` is called automatically, it will figure it out current width and height, dispatch 'd3maOnWindowResize' or 'd3maOffWindowResize' accordingly, passing the correct data object to the handlers.
+		When each instance attach an function of resize(context, context ...), E.G. d3ma.onResize(line._resize, line); `1. _resize()` is called automatically, it will figure it out current width and height, dispatch 'd3maOnWindowResize' or 'd3maOffWindowResize' accordingly, passing the correct data object to the handlers.
 
 		Each module ( like line, bar, circle etc ) will handle it to trigger `2. _onWindowResize()` this._onWindowResize() like Line, Axis or chart._onWindowResize(chart, this) inside this.layer enter lifeevent. _onWindowResize defined the global handler on 'd3maOnWindowResize' or 'd3maOffWindowResize', passing three arguments (e, chart, single).
 		e is the object received from 'd3maOnWindowResize' or 'd3maOffWindowResize'.
 		chart refer to this context, used it to access xScale, yScale, width, height, etc. chart property.
 		single refer to each individual group just appended by insert command.
 
-		`3. _redraw(e, chart, single)` will be triggered on 'd3maOnWindowResize'. First, it will trigger `5. _updateScale(_width, _height)`, based on the current xScale string value, yScale string value, update the xScale, yScale range array. ( defined in scale.js ) and update the module box width and height attribute.  Second, it will dispatch another global d3.ma event. 'd3maSingleWindowResize', passing (chart, single) as its arguments.  Third, defined a recommended method called `6. update()`. E.G. this.update( _width, _height, chart, single ).  so any module could hook into this method and attach its own custom updates based on current context and its useful values like width, height, chart info and single info
+		`3. _redraw(e, chart, single)` will be triggered on 'd3maOnWindowResize'. First, it will trigger `5. _updateScale(_width, _height)`, based on the current xScale string value, yScale string value, update the xScale, yScale range array. ( defined in scale.js ) and update the module box width and height attribute.  Second, it will dispatch another global d3ma event. 'd3maSingleWindowResize', passing (chart, single) as its arguments.  Third, defined a recommended method called `6. update()`. E.G. this.update( _width, _height, chart, single ).  so any module could hook into this method and attach its own custom updates based on current context and its useful values like width, height, chart info and single info
 
 		`4. _unbind(e, chart, single)` will be triggered on 'd3maOffWindowResize'. It will auto trigger `5. _updateScale(_width, _height)` and `6. update( _width, _height, chart, single )` for modifying the scale range and domain
 
@@ -1020,24 +1815,24 @@ d3.chart('Scale').extend('Base', {
 
 	_resize: function() {
 		// NOTE: this here is the context where you definied in the 2nd param when initialized
-		// ex: d3.ma.onResize(line._resize, line);
+		// ex: d3ma.onResize(line._resize, line);
 		// in this case, the context here is  line
 		//
 		// fluid attribute is being checked, on parentNode element data-fluid attr, it could be set by container.fluid()
 
 		var containerInfo = this.info,
-			parentNodeEl = d3.ma.$$(containerInfo.parentNode);
+			parentNodeEl = d3ma.$$(containerInfo.parentNode);
 
 		// If parentNodeEl is undefined, that means we need to unbind the resize event
 		// in this case, simply just return false
 		if ( !parentNodeEl ) { return false; }
 
-		var currentWindowSize = d3.ma.windowSize(),
+		var currentWindowSize = d3ma.windowSize(),
 			fluid = parentNodeEl.getAttribute('data-fluid'),
 
-			widthOffset = ( d3.ma.responsive ) ? parentNodeEl.offsetLeft : d3.ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
+			widthOffset = ( d3ma.responsive ) ? parentNodeEl.offsetLeft : d3ma.$$(containerInfo.parentNode).offsetLeft + containerInfo.marginLeft + containerInfo.marginRight,
 
-			heightOffset =  ( d3.ma.responsive ) ? parentNodeEl.offsetTop : parentNodeEl.offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
+			heightOffset =  ( d3ma.responsive ) ? parentNodeEl.offsetTop : parentNodeEl.offsetTop + containerInfo.marginTop + containerInfo.marginBottom,
 
 			windowWidth = currentWindowSize.width - widthOffset,
 			windowHeight = currentWindowSize.height - heightOffset;
@@ -1054,8 +1849,8 @@ d3.chart('Scale').extend('Base', {
 			if ( oldClientW < newClientW || oldClientH < newClientH ) {
 				var viewBoxValue = '0 0 ' + newClientW + ' ' + newClientH,
 					svgEl = parentNodeEl.children[0],
-					canvasEl = d3.ma.$$(containerInfo.id) || d3.ma.$$('#summaryChart').children[0].children[1],
-					clippathEl = d3.ma.$$(containerInfo.cid + ' rect') || d3.ma.$$('#summaryChart').children[0].children[0].children[0].children[0];
+					canvasEl = d3ma.$$(containerInfo.id) || d3ma.$$('#summaryChart').children[0].children[1],
+					clippathEl = d3ma.$$(containerInfo.cid + ' rect') || d3ma.$$('#summaryChart').children[0].children[0].children[0].children[0];
 
 				// update svg element width & height property
 				svgEl.setAttribute('width', newClientW);
@@ -1574,11 +2369,11 @@ d3.chart('Base').extend("Axis", {
 			# syntax: bars.dispatch.on('d3maMouseenter', function(e){ });
 			# arg, e: it should be the return data obj which you defined in the constrcutor level fn, onDataMouseenter()
 			E.G
-				var tooltip = d3.ma.tooltip(this.base);
+				var tooltip = d3ma.tooltip(this.base);
 				bars.dispatch.on('d3maMouseenter', function(e){
 					e.pos = [ e.pos[0] + 40, e.pos[1] + 30 ];
 					var html = "<div class='tips'>" + e.d.label + "<br><strong>" + e.d.value + "</strong>" + "</div>"
-					//tooltip.show([e.pos[0], e.pos[1]], html, d3.ma.$$('#vis'));
+					//tooltip.show([e.pos[0], e.pos[1]], html, d3ma.$$('#vis'));
 					tooltip.show([e.pos[0], e.pos[1]], html);
 				});
 
@@ -1935,6 +2730,99 @@ d3.chart('Base').extend('Circle', {
 		}
 	}
 });
+d3.chart('Base').extend('Tree', {
+
+  initialize: function (options) {
+    this.options = options = options || {};
+
+    var self = this;
+
+    this.layer('tree', this.base, {
+      // select the elements we wish to bind to and bind the data to them.
+      dataBind: function (data) {
+        var chart = this.chart();
+
+        if (chart.onDataBind) {
+          data = chart.onDataBind(data, chart);
+        }
+
+        return this.selectAll("g.node").data(data, function(d){
+          return d.id;
+        });
+      },
+
+      // insert actual element, defined its own attrs
+      insert:   function () {
+        var chart = this.chart();
+        var node = this.insert("g").attr("class", "node");
+
+        if (chart.onInsert) {
+          chart.onInsert(chart, node, this);
+        }
+
+        // add any property to each "node", and return itself
+        return node;
+      },
+
+      // define lifecycle events
+      events:   {
+        'enter': function () {
+          var chart = this.chart();
+
+          // onEnter fn will take two args
+          // chart  # refer to this context, used it to access xScale, yScale, width, height, etc.
+          // chart property this   # refer to each individual group just appended by insert command
+          if (chart.onEnter) {
+            chart.onEnter(chart, this);
+          }
+        },
+
+        'enter:transition': function () {
+          var chart = this.chart();
+
+          if (chart.onEnterTransition) {
+            chart.onEnterTransition(chart, this);
+          }
+        },
+
+        'merge': function () {
+          var chart = this.chart();
+
+          if (chart.onMerge) {
+            chart.onMerge(chart, this);
+          }
+
+          chart._onWindowResize(chart, this);
+          self._bindMouseEnterOutEvents(chart, this);
+        },
+
+        'merge:transition': function () {
+          var chart = this.chart();
+
+          if (chart.onMergeTransition) {
+            chart.onMergeTransition(chart, this);
+          }
+        },
+
+        'exit:transition': function () {
+          var chart = this.chart();
+          var duration = chart.options.animationDurationRemove || 400;
+          var easing = chart.options.animationEasing || 'cubic-in-out';
+
+          if (chart.onRemove && typeof chart.onRemove === 'function') {
+            chart.onRemove(chart, this);
+          } else {
+            this
+              .duration(duration)
+              .ease(easing)
+              .style('opacity', 1e-6)
+              .remove();
+          }
+        }
+      }
+    });
+  }
+});
 /*
  */
 d3.chart('Base').extend('SimpleLine', {
@@ -1992,4 +2880,107 @@ d3.chart('Base').extend('SimpleLine', {
 		}
 	}
 });
-})();
+d3.chart('Base').extend('DiagonalLine', {
+  initialize: function (options) {
+    this.options = options || {};
+
+    this.linePath = this.base.append('svg:g').classed('diagonalLine', true);
+
+    this.diagonal = d3.svg.diagonal()
+      .projection(function (d) {
+        return [d.y, d.x];
+      });
+
+    this.layer('diagonalLine', this.linePath, {
+      dataBind: function (data) {
+        var chart = this.chart();
+
+        // Setup the auto resize to handle the on resize event
+        chart.dispatch.on('d3maSingleWindowResize', function (chart, single) {
+          single.attr({'d': chart.diagonal});
+        });
+
+        if (chart.onDataBind) {
+          // in case onDataBind return a new data set
+          // we need to assign back to data which contain the new data set
+          // or if it is no return, it would undefined, stay what it is
+          data = chart.onDataBind(data, chart) || data;
+        }
+
+        return this.selectAll("path.link")
+          .data(data, function (d) {
+            return d.target.id;
+          });
+      },
+
+      insert: function () {
+        var chart = this.chart();
+        var path = this.insert("path", "g").attr("class", "link");
+
+        if (chart.onInsert) {
+          chart.onInsert(chart, path, this);
+        }
+
+        return path;
+      },
+
+      events: {
+        'enter': function () {
+          var chart = this.chart();
+
+          // chart  # refer to this context, used it to access xScale, yScale, width, height, etc.
+          // chart property this   # refer to each individual group just appended by insert command
+          if (chart.onEnter) {
+            chart.onEnter(chart, this);
+          }
+        },
+
+        'enter:transition': function () {
+          var chart = this.chart();
+
+          if (chart.onEnterTransition) {
+            chart.onEnterTransition(chart, this);
+          }
+        },
+
+        'merge': function () {
+          var chart = this.chart();
+
+          chart._onWindowResize(chart, this);
+        },
+
+        'merge:transition': function () {
+          var chart = this.chart();
+
+          if (chart.onMergeTransition) {
+            chart.onMergeTransition(chart, this);
+          }
+        },
+
+        'exit:transition': function () {
+          var chart = this.chart();
+          var duration = chart.options.animationDurationRemove || 400;
+          var easing = chart.options.animationEasing || 'cubic-in-out';
+
+          if (chart.onRemove && typeof chart.onRemove === 'function') {
+            chart.onRemove(chart, this);
+          } else {
+            this
+              .duration(duration)
+              .ease(easing)
+              .style('opacity', 1e-6)
+              .remove();
+          }
+        }
+      }
+    });
+  },
+
+  _update: function (_width, _height, chart, single) {
+    this.linePath.attr({'d': chart.diagonal});
+  }
+});
+     // when use directly in the browser, export d3.ma as a global
+     var ret = typeof window !== 'undefined' ? d3.ma = d3ma : d3ma;
+     return ret;
+}));
