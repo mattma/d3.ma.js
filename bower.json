@@ -1,0 +1,26 @@
+{
+  "name": "d3.ma",
+  "main": "d3.ma.js",
+  "version": "0.2.0",
+  "homepage": "https://github.com/mattma/d3.ma.js",
+  "authors": [
+    "Matt Ma <bigmabig@gmail.com>"
+  ],
+  "description": "d3 framework for visualizing your data based on object oriented approach",
+  "moduleType": [],
+  "keywords": [
+    "d3",
+    "graph",
+    "svg",
+    "chart"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "examples"
+  ]
+}
