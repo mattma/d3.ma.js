@@ -507,7 +507,8 @@ Chart.prototype.draw = function(data) {
 		this._layers[layerName].draw(data);
 	}
 
-	for ( mixin in this._mixins) {
+	for (mixin in this._mixins) {
+        if (this._mixins.hasOwnProperty(mixin)) {
 		// demux fn should return the set of data that would be appropriate for that chart
 		var fn = this._mixins[mixin].demux;
 		if(fn && typeof fn === 'function'){
@@ -515,6 +516,7 @@ Chart.prototype.draw = function(data) {
 		} else {
 			this._mixins[mixin].chart.draw(data);
 		}
+        }
 	}
 };
 
