@@ -15,5 +15,6 @@ d3ma.setCanvas = canvas => {
   if (!canvas && typeof canvas !== 'object') {
     return d3ma.canvas;
   }
+  // add one more comment. add few more comments
   d3ma.canvas.push(canvas);
 };

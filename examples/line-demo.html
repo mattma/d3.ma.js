@@ -12,21 +12,7 @@
       }
     </style>
     <script src="../bower_components/d3/d3.js"></script>
-    <script src="../src/lib/d3chart.js"></script>
-    <script src="../src/common/core.js"></script>
-    <script src="../src/common/utils.js"></script>
-    <script src="../src/common/container.js"></script>
-    <script src="../src/components/clippath.js"></script>
-    <script src="../src/core/scale.js"></script>
-    <script src="../src/core/base.js"></script>
-    <script src="../src/components/axis.js"></script>
-    <script src="../src/basic/bars.js"></script>
-    <script src="../src/basic/line.js"></script>
-    <script src="../src/basic/circle.js"></script>
-    <script src="../src/basic/area.js"></script>
-    <!-- NEVER EVER INCLUDE THIS FILE IN THE BUILD -->
-    <script src="../src/common/development.js"></script>
-    <!-- <script src="../build/d3.ma.js"></script> -->
+    <script src="../build/d3.ma.js"></script>
 </head>
 
 <body>
@@ -117,7 +103,7 @@
                 info: containerInfo,
                 demux: function(data) {
                     var ret = [];
-                    d3ma.each(data, function(val, ind) {
+                    d3.ma.each(data, function(val, ind) {
                         ret.push({
                             x: val.x * Math.random() * 5,
                             y: val.y
@@ -195,10 +181,10 @@
     // canvas.draw(data);
     // canvas.draw(data, function(data) { return data } );
 
-    console.log('container.allCanvas: ', d3ma.setCanvas());
-    d3ma.setCanvas(canvas);
-    console.log('contaainer.allCanvas: ', d3ma.setCanvas());
-    d3ma.canvas[0].draw(data);
+    console.log('container.allCanvas: ', d3.ma.setCanvas());
+    d3.ma.setCanvas(canvas);
+    console.log('contaainer.allCanvas: ', d3.ma.setCanvas());
+    d3.ma.canvas[0].draw(data);
 
     // In plain d3, this works too
     //d3.select('.canvas').chart("FinalChart", container.info() ).draw(data);
@@ -214,8 +200,5 @@
         canvas.draw(data1);
     });
     </script>
-    <!-- livereload snippet  -->
-    <script src="http://localhost:35729/livereload.js?snipver=1"></script>
 </body>
-
 </html>

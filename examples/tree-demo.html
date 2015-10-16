@@ -31,23 +31,11 @@
       }
     </style>
     <script src="../bower_components/d3/d3.js"></script>
-    <script src="../src/lib/d3chart.js"></script>
-    <script src="../bower_components/lodash/lodash.js"></script>
-    <script src="../src/common/core.js"></script>
-    <script src="../src/common/utils.js"></script>
-    <script src="../src/common/container.js"></script>
-    <script src="../src/components/clippath.js"></script>
-    <script src="../src/core/scale.js"></script>
-    <script src="../src/core/base.js"></script>
-    <script src="../src/basic/diagonalLine.js"></script>
-    <script src="../src/basic/tree.js"></script>
-    <!-- NEVER EVER INCLUDE THIS FILE IN THE BUILD -->
-    <script src="../src/common/development.js"></script>
-    <!-- <script src="../build/d3.ma.js"></script> -->
+    <script src="../build/d3.ma.js"></script>
 </head>
-
 <body>
     <div id="vis"></div>
+
     <script type="text/javascript">
     var data = {
         "name": "flare",
@@ -1113,7 +1101,7 @@
 
     // recursive replace the children nodes to show its elements
     function swapChildren(arr, d) {
-        return d3ma.map(arr, function(eachD) {
+        return d3.ma.map(arr, function(eachD) {
             // initial loading does not contain "d" argument
             // "d" should be fulfilled when user clicked on a node
             if (!d) {
@@ -1179,8 +1167,5 @@
     //   console.log(rows);
     // });
     </script>
-    <!-- livereload snippet  -->
-    <script src="http://localhost:35729/livereload.js?snipver=1"></script>
 </body>
-
 </html>

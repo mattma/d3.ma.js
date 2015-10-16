@@ -7,13 +7,15 @@ var $ = require('gulp-load-plugins')({
   scope: ['devDependencies']
 });
 var streamqueue  = require('streamqueue');
+var server = require('tiny-lr')();
+var path = require('path');
 
 var jsSrcFiles = [
   'gulpfile.js',
   'src/**/*.js',
   '!src/*.js'
 ];
-var destPath = './';
+var destPath = 'build';
 
 gulp.task('jshint', function () {
   return gulp.src(jsSrcFiles)
@@ -83,19 +85,6 @@ gulp.task('test', ['prepareTests'], function () {
   return rerunTest();
 });
 
-// Notifies livereload of changes detected by `gulp.watch()`
-function notifyLivereload (event) {
-  // `gulp.watch()` events provide an absolute path
-  //  make it relative path. Both relative and absolute should work
-  var fileName = path.relative(__dirname, event.path);
-
-  server.changed({
-    body: {
-      files: [fileName]
-    }
-  });
-}
-
 function rebuildProject (event) {
   switch (path.extname(event.path)) {
     case '.js' :
@@ -106,5 +95,17 @@ function rebuildProject (event) {
       break;
   }
 }
+
+// when develop the library, it should always run in `gulp serve`
+// it will watch the source files change, build a new development
+// js file at `build/d3.ma.js`. includes Babel supports
+gulp.task('serve', ['buildjs'], function () {
+  server.listen(35729, function (err) {
+    if (err) {
+      return gutil.log('\n[-log]', gutil.colors.red(err));
+    }
+    $.watch('src/**/*.js', rebuildProject);
+  });
+});
 
 gulp.task('default', ['serve']);
