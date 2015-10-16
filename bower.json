@@ -26,7 +26,9 @@
     "examples",
     "src",
     "libs",
-    "test"
+    "test",
+    "karma.conf.js",
+    "todo.md"
   ],
   "dependencies": {
     "d3": "~3.5.6"
