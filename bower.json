@@ -12,7 +12,9 @@
     "d3",
     "graph",
     "svg",
-    "chart"
+    "chart",
+    "d3.js",
+    "visualization"
   ],
   "license": "MIT",
   "ignore": [
@@ -21,9 +23,15 @@
     "bower_components",
     "test",
     "tests",
-    "examples"
+    "examples",
+    "src",
+    "libs",
+    "test"
   ],
   "dependencies": {
     "d3": "~3.4.3"
+  },
+  "devDependencies": {
+    "lodash": "~3.10.1"
   }
 }
