@@ -1,6 +1,6 @@
 // semver
 let d3ma = {
-  version: '0.2.1'
+  version: "__VERSION__"
 };
 
 // useful to figure out how many svg elements on the current page

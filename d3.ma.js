@@ -773,7 +773,7 @@
 
 	// semver
 	var d3ma = {
-		version: '0.2.1'
+		version: "0.2.1"
 	};
 
 	// useful to figure out how many svg elements on the current page

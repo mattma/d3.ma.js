@@ -97,6 +97,7 @@ gulp.task('stylesheet', function () {
 gulp.task('release', ['build', 'stylesheet'], function () {
   return gulp.src('build/*.js')
     .pipe($.header(banner, {pkg: pkg}))
+    .pipe($.replace(/__VERSION__/, pkg.version))
     .pipe(gulp.dest('./'));
 });
 
