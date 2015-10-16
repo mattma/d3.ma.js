@@ -1,7 +1,3 @@
-TODO:
-1. refactor container with handle multiple data
-2. legend
-
 1. lib   d3chart
 
 Modified Chart.prototype.draw
@@ -12,17 +8,19 @@ options.demux function is a new addition to simulate the new d3.chart api attach
 You could define a demux function with one param of data, you could manipulate the data
 for this instance.
 
-	this.mixin("Line", d3.select('#vis1').append('svg').append('g').classed('lines', true), {
-		info: containerInfo,
-		demux: function(data){
-			var ret= [];
-			d3ma.each(data, function(val, ind) {
-				ret.push( { x: val.x * Math.random() * 5 , y: val.y } );
-				return ret;
-			});
-			return ret;
-		}
-
+```js
+this.mixin("Line", d3.select('#vis1').append('svg').append('g').classed('lines', true), {
+    info: containerInfo,
+    demux: function(data){
+        var ret= [];
+        d3ma.each(data, function(val, ind) {
+            ret.push( { x: val.x * Math.random() * 5 , y: val.y } );
+            return ret;
+        });
+        return ret;
+    }
+});
+```
 
 adding the d3ma.setCanvas and d3ma.canvas to the core.js section
 used to manage how many different instances currently on the page
@@ -81,19 +79,26 @@ It is used for displaying the bar chart. It extended from scale.js and base.js
 
 ## how AMD works with d3.ma.js
 
-	require.config({
-		paths: {
-			'd3': '../../libs/d3.v3',
-			'd3ma': '../../build/d3.ma',
-		},
+```js
+require.config({
+  paths: {
+    'd3': '../../libs/d3.v3',
+    'd3ma': '../../build/d3.ma',
+  },
 
-		shim: {
-			d3ma: {
-				deps : ['d3']
-			}
-		}
-	});
+  shim: {
+    d3ma: {
+      deps : ['d3']
+    }
+  }
+});
+```
 
 By default, d3.js does not [export global](https://github.com/mbostock/d3/issues/1693) window.d3 anymore after the version 3.4.0 release. So if you define the d3 name anything other than 'd3', for example, 'd3v3' or 'd3js' or whatever, it won't work. It has to define as `'d3': 'path/to/d3.v3.js' ` in your configuration mapping. Otherwise, it won't load up d3.ma.js correctly.
 
 Now, window.d3, window.d3.ma, window.d3ma would be **undefinied** value. Everything has to work internally.
+
+- TODO:
+
+1. refactor container with handle multiple data
+2. legend
