@@ -1,7 +1,7 @@
 /*! 
  	d3.ma.js - v0.2.0
  	Author: Matt Ma (matt@mattmadesign.com) 
- 	Date: 2015-10-08
+ 	Date: 2015-10-15
 */
 (function (root, factory) {
 	if (typeof exports === 'object') {
