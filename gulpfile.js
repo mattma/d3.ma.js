@@ -9,6 +9,7 @@ var $ = require('gulp-load-plugins')({
 var streamqueue  = require('streamqueue');
 var server = require('tiny-lr')();
 var path = require('path');
+var pkg = require('./package.json');
 
 var jsSrcFiles = [
   'gulpfile.js',
@@ -16,6 +17,16 @@ var jsSrcFiles = [
   '!src/*.js'
 ];
 var destPath = 'build';
+
+// using data from package.json
+var banner = ['/**',
+' * <%= pkg.name %> - <%= pkg.description %>',
+' * @version v<%= pkg.version %>',
+' * @author <%= pkg.author.name %> - <%= pkg.author.email %>',
+' * @link <%= pkg.homepage %>',
+' * @license <%= pkg.license.type %>',
+' */',
+''].join('\n');
 
 gulp.task('jshint', function () {
   return gulp.src(jsSrcFiles)
@@ -79,11 +90,13 @@ gulp.task('build', ['buildjs'], function () {
 
 gulp.task('stylesheet', function () {
   return gulp.src('src/d3.ma.css')
+    .pipe($.header(banner, {pkg: pkg}))
     .pipe(gulp.dest('./'));
 });
 
 gulp.task('release', ['build', 'stylesheet'], function () {
   return gulp.src('build/*.js')
+    .pipe($.header(banner, {pkg: pkg}))
     .pipe(gulp.dest('./'));
 });
 

@@ -1,10 +1,11 @@
 {
   "name": "d3.ma.js",
-  "description": "d3 magic library",
+  "description": "d3 magic for visualizing data based on object oriented principles",
   "author": {
     "name": "Matt Ma",
     "email": "matt@mattmadesign.com"
   },
+  "homepage": "https://github.com/mattma/d3.ma.js",
   "version": "0.2.1",
   "repository": "",
   "main": "Gruntfile.js",
@@ -15,6 +16,7 @@
     "gulp": "^3.9.0",
     "gulp-babel": "^5.3.0",
     "gulp-concat": "^2.6.0",
+    "gulp-header": "^1.7.1",
     "gulp-jscs": "^3.0.1",
     "gulp-jshint": "^1.11.2",
     "gulp-load-plugins": "^1.0.0",
@@ -37,5 +39,8 @@
   "engines": {
     "node": ">= 0.10"
   },
-  "license": ""
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/mattma/d3.ma.js/blob/master/LICENSE.md"
+  }
 }

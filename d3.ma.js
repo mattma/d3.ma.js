@@ -1,3 +1,10 @@
+/**
+ * d3.ma.js - d3 magic for visualizing data based on object oriented principles
+ * @version v0.2.1
+ * @author Matt Ma - matt@mattmadesign.com
+ * @link https://github.com/mattma/d3.ma.js
+ * @license MIT
+ */
 (function (root, factory) {
 	if (typeof exports === 'object') {
 		module.exports = factory(require('d3'));
