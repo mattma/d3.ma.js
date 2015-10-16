@@ -22,5 +22,8 @@
     "test",
     "tests",
     "examples"
-  ]
+  ],
+  "dependencies": {
+    "d3": "~3.4.3"
+  }
 }

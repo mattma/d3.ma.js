@@ -41,3 +41,5 @@ compass_app_log.txt
 # Sublime Specific Settings
 *.sublime-project
 *.sublime-workspace
+
+bower_components
