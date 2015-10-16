@@ -6,25 +6,29 @@
     <title>D3 tree chart demo</title>
     <link rel="stylesheet" type="text/css" href="../src/d3.ma.css">
     <style>
-    .node {
-        cursor: pointer;
-    }
+      #vis {
+        width: 1400px;
+        height: 600px;
+      }
+      .node {
+          cursor: pointer;
+      }
 
-    .node circle {
-        fill: #fff;
-        stroke: steelblue;
-        stroke-width: 1.5px;
-    }
+      .node circle {
+          fill: #fff;
+          stroke: steelblue;
+          stroke-width: 1.5px;
+      }
 
-    .node text {
-        font: 10px sans-serif;
-    }
+      .node text {
+          font: 10px sans-serif;
+      }
 
-    .link {
-        fill: none;
-        stroke: #ccc;
-        stroke-width: 1.5px;
-    }
+      .link {
+          fill: none;
+          stroke: #ccc;
+          stroke-width: 1.5px;
+      }
     </style>
     <script src="../bower_components/d3/d3.js"></script>
     <script src="../src/lib/d3chart.js"></script>
