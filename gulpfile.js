@@ -45,6 +45,7 @@ gulp.task('buildjs', function () {
       gulp.src('src/core/base.js'),
 
       gulp.src('src/components/axis.js'),
+      // gulp.src('src/components/legend.js'),
 
       gulp.src('src/basic/bars.js'),
       gulp.src('src/basic/line.js'),
@@ -53,6 +54,7 @@ gulp.task('buildjs', function () {
       gulp.src('src/basic/tree.js'),
       gulp.src('src/basic/simpleLine.js'),
       gulp.src('src/basic/diagonalLine.js'),
+      // gulp.src('src/basic/icicle.js'),
 
       gulp.src('src/outro.js')
     )
