@@ -1,0 +1,131 @@
+/* ======================= */
+/* = d3.ma.css For d3.ma.js library = */
+/* ======================= */
+svg {
+  font: 10px sans-serif;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.area {
+  fill: lightsteelblue;
+}
+
+.dot {
+  fill: white;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.circles {
+  stroke: steelblue;
+}
+
+/* ================ */
+/* = Axis & Label Section = */
+/* ================ */
+.axis path, .axis line {
+  fill: none;
+  shape-rendering: crispEdges;
+}
+
+/* Axis Guides */
+.axis .tick line {
+  stroke: lightgrey;
+  opacity: 0.8;
+}
+
+/* Axis itself on x and y */
+.axis path {
+  stroke: rgb(51, 51, 51);
+  stroke-width: 1px;
+}
+
+/* When guides show, Y-Axis 0 position guide override X-Axis itself, so hide it */
+.y.axis text+g line {
+  stroke-width: 0;
+}
+
+.label {
+  text-anchor: middle;
+  font-size: 1.4em;
+  fill: black;
+  font-family: arial, helvetica, sans-serif;
+  text-transform: capitalize;
+}
+
+/* ================ */
+/* = Hover Intent = */
+/* ================ */
+.dotHover circle {
+  fill-opacity: 0;
+  stroke-opacity: 0;
+
+  transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
+  -moz-transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
+  -webkit-transition: stroke-width 250ms linear, stroke-opacity 250ms linear;
+
+  /* This need to be set by the color of the line or area, couid set color on the dot too for animation */
+  /* Based on the parents, if parents has stroke color defined, it will use that color for circle */
+  stroke: inherit;
+  /* fill: purple; */
+}
+
+.dotHover circle.hover {
+  stroke-width: 20px;
+  fill-opacity: .5 !important;
+  stroke-opacity: .5 !important;
+}
+
+/* ================= */
+/* = Tooltip CSS = */
+/* ================= */
+ .d3maTooltip-pending-removal {
+  position: absolute;
+  pointer-events: none;
+}
+
+.d3maTooltip {
+  position: absolute;
+  background-color: rgba(255,255,255,0.75);
+  padding: 3px 5px;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,.2);
+  z-index: 10000;
+
+  font-family: Arial;
+  font-size: 13px;
+  -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  box-shadow: 0 5px 10px rgba(0,0,0,.2);
+
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+
+  pointer-events: none;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ================= */
+/* = General Shape = */
+/* ================= */
+rect {
+  -moz-transition: fill-opacity .5s linear;
+  -webkit-transition: fill-opacity .5s linear;
+  transition: fill-opacity .5s linear;
+}
+
+rect:hover {
+  fill-opacity: 1;
+}

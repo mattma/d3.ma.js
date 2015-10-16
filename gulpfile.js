@@ -77,9 +77,14 @@ gulp.task('build', ['buildjs'], function () {
     .pipe(gulp.dest(destPath));
 });
 
-gulp.task('release', ['releaseServer'], function () {
-  // reset the development libraries
-  gulp.start('envDev');
+gulp.task('stylesheet', function () {
+  return gulp.src('src/d3.ma.css')
+    .pipe(gulp.dest('./'));
+});
+
+gulp.task('release', ['build', 'stylesheet'], function () {
+  return gulp.src('build/*.js')
+    .pipe(gulp.dest('./'));
 });
 
 gulp.task('test', ['prepareTests'], function () {
