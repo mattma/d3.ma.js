@@ -1,5 +1,5 @@
 /*! 
- 	d3.ma.js - v0.2.0
+ 	d3.ma.js - v0.2.1
  	Author: Matt Ma (matt@mattmadesign.com) 
  	Date: 2015-10-15
 */
