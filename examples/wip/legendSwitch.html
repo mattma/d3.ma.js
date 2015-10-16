@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D3 Test</title>
+
+  <link rel="stylesheet" type="text/css" href="../src/d3.ma.css">
+  <style>
+    #vis {
+      width: 1400px;
+      height: 600px;
+    }
+  </style>
+
+  <script src="../bower_components/d3/d3.js"></script>
+  <script src="../libs/d3.chart.js"></script>
+
+
+  <script src="../src/common/core.js"></script>
+  <script src="../src/common/utils.js"></script>
+  <script src="../src/common/container.js"></script>
+  <script src="../src/components/clippath.js"></script>
+
+
+  <script src="../src/core/scale.js"></script>
+  <script src="../src/core/base.js"></script>
+
+
+  <script src="../src/components/axis.js"></script>
+  <script src="../src/components/legend.js"></script>
+
+
+  <script src="../src/basic/bars.js"></script>
+  <script src="../src/basic/line.js"></script>
+  <script src="../src/basic/circle.js"></script>
+  <script src="../src/basic/area.js"></script>
+
+<!--
+  <script src="../build/d3.ma.min.js"></script>
+-->
+
+</head>
+<body>
+  <div id="vis"></div>
+
+  <script>
+    function sinAndCos() {
+      var sin = [],
+        cos = [];
+
+      for (var i = 0; i < 100; i++) {
+        sin.push({x: i, y: i % 10 == 5 ? null : Math.sin(i/10) }); //the nulls are to show how defined works
+        cos.push({x: i, y: .5 * Math.cos(i/10)});
+      }
+
+      return [
+        {
+          area: true,
+          values: sin,
+          key: "Sine Wave",
+          color: "#ff7f0e"
+        },
+        {
+          values: cos,
+          key: "Cosine Wave",
+          color: "#2ca02c"
+        }
+      ];
+    }
+
+    var data = sinAndCos();
+  </script>
+
+  <script>
+    d3.chart('Line').extend('MyLine', {
+      onDataBind: function(chart, data, transform) {
+        var chart = chart || this;
+        singleDomain(chart, data, transform);
+      }
+    });
+
+    d3.chart('Axis').extend('MyAxis', {
+      onDataBind: function(chart){
+        var chart = chart || this;
+        domain(chart, data);
+        //this.xPos(this.yScale(0));
+      }
+    });
+
+    function singleDomain(context, data, transform) {
+      var chart = context || this;
+
+      var dataX = d3.extent(data[transform], function(d, i) { return d.x; });
+      var dataY = d3.extent(data[transform], function(d, i) { return d.y; });
+
+      chart.xScale.domain(dataX);
+      chart.yScale.domain([-1, 1]);
+    }
+
+    function domain(context, data) {
+
+      var chart = context || this;
+
+      var dataX = data.map(function(d, i){
+        return d3.extent(d['values'], function(d, i) { return d.x; })
+      });
+      var dataY = data.map(function(d, i){
+        return d3.extent(d['values'], function(d, i) { return d.y; })
+      });
+
+      var extentX = d3.extent(dataX, function(d, i){ return d[i] });
+      var extentY = d3.extent(dataY, function(d, i){ return d[i] });
+
+      chart.xScale.domain(extentX);
+      chart.yScale.domain([-1, 1]);
+    }
+
+    d3.chart('MyLegend', {
+      initialize: function(containerInfo) {
+        var legend = this.mixin('Legend', this.base.append('g'), {
+          info: containerInfo,
+          align: false
+        });
+
+        var axis =  this.mixin("MyAxis",  this.base.append("g").classed('axisgroup', true), {
+          info: containerInfo,
+          guide: true,
+          ticksOnResize: true
+        });
+
+        axis
+          .xLabel('Line Chart X', 0, 20 )
+          .yLabel('Y Labels', 15, 20);
+
+        legend.dispatch.on('d3maLegendMouseenter', function(d,i){
+          console.log(d);
+        });
+        legend.dispatch.on('d3maLegendMouseout', function(d,i){
+          console.log(i);
+        });
+        legend.dispatch.on('d3maLegendClick', function(d,i, chart, single){
+          console.log('d: ', d);
+          console.log('i: ', i);
+          console.log('chart: ', chart);
+          console.log('single: ', single);
+        });
+      }
+    });
+
+    d3.chart("FinalChart", {
+      initialize: function(containerInfo) {
+        var line = this.mixin('MyLine', this.base.append('g'), {
+          info: containerInfo,
+          data: 'values'
+        });
+      }
+    });
+
+    var container = d3.ma.container('#vis').margin({left: 50});
+
+    container.box(1400, 600);  //.resize()
+
+    var canvas = container.canvas();
+
+    var gEnter = canvas.selectAll('g').data(data).enter().append('g');
+
+
+    // var wrap = canvas.selectAll('g').data(data);
+
+    // var gEnter = wrap.enter().append('g').attr('class', 'd3ma').append('g');
+
+    // var g = wrap.select('g');
+
+    // console.log('g: ', g);
+
+    // g.chart("FinalChart", container.info() );
+
+    gEnter.each(function(d, i){
+      d3.select(this).chart("FinalChart", container.info() ).draw( d );
+    });
+
+    canvas.chart("MyLegend", container.info() ).draw(data);
+
+  </script>
+
+  <!-- livereload snippet  -->
+  <script src="http://localhost:35729/livereload.js?snipver=1"></script>
+</body>
+</html>

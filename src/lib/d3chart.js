@@ -1,20 +1,20 @@
 /*! d3.chart - v0.2.0
-*  Modified based on v0.2.0 - Home Baked
-*  Date: 2014-02-21
-*/
+ *  Modified based on v0.2.0 - Home Baked
+ *  Date: 2014-02-21
+ */
 
 var hasOwnProp = Object.hasOwnProperty;
 
 var d3cAssert = function(test, message) {
-	if (test) {
-		return;
-	}
-	throw new Error("[d3.chart] " + message);
+    if (test) {
+        return;
+    }
+    throw new Error("[d3.chart] " + message);
 };
 
 d3cAssert(d3, "d3.js is required");
 d3cAssert(typeof d3.version === "string" && d3.version.match(/^3/),
-	"d3.js version 3 is required");
+    "d3.js version 3 is required");
 
 // @todo file break line
 
@@ -32,9 +32,9 @@ var lifecycleRe = /^(enter|update|merge|exit)(:transition)?$/;
  * @param {d3.selection} base The containing DOM node for the layer.
  */
 var Layer = function(base) {
-	d3cAssert(base, "Layers must be initialized with a base.");
-	this._base = base;
-	this._handlers = {};
+    d3cAssert(base, "Layers must be initialized with a base.");
+    this._base = base;
+    this._handlers = {};
 };
 
 /**
@@ -44,7 +44,7 @@ var Layer = function(base) {
  * @param {Array} data Value passed to {@link Layer#draw}
  */
 Layer.prototype.dataBind = function() {
-	d3cAssert(false, "Layers must specify a `dataBind` method.");
+    d3cAssert(false, "Layers must specify a `dataBind` method.");
 };
 
 /**
@@ -53,7 +53,7 @@ Layer.prototype.dataBind = function() {
  * Layer instances.
  */
 Layer.prototype.insert = function() {
-	d3cAssert(false, "Layers must specify an `insert` method.");
+    d3cAssert(false, "Layers must specify an `insert` method.");
 };
 
 /**
@@ -68,20 +68,20 @@ Layer.prototype.insert = function() {
  * @returns {d3.selection} Reference to the layer's base.
  */
 Layer.prototype.on = function(eventName, handler, options) {
-	options = options || {};
-	d3cAssert(
-		lifecycleRe.test(eventName),
-		"Unrecognized lifecycle event name specified to `Layer#on`: '" +
-		eventName + "'."
-	);
-	if (!(eventName in this._handlers)) {
-		this._handlers[eventName] = [];
-	}
-	this._handlers[eventName].push({
-		callback: handler,
-		chart: options.chart || null
-	});
-	return this._base;
+    options = options || {};
+    d3cAssert(
+        lifecycleRe.test(eventName),
+        "Unrecognized lifecycle event name specified to `Layer#on`: '" +
+        eventName + "'."
+    );
+    if (!(eventName in this._handlers)) {
+        this._handlers[eventName] = [];
+    }
+    this._handlers[eventName].push({
+        callback: handler,
+        chart: options.chart || null
+    });
+    return this._base;
 };
 
 /**
@@ -96,30 +96,30 @@ Layer.prototype.on = function(eventName, handler, options) {
  */
 Layer.prototype.off = function(eventName, handler) {
 
-	var handlers = this._handlers[eventName];
-	var idx;
+    var handlers = this._handlers[eventName];
+    var idx;
 
-	d3cAssert(
-		lifecycleRe.test(eventName),
-		"Unrecognized lifecycle event name specified to `Layer#off`: '" +
-		eventName + "'."
-	);
+    d3cAssert(
+        lifecycleRe.test(eventName),
+        "Unrecognized lifecycle event name specified to `Layer#off`: '" +
+        eventName + "'."
+    );
 
-	if (!handlers) {
-		return this._base;
-	}
+    if (!handlers) {
+        return this._base;
+    }
 
-	if (arguments.length === 1) {
-		handlers.length = 0;
-		return this._base;
-	}
+    if (arguments.length === 1) {
+        handlers.length = 0;
+        return this._base;
+    }
 
-	for (idx = handlers.length - 1; idx > -1; --idx) {
-		if (handlers[idx].callback === handler) {
-			handlers.splice(idx, 1);
-		}
-	}
-	return this._base;
+    for (idx = handlers.length - 1; idx > -1; --idx) {
+        if (handlers[idx].callback === handler) {
+            handlers.splice(idx, 1);
+        }
+    }
+    return this._base;
 };
 
 /**
@@ -138,80 +138,80 @@ Layer.prototype.off = function(eventName, handler) {
  * @param {Array} data Data to drive the rendering.
  */
 Layer.prototype.draw = function(data) {
-	var bound, entering, events, selection, handlers, eventName, idx, len;
+    var bound, entering, events, selection, handlers, eventName, idx, len;
 
-	bound = this.dataBind.call(this._base, data);
+    bound = this.dataBind.call(this._base, data);
 
-	// Although `bound instanceof d3.selection` is more explicit, it fails
-	// in IE8, so we use duck typing to maintain compatability.
-	d3cAssert(bound && bound.call === d3.selection.prototype.call,
-		"Invalid selection defined by `Layer#dataBind` method.");
-	d3cAssert(bound.enter, "Layer selection not properly bound.");
+    // Although `bound instanceof d3.selection` is more explicit, it fails
+    // in IE8, so we use duck typing to maintain compatability.
+    d3cAssert(bound && bound.call === d3.selection.prototype.call,
+        "Invalid selection defined by `Layer#dataBind` method.");
+    d3cAssert(bound.enter, "Layer selection not properly bound.");
 
-	entering = bound.enter();
-	entering._chart = this._base._chart;
+    entering = bound.enter();
+    entering._chart = this._base._chart;
 
-	events = [{
-		name: "update",
-		selection: bound
-	}, {
-		name: "enter",
-		// Defer invocation of the `insert` method so that the previous
-		// `update` selection does not contain the new nodes.
-		selection: this.insert.bind(entering)
-	}, {
-		name: "merge",
-		// This selection will be modified when the previous selection
-		// is made.
-		selection: bound
-	}, {
-		name: "exit",
-		selection: bound.exit.bind(bound)
-	}];
+    events = [{
+        name: "update",
+        selection: bound
+    }, {
+        name: "enter",
+        // Defer invocation of the `insert` method so that the previous
+        // `update` selection does not contain the new nodes.
+        selection: this.insert.bind(entering)
+    }, {
+        name: "merge",
+        // This selection will be modified when the previous selection
+        // is made.
+        selection: bound
+    }, {
+        name: "exit",
+        selection: bound.exit.bind(bound)
+    }];
 
-	for (var i = 0, l = events.length; i < l; ++i) {
-		eventName = events[i].name;
-		selection = events[i].selection;
+    for (var i = 0, l = events.length; i < l; ++i) {
+        eventName = events[i].name;
+        selection = events[i].selection;
 
-		// Some lifecycle selections are expressed as functions so that
-		// they may be delayed.
-		if (typeof selection === "function") {
-			selection = selection();
-		}
+        // Some lifecycle selections are expressed as functions so that
+        // they may be delayed.
+        if (typeof selection === "function") {
+            selection = selection();
+        }
 
-		if (selection.empty()) {
-			continue;
-		}
+        if (selection.empty()) {
+            continue;
+        }
 
-		// Although `selection instanceof d3.selection` is more explicit,
-		// it fails in IE8, so we use duck typing to maintain
-		// compatability.
-		d3cAssert(selection &&
-			selection.call === d3.selection.prototype.call,
-			"Invalid selection defined for '" + eventName +
-			"' lifecycle event.");
+        // Although `selection instanceof d3.selection` is more explicit,
+        // it fails in IE8, so we use duck typing to maintain
+        // compatability.
+        d3cAssert(selection &&
+            selection.call === d3.selection.prototype.call,
+            "Invalid selection defined for '" + eventName +
+            "' lifecycle event.");
 
-		handlers = this._handlers[eventName];
+        handlers = this._handlers[eventName];
 
-		if (handlers) {
-			for (idx = 0, len = handlers.length; idx < len; ++idx) {
-				// Attach a reference to the parent chart so the selection"s
-				// `chart` method will function correctly.
-				selection._chart = handlers[idx].chart || this._base._chart;
-				selection.call(handlers[idx].callback);
-			}
-		}
+        if (handlers) {
+            for (idx = 0, len = handlers.length; idx < len; ++idx) {
+                // Attach a reference to the parent chart so the selection"s
+                // `chart` method will function correctly.
+                selection._chart = handlers[idx].chart || this._base._chart;
+                selection.call(handlers[idx].callback);
+            }
+        }
 
-		handlers = this._handlers[eventName + ":transition"];
+        handlers = this._handlers[eventName + ":transition"];
 
-		if (handlers && handlers.length) {
-			selection = selection.transition();
-			for (idx = 0, len = handlers.length; idx < len; ++idx) {
-				selection._chart = handlers[idx].chart || this._base._chart;
-				selection.call(handlers[idx].callback);
-			}
-		}
-	}
+        if (handlers && handlers.length) {
+            selection = selection.transition();
+            for (idx = 0, len = handlers.length; idx < len; ++idx) {
+                selection._chart = handlers[idx].chart || this._base._chart;
+                selection.call(handlers[idx].callback);
+            }
+        }
+    }
 };
 
 // @todo file break line
@@ -226,63 +226,63 @@ Layer.prototype.draw = function(data) {
  * @returns {d3.selection}
  */
 d3.selection.prototype.layer = function(options) {
-	var layer = new Layer(this);
-	var eventName;
+    var layer = new Layer(this);
+    var eventName;
 
-	// Set layer methods (required)
-	layer.dataBind = options.dataBind;
-	layer.insert = options.insert;
+    // Set layer methods (required)
+    layer.dataBind = options.dataBind;
+    layer.insert = options.insert;
 
-	// Bind events (optional)
-	if ("events" in options) {
-		for (eventName in options.events) {
-			layer.on(eventName, options.events[eventName]);
-		}
-	}
+    // Bind events (optional)
+    if ("events" in options) {
+        for (eventName in options.events) {
+            layer.on(eventName, options.events[eventName]);
+        }
+    }
 
-	// Mix the public methods into the D3.js selection (bound appropriately)
-	this.on = function() {
-		return layer.on.apply(layer, arguments);
-	};
-	this.off = function() {
-		return layer.off.apply(layer, arguments);
-	};
-	this.draw = function() {
-		return layer.draw.apply(layer, arguments);
-	};
+    // Mix the public methods into the D3.js selection (bound appropriately)
+    this.on = function() {
+        return layer.on.apply(layer, arguments);
+    };
+    this.off = function() {
+        return layer.off.apply(layer, arguments);
+    };
+    this.draw = function() {
+        return layer.draw.apply(layer, arguments);
+    };
 
-	return this;
+    return this;
 };
 
 var variadicNew = function(Ctor, args) {
-	var inst,
-		// Set the prototype chain to inherit from parent, without calling parent‘s constructor function.
-		Surrogate = function(ctor) {
-			this.constructor = ctor;
-		};
-	Surrogate.prototype = Ctor.prototype;
-	inst = new Surrogate(Ctor);
-	Ctor.apply(inst, args);
-	return inst;
+    var inst,
+        // Set the prototype chain to inherit from parent, without calling parent‘s constructor function.
+        Surrogate = function(ctor) {
+            this.constructor = ctor;
+        };
+    Surrogate.prototype = Ctor.prototype;
+    inst = new Surrogate(Ctor);
+    Ctor.apply(inst, args);
+    return inst;
 };
 
 // extend
 // Borrowed from Underscore.js
 function extend(object) {
-	var argsIndex, argsLength, iteratee, key;
-	if (!object) {
-		return object;
-	}
-	argsLength = arguments.length;
-	for (argsIndex = 1; argsIndex < argsLength; argsIndex++) {
-		iteratee = arguments[argsIndex];
-		if (iteratee) {
-			for (key in iteratee) {
-				object[key] = iteratee[key];
-			}
-		}
-	}
-	return object;
+    var argsIndex, argsLength, iteratee, key;
+    if (!object) {
+        return object;
+    }
+    argsLength = arguments.length;
+    for (argsIndex = 1; argsIndex < argsLength; argsIndex++) {
+        iteratee = arguments[argsIndex];
+        if (iteratee) {
+            for (key in iteratee) {
+                object[key] = iteratee[key];
+            }
+        }
+    }
+    return object;
 }
 
 /**
@@ -292,16 +292,16 @@ function extend(object) {
  * @private
  */
 var initCascade = function(instance, args) {
-	var ctor = this.constructor;
-	var sup = ctor.__super__;
-	if (sup) {
-		initCascade.call(sup, instance, args);
-	}
-	// Do not invoke the `initialize` method on classes further up the
-	// prototype chain (again).
-	if (hasOwnProp.call(ctor.prototype, "initialize")) {
-		this.initialize.apply(instance, args);
-	}
+    var ctor = this.constructor;
+    var sup = ctor.__super__;
+    if (sup) {
+        initCascade.call(sup, instance, args);
+    }
+    // Do not invoke the `initialize` method on classes further up the
+    // prototype chain (again).
+    if (hasOwnProp.call(ctor.prototype, "initialize")) {
+        this.initialize.apply(instance, args);
+    }
 };
 
 /**
@@ -349,16 +349,16 @@ var initCascade = function(instance, args) {
  */
 var Chart = function(selection, chartOptions) {
 
-	this.base = selection;
-	this._layers = {};
-	this._mixins = [];
-	this._events = {};
+    this.base = selection;
+    this._layers = {};
+    this._mixins = [];
+    this._events = {};
 
-	if (chartOptions && chartOptions.transform) {
-		this.transform = chartOptions.transform;
-	}
+    if (chartOptions && chartOptions.transform) {
+        this.transform = chartOptions.transform;
+    }
 
-	initCascade.call(this, this, [chartOptions]);
+    initCascade.call(this, this, [chartOptions]);
 };
 
 /**
@@ -381,12 +381,12 @@ Chart.prototype.initialize = function() {};
  * @returns {Layer} The layer removed by this operation.
  */
 Chart.prototype.unlayer = function(name) {
-	var layer = this.layer(name);
+    var layer = this.layer(name);
 
-	delete this._layers[name];
-	delete layer._chart;
+    delete this._layers[name];
+    delete layer._chart;
 
-	return layer;
+    return layer;
 };
 
 /**
@@ -415,41 +415,41 @@ Chart.prototype.unlayer = function(name) {
  * @returns {Layer}
  */
 Chart.prototype.layer = function(name, selection, options) {
-	var layer;
+    var layer;
 
-	if (arguments.length === 1) {
-		return this._layers[name];
-	}
+    if (arguments.length === 1) {
+        return this._layers[name];
+    }
 
-	// we are reattaching a previous layer, which the
-	// selection argument is now set to.
-	if (arguments.length === 2) {
+    // we are reattaching a previous layer, which the
+    // selection argument is now set to.
+    if (arguments.length === 2) {
 
-		if (typeof selection.draw === "function") {
-			selection._chart = this;
-			this._layers[name] = selection;
-			return this._layers[name];
+        if (typeof selection.draw === "function") {
+            selection._chart = this;
+            this._layers[name] = selection;
+            return this._layers[name];
 
-		} else {
-			d3cAssert(false, "When reattaching a layer, the second argument " +
-				"must be a d3.chart layer");
-		}
-	}
+        } else {
+            d3cAssert(false, "When reattaching a layer, the second argument " +
+                "must be a d3.chart layer");
+        }
+    }
 
-	layer = selection.layer(options);
+    layer = selection.layer(options);
 
-	this._layers[name] = layer;
+    this._layers[name] = layer;
 
-	selection._chart = this;
+    selection._chart = this;
 
-	return layer;
+    return layer;
 };
 
 // @todo @matt cannot be removed due dependency
 // currently handled by Chart constructor init
 // draw method has been reimplemented too
 Chart.prototype.transform = function(data) {
-	return data;
+    return data;
 };
 
 /**
@@ -457,31 +457,31 @@ Chart.prototype.transform = function(data) {
  * demux will take an argument, data as one and only param
 
 this.mixin("Line", d3.select('#vis1').append('svg').append('g').classed('lines', true), {
-	info: containerInfo,
-	demux: function(data){
-		var ret= [];
-		d3ma.each(data, function(val, ind) {
-			ret.push( { x: val.x * Math.random() * 5 , y: val.y } );
-			return ret;
-		});
-		return ret;
-	}
+  info: containerInfo,
+  demux: function(data){
+    var ret= [];
+    d3ma.each(data, function(val, ind) {
+      ret.push( { x: val.x * Math.random() * 5 , y: val.y } );
+      return ret;
+    });
+    return ret;
+  }
 });
 */
 Chart.prototype.mixin = function(chartName, selection, options) {
-	var args = Array.prototype.slice.call(arguments, 2);
-	args.unshift(selection);
-	var ctor = Chart[chartName];
-	var chart = variadicNew(ctor, args);
+    var args = Array.prototype.slice.call(arguments, 2);
+    args.unshift(selection);
+    var ctor = Chart[chartName];
+    var chart = variadicNew(ctor, args);
 
-	var obj = {
-		chart: chart,
-		demux: (options.demux) ? options.demux : false
-	};
+    var obj = {
+        chart: chart,
+        demux: (options.demux) ? options.demux : false
+    };
 
-	//this._mixins.push(chart);
-	this._mixins.push(obj);
-	return chart;
+    //this._mixins.push(chart);
+    this._mixins.push(obj);
+    return chart;
 };
 
 /**
@@ -499,25 +499,25 @@ Chart.prototype.mixin = function(chartName, selection, options) {
  */
 Chart.prototype.draw = function(data) {
 
-	var layerName, mixin;
+    var layerName, mixin;
 
-	data = this.transform(data);
+    data = this.transform(data);
 
-	for (layerName in this._layers) {
-		this._layers[layerName].draw(data);
-	}
+    for (layerName in this._layers) {
+        this._layers[layerName].draw(data);
+    }
 
-	for (mixin in this._mixins) {
+    for (mixin in this._mixins) {
         if (this._mixins.hasOwnProperty(mixin)) {
-		// demux fn should return the set of data that would be appropriate for that chart
-		var fn = this._mixins[mixin].demux;
-		if(fn && typeof fn === 'function'){
-			this._mixins[mixin].chart.draw(fn(data));
-		} else {
-			this._mixins[mixin].chart.draw(data);
-		}
+            // demux fn should return the set of data that would be appropriate for that chart
+            var fn = this._mixins[mixin].demux;
+            if (fn && typeof fn === 'function') {
+                this._mixins[mixin].chart.draw(fn(data));
+            } else {
+                this._mixins[mixin].chart.draw(data);
+            }
         }
-	}
+    }
 };
 
 /**
@@ -542,13 +542,13 @@ Chart.prototype.draw = function(data) {
  * @returns {Chart} A reference to this chart (chainable).
  */
 Chart.prototype.on = function(name, callback, context) {
-	var events = this._events[name] || (this._events[name] = []);
-	events.push({
-		callback: callback,
-		context: context || this,
-		_chart: this
-	});
-	return this;
+    var events = this._events[name] || (this._events[name] = []);
+    events.push({
+        callback: callback,
+        context: context || this,
+        _chart: this
+    });
+    return this;
 };
 
 /**
@@ -566,12 +566,12 @@ Chart.prototype.on = function(name, callback, context) {
  * @returns {Chart} A reference to this chart (chainable)
  */
 Chart.prototype.once = function(name, callback, context) {
-	var self = this;
-	var once = function() {
-		self.off(name, once);
-		callback.apply(this, arguments);
-	};
-	return this.on(name, once, context);
+    var self = this;
+    var once = function() {
+        self.off(name, once);
+        callback.apply(this, arguments);
+    };
+    return this.on(name, once, context);
 };
 
 /**
@@ -590,42 +590,42 @@ Chart.prototype.once = function(name, callback, context) {
  * @returns {Chart} A reference to this chart (chainable).
  */
 Chart.prototype.off = function(name, callback, context) {
-	var names, n, events, event, i, j;
+    var names, n, events, event, i, j;
 
-	// remove all events
-	if (arguments.length === 0) {
-		for (name in this._events) {
-			this._events[name].length = 0;
-		}
-		return this;
-	}
+    // remove all events
+    if (arguments.length === 0) {
+        for (name in this._events) {
+            this._events[name].length = 0;
+        }
+        return this;
+    }
 
-	// remove all events for a specific name
-	if (arguments.length === 1) {
-		events = this._events[name];
-		if (events) {
-			events.length = 0;
-		}
-		return this;
-	}
+    // remove all events for a specific name
+    if (arguments.length === 1) {
+        events = this._events[name];
+        if (events) {
+            events.length = 0;
+        }
+        return this;
+    }
 
-	// remove all events that match whatever combination of name, context
-	// and callback.
-	names = name ? [name] : Object.keys(this._events);
-	for (i = 0; i < names.length; i++) {
-		n = names[i];
-		events = this._events[n];
-		j = events.length;
-		while (j--) {
-			event = events[j];
-			if ((callback && callback === event.callback) ||
-				(context && context === event.context)) {
-				events.splice(j, 1);
-			}
-		}
-	}
+    // remove all events that match whatever combination of name, context
+    // and callback.
+    names = name ? [name] : Object.keys(this._events);
+    for (i = 0; i < names.length; i++) {
+        n = names[i];
+        events = this._events[n];
+        j = events.length;
+        while (j--) {
+            event = events[j];
+            if ((callback && callback === event.callback) ||
+                (context && context === event.context)) {
+                events.splice(j, 1);
+            }
+        }
+    }
 
-	return this;
+    return this;
 };
 
 /**
@@ -638,18 +638,18 @@ Chart.prototype.off = function(name, callback, context) {
  * @returns {Chart} A reference to this chart (chainable).
  */
 Chart.prototype.trigger = function(name) {
-	var args = Array.prototype.slice.call(arguments, 1);
-	var events = this._events[name];
-	var i, ev;
+    var args = Array.prototype.slice.call(arguments, 1);
+    var events = this._events[name];
+    var i, ev;
 
-	if (events !== undefined) {
-		for (i = 0; i < events.length; i++) {
-			ev = events[i];
-			ev.callback.apply(ev.context, args);
-		}
-	}
+    if (events !== undefined) {
+        for (i = 0; i < events.length; i++) {
+            ev = events[i];
+            ev.callback.apply(ev.context, args);
+        }
+    }
 
-	return this;
+    return this;
 };
 
 /**
@@ -669,43 +669,43 @@ Chart.prototype.trigger = function(name) {
  * @returns {Function} A new Chart constructor
  */
 Chart.extend = function(name, protoProps, staticProps) {
-	var parent = this;
-	var child;
+    var parent = this;
+    var child;
 
-	// The constructor function for the new subclass is either defined by
-	// you (the "constructor" property in your `extend` definition), or
-	// defaulted by us to simply call the parent's constructor.
-	if (protoProps && hasOwnProp.call(protoProps, "constructor")) {
-		child = protoProps.constructor;
-	} else {
-		child = function() {
-			return parent.apply(this, arguments);
-		};
-	}
+    // The constructor function for the new subclass is either defined by
+    // you (the "constructor" property in your `extend` definition), or
+    // defaulted by us to simply call the parent's constructor.
+    if (protoProps && hasOwnProp.call(protoProps, "constructor")) {
+        child = protoProps.constructor;
+    } else {
+        child = function() {
+            return parent.apply(this, arguments);
+        };
+    }
 
-	// Add static properties to the constructor function, if supplied.
-	extend(child, parent, staticProps);
+    // Add static properties to the constructor function, if supplied.
+    extend(child, parent, staticProps);
 
-	// Set the prototype chain to inherit from `parent`, without calling
-	// `parent`'s constructor function.
-	var Surrogate = function() {
-		this.constructor = child;
-	};
-	Surrogate.prototype = parent.prototype;
-	child.prototype = new Surrogate();
+    // Set the prototype chain to inherit from `parent`, without calling
+    // `parent`'s constructor function.
+    var Surrogate = function() {
+        this.constructor = child;
+    };
+    Surrogate.prototype = parent.prototype;
+    child.prototype = new Surrogate();
 
-	// Add prototype properties (instance properties) to the subclass, if
-	// supplied.
-	if (protoProps) {
-		extend(child.prototype, protoProps);
-	}
+    // Add prototype properties (instance properties) to the subclass, if
+    // supplied.
+    if (protoProps) {
+        extend(child.prototype, protoProps);
+    }
 
-	// Set a convenience property in case the parent's prototype is needed
-	// later.
-	child.__super__ = parent.prototype;
+    // Set a convenience property in case the parent's prototype is needed
+    // later.
+    child.__super__ = parent.prototype;
 
-	Chart[name] = child;
-	return child;
+    Chart[name] = child;
+    return child;
 };
 
 // @todo file break line
@@ -724,13 +724,13 @@ Chart.extend = function(name, protoProps, staticProps) {
  *        {@link Chart.extend} and used to create a new chart.
  */
 d3.chart = function(name) {
-	if (arguments.length === 0) {
-		return Chart;
-	} else if (arguments.length === 1) {
-		return Chart[name];
-	}
+    if (arguments.length === 0) {
+        return Chart;
+    } else if (arguments.length === 1) {
+        return Chart[name];
+    }
 
-	return Chart.extend.apply(Chart, arguments);
+    return Chart.extend.apply(Chart, arguments);
 };
 
 /**
@@ -746,25 +746,25 @@ d3.chart = function(name) {
  *        See {@link Chart} for more information.
  */
 d3.selection.prototype.chart = function(chartName) {
-	// Without an argument, attempt to resolve the current selection's
-	// containing d3.chart.
-	if (arguments.length === 0) {
-		return this._chart;
-	}
-	var ChartCtor = Chart[chartName];
-	var chartArgs;
-	d3cAssert(ChartCtor, "No chart registered with name '" +
-		chartName + "'");
+    // Without an argument, attempt to resolve the current selection's
+    // containing d3.chart.
+    if (arguments.length === 0) {
+        return this._chart;
+    }
+    var ChartCtor = Chart[chartName];
+    var chartArgs;
+    d3cAssert(ChartCtor, "No chart registered with name '" +
+        chartName + "'");
 
-	chartArgs = Array.prototype.slice.call(arguments, 1);
-	chartArgs.unshift(this);
-	return variadicNew(ChartCtor, chartArgs);
+    chartArgs = Array.prototype.slice.call(arguments, 1);
+    chartArgs.unshift(this);
+    return variadicNew(ChartCtor, chartArgs);
 };
 
 // Implement the zero-argument signature of `d3.selection.prototype.chart`
 // for all selection types.
 d3.selection.enter.prototype.chart = function() {
-	return this._chart;
+    return this._chart;
 };
 
 d3.transition.prototype.chart = d3.selection.enter.prototype.chart;

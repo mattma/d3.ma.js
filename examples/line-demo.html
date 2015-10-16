@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>D3 Line Chart Demo</title>
+    <link rel="stylesheet" type="text/css" href="../src/d3.ma.css">
+    <style>
+      #vis {
+        width: 1400px;
+        height: 600px;
+      }
+    </style>
+    <script src="../bower_components/d3/d3.js"></script>
+    <script src="../src/lib/d3chart.js"></script>
+    <script src="../src/common/core.js"></script>
+    <script src="../src/common/utils.js"></script>
+    <script src="../src/common/container.js"></script>
+    <script src="../src/components/clippath.js"></script>
+    <script src="../src/core/scale.js"></script>
+    <script src="../src/core/base.js"></script>
+    <script src="../src/components/axis.js"></script>
+    <script src="../src/basic/bars.js"></script>
+    <script src="../src/basic/line.js"></script>
+    <script src="../src/basic/circle.js"></script>
+    <script src="../src/basic/area.js"></script>
+    <!-- NEVER EVER INCLUDE THIS FILE IN THE BUILD -->
+    <script src="../src/common/development.js"></script>
+    <!-- <script src="../build/d3.ma.js"></script> -->
+</head>
+
+<body>
+    <button>update</button>
+    <div id="vis"></div>
+    <div id="vis1"></div>
+    <script>
+    var data = d3.range(40).map(function(i) {
+      return {
+        x: i / 39,
+        y: (Math.sin(i / 3) + 2) / 4
+      };
+    });
+    </script>
+    <script>
+    // http://jsbin.com/isawar/4/edit
+
+    // TODO: Move the onData, onInsert, onEnter, etc
+    // to the prototype level, so do not need to defined in each one
+    // d3.selection.prototype.layer = function(options) {
+    //  //d3.selection.prototype.layer.call(this, options);
+    //  return this;
+    // };
+
+    function domain(data, context) {
+        // Setup xScale domain range
+        context.xScale.domain([0, d3.max(data, function(d, i) {
+            return d.x
+        })]);
+
+        context.yScale.domain([0, d3.max(data, function(d, i) {
+            return d.y
+        })]);
+    }
+
+    d3.chart('Axis').extend('MyAxis', {
+        onDataBind: function(data) {
+            var chart = chart || this;
+            domain(data, chart);
+        }
+    });
+
+    d3.chart('Circle').extend('MyCircle', {
+        onDataBind: function(data) {
+            var chart = chart || this;
+            domain(data, chart);
+        },
+
+        onDataMouseenter: function(d, i, chart) {
+            var chart = chart || this;
+            var obj = {
+                'value': d.x,
+                'pointIndex': i,
+                'd': d,
+                'event': d3.event,
+                'pos': [
+                    chart.xScale(d.x),
+                    chart.yScale(d.y)
+                ]
+            };
+            return obj;
+        }
+    });
+
+    d3.chart("FinalChart", {
+        initialize: function(containerInfo) {
+            // Used for the clipPath object
+            // var clip =  this.mixin("Clip",  this.base);
+            // clip.box(300, 600).xy(0, 50);
+
+            var axis = this.mixin("MyAxis", this.base.append("g").classed('axisgroup', true), {
+                info: containerInfo,
+                guide: true,
+                ticksOnResize: true
+            });
+
+            axis
+                .xLabel('Line Chart X', 0, 20)
+                .yLabel('Y Labels', 15, 20);
+
+            // https://github.com/misoproject/d3.chart/wiki/chart-attach
+            // Now you could have the different experiences for different instances
+            // by defining the demux method
+            //
+            // Without defining `#vis1`, can be directly attach to `#vis`
+            // var line = this.mixin("Line", this.base.append('g').classed('lines', true), {
+            var line = this.mixin("Line", d3.select('#vis1').append('svg').append('g').classed('lines', true), {
+                info: containerInfo,
+                demux: function(data) {
+                    var ret = [];
+                    d3ma.each(data, function(val, ind) {
+                        ret.push({
+                            x: val.x * Math.random() * 5,
+                            y: val.y
+                        });
+                        return ret;
+                    });
+                    return ret;
+                }
+            });
+
+            var area = this.mixin("Area", this.base.append('g').classed('area', true), {
+                info: containerInfo
+            });
+
+            var circles = this.mixin("MyCircle", this.base.append('g').classed('circles', true), {
+                info: containerInfo,
+                showOnHover: true
+            });
+
+            circles.layer('circle').on('enter', function(chart) {
+                var chart = this.chart();
+
+                this.attr({
+                    'class': 'dot',
+                    'cx': function(d, i) {
+                        return area.xScale(d.x)
+                    },
+                    'cy': function(d, i) {
+                        return area.yScale(d.y)
+                    },
+                    'r': 2.5
+                })
+            });
+
+            circles.dispatch.on('d3maSingleWindowResize', function(chart, single) {
+                var chart = chart || this;
+
+                single.attr({
+                    'cx': function(d, i) {
+                        return area.xScale(d.x)
+                    },
+                    'cy': function(d, i) {
+                        return area.yScale(d.y)
+                    }
+                });
+            });
+
+            // Handle resize in utils.js
+            // convininent methods to recall onResize()
+            d3.ma.resize(axis, line, area, circles);
+
+            //Tooltip section
+            var tooltip = d3.ma.tooltip(this.base);
+            circles.dispatch.on('d3maMouseenter', function(e) {
+                e.pos = [e.pos[0] + 20, e.pos[1] + 100];
+                var html = "<div class='tips'>" + e.d.x + "<br><strong>" + e.d.y + "</strong>" + "</div>"
+                tooltip.show([e.pos[0], e.pos[1]], html);
+            });
+
+            circles.dispatch.on('d3maMouseout', function(e) {
+                tooltip.close();
+            });
+
+            //d3.ma.reloadResize(axis, line, area, circles);
+        }
+    });
+
+    var container = d3.ma.container('#vis');
+
+    container.box(1400, 600); // .resize();
+
+    var canvas = container.canvas().chart("FinalChart", container.info());
+
+    // render it with some data
+    // canvas.draw(data);
+    // canvas.draw(data, function(data) { return data } );
+
+    console.log('container.allCanvas: ', d3ma.setCanvas());
+    d3ma.setCanvas(canvas);
+    console.log('contaainer.allCanvas: ', d3ma.setCanvas());
+    d3ma.canvas[0].draw(data);
+
+    // In plain d3, this works too
+    //d3.select('.canvas').chart("FinalChart", container.info() ).draw(data);
+
+    var data1 = d3.range(60).map(function(i) {
+        return {
+            x: i / 60,
+            y: (Math.sin(i / 3) + 2) / 20
+        };
+    });
+
+    d3.selectAll("button").on("click", function() {
+        canvas.draw(data1);
+    });
+    </script>
+    <!-- livereload snippet  -->
+    <script src="http://localhost:35729/livereload.js?snipver=1"></script>
+</body>
+
+</html>
