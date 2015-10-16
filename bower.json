@@ -1,7 +1,7 @@
 {
   "name": "d3.ma",
   "main": "d3.ma.js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/mattma/d3.ma.js",
   "authors": [
     "Matt Ma <bigmabig@gmail.com>"
