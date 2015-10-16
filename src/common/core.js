@@ -1,4 +1,4 @@
-var d3ma = {version: '0.2.0'}; // semver;
+var d3ma = {version: '0.2.1'}; // semver;
 
 // useful to figure out how many svg elements on the current page
 // track individual .canvas element
