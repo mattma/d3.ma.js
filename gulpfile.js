@@ -6,13 +6,11 @@ var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*'],
   scope: ['devDependencies']
 });
-var testem = new (require('testem'))();
-
-var path = require('path');
 
 var jsSrcFiles = [
   'gulpfile.js',
-  'src/**/*.js'
+  'src/**/*.js',
+  '!src/*.js'
 ];
 
 var jsSrcFilesOrderList = [
