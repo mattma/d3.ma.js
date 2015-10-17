@@ -1,8 +1,6 @@
-/*! d3.chart - v0.2.0
- *  Modified based on v0.2.0 - Home Baked
- *  Date: 2014-02-21
- */
-
+// d3.chart - v0.2.0
+// Modified based on v0.2.0 - Home Baked
+// Date: 2014-02-21
 var hasOwnProp = Object.hasOwnProperty;
 
 var d3cAssert = function(test, message) {

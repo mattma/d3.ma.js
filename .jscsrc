@@ -1,0 +1,23 @@
+{
+  esnext: true,
+  excludeFiles: [
+    "node_modules/**",
+    "bower_components/**",
+    "libs/*.js",
+    "examples/*.js",
+    "*.js"
+  ],
+  disallowMultipleVarDeclWithAssignment: true,
+  requireCurlyBraces: [
+    "if",
+    "else",
+    "for",
+    "while",
+    "do",
+    "try",
+    "catch"
+  ],
+  disallowTrailingWhitespace: true,
+  disallowTrailingComma: true,
+  validateIndentation: 2
+}

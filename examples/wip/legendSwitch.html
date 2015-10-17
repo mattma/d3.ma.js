@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>D3 Test</title>
 
-  <link rel="stylesheet" type="text/css" href="../src/d3.ma.css">
+  <link rel="stylesheet" type="text/css" href="../../src/d3.ma.css">
   <style>
     #vis {
       width: 1400px;
@@ -12,33 +12,9 @@
     }
   </style>
 
-  <script src="../bower_components/d3/d3.js"></script>
-  <script src="../libs/d3.chart.js"></script>
-
-
-  <script src="../src/common/core.js"></script>
-  <script src="../src/common/utils.js"></script>
-  <script src="../src/common/container.js"></script>
-  <script src="../src/components/clippath.js"></script>
-
-
-  <script src="../src/core/scale.js"></script>
-  <script src="../src/core/base.js"></script>
-
-
-  <script src="../src/components/axis.js"></script>
-  <script src="../src/components/legend.js"></script>
-
-
-  <script src="../src/basic/bars.js"></script>
-  <script src="../src/basic/line.js"></script>
-  <script src="../src/basic/circle.js"></script>
-  <script src="../src/basic/area.js"></script>
-
-<!--
-  <script src="../build/d3.ma.min.js"></script>
--->
-
+  <script src="../../bower_components/d3/d3.js"></script>
+  <!-- Need to add icicle.js into gulpfile.js for the build-->
+  <script src="../../build/d3.ma.min.js"></script>
 </head>
 <body>
   <div id="vis"></div>
@@ -180,10 +156,6 @@
     });
 
     canvas.chart("MyLegend", container.info() ).draw(data);
-
   </script>
-
-  <!-- livereload snippet  -->
-  <script src="http://localhost:35729/livereload.js?snipver=1"></script>
 </body>
 </html>
