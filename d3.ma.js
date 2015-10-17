@@ -1,6 +1,6 @@
 /**
  * d3.ma.js - d3 magic for visualizing data based on object oriented principles
- * @version v0.2.1
+ * @version v0.3.0
  * @author Matt Ma <matt@mattmadesign.com>
  * @link https://github.com/mattma/d3.ma.js
  * @license MIT
@@ -773,7 +773,7 @@
 
 	// semver
 	var d3ma = {
-		version: "0.2.1"
+		version: "0.3.0"
 	};
 
 	// useful to figure out how many svg elements on the current page
