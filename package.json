@@ -1,14 +1,15 @@
 {
   "name": "d3.ma.js",
   "description": "d3 magic for visualizing data based on object oriented principles",
+  "version": "0.3.0",
   "author": {
     "name": "Matt Ma",
-    "email": "matt@mattmadesign.com"
+    "email": "matt@mattmadesign.com",
+    "url" : "http://mattmadesign.com"
   },
   "homepage": "https://github.com/mattma/d3.ma.js",
-  "version": "0.2.1",
-  "repository": "",
-  "main": "Gruntfile.js",
+  "repository": "https://github.com/mattma/d3.ma.js",
+  "main": "gulpfile.js",
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-babel": "^5.3.0",
@@ -23,20 +24,17 @@
     "gulp-util": "^3.0.6",
     "gulp-watch": "^4.3.5",
     "jshint-stylish": "^2.0.1",
-    "karma-chrome-launcher": "^0.1.7",
+    "karma-chrome-launcher": "^0.2.1",
     "karma-coverage": "*",
-    "karma-firefox-launcher": "^0.1.4",
+    "karma-firefox-launcher": "^0.1.6",
     "karma-mocha": "*",
     "karma-requirejs": "^0.2.2",
-    "requirejs": "^2.1.15",
+    "requirejs": "^2.1.20",
     "streamqueue": "^1.1.1",
     "tiny-lr": "^0.2.1"
   },
   "engines": {
     "node": ">= 0.10"
   },
-  "license": {
-    "type": "MIT",
-    "url": "https://github.com/mattma/d3.ma.js/blob/master/LICENSE.md"
-  }
+  "license": "MIT"
 }

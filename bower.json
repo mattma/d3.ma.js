@@ -1,19 +1,19 @@
 {
   "name": "d3.ma",
   "main": "d3.ma.js",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "homepage": "https://github.com/mattma/d3.ma.js",
   "authors": [
     "Matt Ma <bigmabig@gmail.com>"
   ],
-  "description": "d3 framework for visualizing your data based on object oriented approach",
+  "description": "d3 magic for visualizing data based on object oriented principles",
   "moduleType": [],
   "keywords": [
     "d3",
+    "d3.js",
     "graph",
     "svg",
     "chart",
-    "d3.js",
     "visualization"
   ],
   "license": "MIT",
@@ -21,13 +21,16 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    "coverage",
+    "build",
     "test",
-    "tests",
     "examples",
     "libs",
     "src",
     "docs",
-    "karma.conf.js"
+    "karma.conf.js",
+    "gulpfile.js",
+    "package.json"
   ],
   "dependencies": {
     "d3": "~3.5.6"

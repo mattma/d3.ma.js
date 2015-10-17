@@ -9,7 +9,6 @@ var $ = require('gulp-load-plugins')({
 var streamqueue  = require('streamqueue');
 var KarmaServer = require('karma').Server;
 var server = require('tiny-lr')();
-var path = require('path');
 var pkg = require('./package.json');
 
 var jsSrcFiles = [
@@ -23,9 +22,9 @@ var destPath = 'build';
 var banner = ['/**',
 ' * <%= pkg.name %> - <%= pkg.description %>',
 ' * @version v<%= pkg.version %>',
-' * @author <%= pkg.author.name %> - <%= pkg.author.email %>',
+' * @author <%= pkg.author.name %> <<%= pkg.author.email %>>',
 ' * @link <%= pkg.homepage %>',
-' * @license <%= pkg.license.type %>',
+' * @license <%= pkg.license %>',
 ' */',
 ''].join('\n');
 
@@ -110,15 +109,8 @@ gulp.task('release', ['stylesheet', 'test'], function () {
     .pipe(gulp.dest('./'));
 });
 
-function rebuildProject (event) {
-  switch (path.extname(event.path)) {
-    case '.js' :
-      gulp.start('buildjs');
-      break;
-    default :
-      gulp.start('build');
-      break;
-  }
+function rebuildProject () {
+  gulp.start('buildjs');
 }
 
 // when develop the library, it should always run in `gulp serve`
