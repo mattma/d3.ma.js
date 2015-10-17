@@ -17,7 +17,7 @@ require.config({
 
   paths: {
     'd3': 'bower_components/d3/d3',
-    'd3ma': 'tmp/d3.ma',
+    'd3ma': 'build/d3.ma',
     'chai': 'test/libs/chai',
     'mocha': 'test/libs/mocha/mocha',
     'common': 'test/libs/common',

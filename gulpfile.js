@@ -7,6 +7,7 @@ var $ = require('gulp-load-plugins')({
   scope: ['devDependencies']
 });
 var streamqueue  = require('streamqueue');
+var KarmaServer = require('karma').Server;
 var server = require('tiny-lr')();
 var path = require('path');
 var pkg = require('./package.json');
@@ -88,22 +89,25 @@ gulp.task('build', ['buildjs'], function () {
     .pipe(gulp.dest(destPath));
 });
 
-gulp.task('stylesheet', function () {
+gulp.task('stylesheet', ['build'], function () {
   return gulp.src('src/d3.ma.css')
     .pipe($.header(banner, {pkg: pkg}))
     .pipe(gulp.dest('./'));
 });
 
-gulp.task('release', ['build', 'stylesheet'], function () {
+// Run Karma test once and exit
+gulp.task('test', function (done) {
+  new KarmaServer({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start();
+});
+
+gulp.task('release', ['stylesheet', 'test'], function () {
   return gulp.src('build/*.js')
     .pipe($.header(banner, {pkg: pkg}))
     .pipe($.replace(/__VERSION__/, pkg.version))
     .pipe(gulp.dest('./'));
-});
-
-gulp.task('test', ['prepareTests'], function () {
-  $.watch('build/tests/*.js', rerunTest);
-  return rerunTest();
 });
 
 function rebuildProject (event) {
