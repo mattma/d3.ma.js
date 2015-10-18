@@ -1,259 +1,289 @@
 /*
-	return element: Most of methods return svg canvas object for easy chaining
+  return element: Most of methods return svg canvas object for easy chaining
 
-	Initalization:
-		var container = d3ma.container('#vis').margin({top: 80, left: 80}).box(1400, 600);
-		var canvas = container.canvas().chart("FinalChart", container.info() );
-		canvas.draw(data);
+  Initalization:
+    var container = d3ma.container('#vis').margin({top: 80, left: 80}).box(1400, 600);
+    var canvas = container.canvas().chart("FinalChart", container.info() );
+    canvas.draw(data);
 
-		Note: container.info() as 2nd parameter is absolutely the core required. It allows each individual layer to know what is the context of the current canvas, passing an object of dataset like container width, height, canvas info including its id, clippath id, width, height, and other info
+    Note: container.info() as 2nd parameter is absolutely the core required. It allows each individual layer to know what is the context of the current canvas, passing an object of dataset like container width, height, canvas info including its id, clippath id, width, height, and other info
 
-	Syntax:
-		d3ma.container(selector)    // is absolutely required, others are optional.
-		# container(selector) will take a css selector, which will be the container to append the svg element
+  Syntax:
+    d3ma.container(selector)    // is absolutely required, others are optional.
+    # container(selector) will take a css selector, which will be the container to append the svg element
 
-	Note:
-		by default, when the svg element initialized, it will create a canvas g element and a defs element contain the clip-path info, random generated cid for clip-path id and id for canvas id attribute.
+  Note:
+    by default, when the svg element initialized, it will create a canvas g element and a defs element contain the clip-path info, random generated cid for clip-path id and id for canvas id attribute.
 
-	APIs:
-		container(selector)
-			# in general, selector is a single dom element, id in most of the case.
+  APIs:
+    container(selector)
+      # in general, selector is a single dom element, id in most of the case.
 
-		container.margin(_margin)
-			# Optional, setter/getter  margin object, must take an object as value, e.g. {top: 80}, normally come before box()
+    container.margin(_margin)
+      # Optional, setter/getter  margin object, must take an object as value, e.g. {top: 80}, normally come before box()
 
-		container.box()
-			# Optional, by default, it will take the container width and height.
-			setter/getter retrieve the svg/container width and height, if only one value provide, width and height would be the same
+    container.box()
+      # Optional, by default, it will take the container width and height.
+      setter/getter retrieve the svg/container width and height, if only one value provide, width and height would be the same
 
-		container.canvasW()
-			# Optional, setter/getter  canvas width. Normally, do not need to set explicitly, Use container.box() will auto set the canvas width and height as properly
+    container.canvasW()
+      # Optional, setter/getter  canvas width. Normally, do not need to set explicitly, Use container.box() will auto set the canvas width and height as properly
 
-		container.canvasH()
-			# Optional, setter/getter  canvas height. Normally, do not need to set explicitly, Use container.box() will auto set the canvas width and height as properly
+    container.canvasH()
+      # Optional, setter/getter  canvas height. Normally, do not need to set explicitly, Use container.box() will auto set the canvas width and height as properly
 
-		container.resize()
-			# Optional. It should always handle the resize using onResize() or resize() for each instance
-			Take no args, by default, the graph would not resize when window resize, by calling container.resize() will enable the graph resize when window size changes. It is chainable, could be chained at anywhere after you initialized container object.
+    container.resize()
+      # Optional. It should always handle the resize using onResize() or resize() for each instance
+      Take no args, by default, the graph would not resize when window resize, by calling container.resize() will enable the graph resize when window size changes. It is chainable, could be chained at anywhere after you initialized container object.
 
-		container.ratio(_ratio)
-			#Optional. setter/getter  update canvas attribute preserveAspectRatio for resize() purpose. aspectRatio variable in this case.
+    container.ratio(_ratio)
+      #Optional. setter/getter  update canvas attribute preserveAspectRatio for resize() purpose. aspectRatio variable in this case.
 
-		container.canvas()
-			# getter. Return the canvas object for easy chaining
+    container.canvas()
+      # getter. Return the canvas object for easy chaining
 
-		container.fluid()
-			# setter. return the container for easy chaining.
-			# it will set parentNode 'data-fluid' to 'responsive' on changing the resize calculation
+    container.fluid()
+      # setter. return the container for easy chaining.
+      # it will set parentNode 'data-fluid' to 'responsive' on changing the resize calculation
 
-		container.info()
-			# getter. Return all the infomation about this container. expose all the data to the world
-			include value of   marginTop, marginRight, marginBottom, marginLeft, containerW, containerH, canvasW, canvasH, id, cid
+    container.info()
+      # getter. Return all the infomation about this container. expose all the data to the world
+      include value of   marginTop, marginRight, marginBottom, marginLeft, containerW, containerH, canvasW, canvasH, id, cid
 */
 
-// Context is very important here. When dealing with backbone itemview.
-// try to limit the current context of the selector, so need to apply the context to limit the selector scope
-// context is an optional param, ignore it as needed
-d3ma.container = function(selector, context) {
+/**
+ * [description]
+ * @param [string] selector: like jquery selector, #id, .class, tag, etc
+ * @param {string} context: set context for the selector, delegate/limit selector scope
+ * @return {[type]}          [description]
+ */
+d3ma.container = (selector, context) => {
+  // generate a random value between 1 to 1000
+  let random = Math.floor(Math.random() * 1000);
 
-	var selection = (context) ? d3.select(context).select(selector) : d3.select(selector);
+  // clip id used to set on clipPath element
+  const cid = 'clip-' + random;
 
-	var margin = { top: 30, right: 10, bottom: 20, left: 40 },
-		containerW = (context) ? d3ma.$$(context + ' '+ selector).clientWidth : d3ma.$$(selector).clientWidth || selection[0][0].clientWidth || document.body.clientWidth || 960,
-		containerH = (context) ? d3ma.$$(context + ' '+ selector).clientHeight : d3ma.$$(selector).clientHeight || selection[0][0].clientHeight || window.innerHeight || 540,
-		canvasW,
-		canvasH,
-		container = selection.append('svg'),  // Create container, append svg element to the selection
-		random = Math.floor(Math.random() * 1000),
+  // canvas id. each canvas element has an unique identifier
+  const id = 'd3ma-' + random;
 
-		// Setup the clipPath to hide the content out of the canvas
-		defs = container.append('defs'),
-		cid = 'clip-' + random,
-		clipPath = defs.append('clipPath').attr('id', cid),
-		rect = clipPath.append('rect'),
+  // selected element is used to draw the chart
+  let selection = context ? d3.select(context).select(selector) : d3.select(selector);
 
-		// Create a new group element append to svg
-		// Set the canvas layout with a good amount of offset, has canvas class for easy targeting
-		id = 'd3ma-' + random,
-		g = container.append('g').classed('canvas', true).attr({
-			'class': 'canvas',
-			'id': id
-		}),
+  // default margin when chart is being draw
+  let margin = {top: 30, right: 10, bottom: 20, left: 40};
 
-		// http://www.w3.org/TR/SVGTiny12/coords.html#PreserveAspectRatioAttribute
-		aspectRatio = 'xMidYMid',
-		scaleRatio = containerW / containerH;
+  // selected element client width
+  let containerW = context ? d3ma.$$(`${context} ${selector}`).clientWidth :
+    d3ma.$$(selector).clientWidth ||
+    selection[0][0].clientWidth ||
+    document.body.clientWidth || 960;
 
+  // selected element client height
+  let containerH = context ? d3ma.$$(`${context} ${selector}`).clientHeight :
+    d3ma.$$(selector).clientHeight ||
+    selection[0][0].clientHeight ||
+    window.innerHeight || 540;
 
-	var canvasW = container.canvasW = function(_width, boxCalled) {
-		if (!arguments.length) { return +(g.attr('width')); }
-		if(boxCalled) { _width = parseInt(_width) - margin.left - margin.right; }
-		g.attr('width', _width);
-		return container;
-	};
+  // http://www.w3.org/TR/SVGTiny12/coords.html#PreserveAspectRatioAttribute
+  let aspectRatio = 'xMidYMid';
+  let scaleRatio = containerW / containerH;
 
-	var canvasH = container.canvasH = function(_height, boxCalled) {
-		if(!arguments.length) { return +(g.attr('height')); }
-		if(boxCalled) { _height = parseInt(_height) - margin.top - margin.bottom; }
-		g.attr('height', _height);
-		return container;
-	};
+  // Create container, append svg element to the selection
+  let container = selection.append('svg');
 
-	container.box = function(_width, _height) {
-		var m = container.margin();
-		if(!arguments.length) {
-			return {
-				'containerWidth': +canvasW() + (+m.left) + (+m.right),
-				'containerHeight': +canvasH() + (+m.top) + (+m.bottom)
-			};
-		}
+  // Defs elements contains clipPath/rect to hide the content out of the canvas
+  let defs = container.append('defs');
+  let clipPath = defs.append('clipPath').attr('id', cid);
+  let rect = clipPath.append('rect');
 
-		// When arguments are more than one, set svg and container width & height
-		var h = (_height) ? _height : _width;
+  // Create a new group element append to svg
+  let g = container.append('g')
+    .classed('canvas', true)
+    .attr({
+      'class': 'canvas',
+      'id': id
+    });
 
-		canvasW(_width, true);
-		canvasH(h, true);
+  // actual canvas width: containerW - marginLeft - marginRight
+  let canvasW = container.canvasW = function(_width, boxCalled) {
+    if (!arguments.length) {
+      return +(g.attr('width'));
+    }
+    if (boxCalled) {
+      _width = parseInt(_width) - margin.left - margin.right;
+    }
+    g.attr('width', _width);
+    return container;
+  };
 
-		container.attr({
-			'width': _width,
-			'height': h,
-			'viewBox': '0 0 '+ _width + ' ' + h,
-			'preserveAspectRatio': aspectRatio
-		});
+  // actual canvas height: containerH - marginTop - marginBottom
+  let canvasH = container.canvasH = function(_height, boxCalled) {
+    if (!arguments.length) {
+      return +(g.attr('height'));
+    }
+    if (boxCalled) {
+      _height = parseInt(_height) - margin.top - margin.bottom;
+    }
+    g.attr('height', _height);
+    return container;
+  };
 
-		scaleRatio = _width / h;
+  container.box = function(_width, _height) {
+    var m = container.margin();
+    if(!arguments.length) {
+      return {
+        'containerWidth': +canvasW() + (+m.left) + (+m.right),
+        'containerHeight': +canvasH() + (+m.top) + (+m.bottom)
+      };
+    }
 
-		containerW = _width;
-		containerH = h;
+    // When arguments are more than one, set svg and container width & height
+    var h = (_height) ? _height : _width;
 
-		_gTransform(m.left, m.top);
-		_initClipPath(_width, h, m.left);
+    canvasW(_width, true);
+    canvasH(h, true);
 
-		return container;
-	};
+    container.attr({
+      'width': _width,
+      'height': h,
+      'viewBox': '0 0 '+ _width + ' ' + h,
+      'preserveAspectRatio': aspectRatio
+    });
 
-	container.margin = function(_margin) {
-		if (!arguments.length) { return margin; }
-		margin.top  = typeof _margin.top  !== 'undefined' ? _margin.top  : margin.top;
-		margin.right  = typeof _margin.right  !== 'undefined' ? _margin.right  : margin.right;
-		margin.bottom = typeof _margin.bottom !== 'undefined' ? _margin.bottom : margin.bottom;
-		margin.left   = typeof _margin.left   !== 'undefined' ? _margin.left   : margin.left;
+    scaleRatio = _width / h;
 
-		// After set the new margin, and maintain svg container width and height, container width and height ratio
-		container.box(containerW, containerH);
+    containerW = _width;
+    containerH = h;
 
-		return container;
-	};
+    _gTransform(m.left, m.top);
+    _initClipPath(_width, h, m.left);
 
-	container.ratio = function(_ratio){
-		if(!arguments.length) { return aspectRatio; }
-		aspectRatio = _ratio;
-		container.attr('preserveAspectRatio', _ratio);
-		return container;
-	};
+    return container;
+  };
 
-	// Return the canvas object for easy chaining
-	container.canvas = function(){
-		return container.select('g');
-	};
+  container.margin = function(_margin) {
+    if (!arguments.length) { return margin; }
+    margin.top  = typeof _margin.top  !== 'undefined' ? _margin.top  : margin.top;
+    margin.right  = typeof _margin.right  !== 'undefined' ? _margin.right  : margin.right;
+    margin.bottom = typeof _margin.bottom !== 'undefined' ? _margin.bottom : margin.bottom;
+    margin.left   = typeof _margin.left   !== 'undefined' ? _margin.left   : margin.left;
 
-	// Return all the infomation about this container
-	// expose all the data to the world
-	container.info = function(){
-		var margin = container.margin(),
-			box = container.box();
-		return {
-			'marginTop': margin.top,
-			'marginRight': margin.right,
-			'marginBottom': margin.bottom,
-			'marginLeft': margin.left,
-			'containerW': box.containerWidth,
-			'containerH': box.containerHeight,
-			'canvasW': canvasW(),
-			'canvasH': canvasH(),
-			'id': '#'+id,
-			'cid': '#'+cid,
-			'parentNode': selector
-		};
-	};
+    // After set the new margin, and maintain svg container width and height, container width and height ratio
+    container.box(containerW, containerH);
 
-	// Set the canvas element transform attribute, call it when needed
-	function _gTransform (_marginLeft, _marginTop) {
-		g.attr('transform', 'translate(' + _marginLeft + ',' + _marginTop + ')');
-	}
+    return container;
+  };
 
-	// setup the defs>clip>rect element width and height, x and y attrs
-	// width and height should equal to the containerW and containerH
-	// x equal to the -marginLeft, so it starts where the origin of the canvas before the transform
-	// y equal to the 0 value of the origin, remain static, here use -1 because to show the y-axis tick top
-	function _initClipPath(_width, _height, _marginLeft) {
-		rect.attr({
-			width: _width,
-			height: _height,
-			x: -(_marginLeft),
-			y: -1  // Static, -1 to show the y-axis top tick
-		});
+  container.ratio = function(_ratio){
+    if(!arguments.length) { return aspectRatio; }
+    aspectRatio = _ratio;
+    container.attr('preserveAspectRatio', _ratio);
+    return container;
+  };
 
-		g.attr('clip-path', 'url(#'+cid+')' );
-	}
+  // Return the canvas object for easy chaining
+  container.canvas = function(){
+    return container.select('g');
+  };
 
-	// e.g container.resize().box(1400, 600);
-	// container.resize() fn could be called from container object, it is chainable
-	// d3ma.resize() should be used all the time. This resize() is the old implementation
-	container.resize = function() {
-		//The Graph will auto scale itself when resize
-		d3ma.onResize( function() {
+  // Return all the infomation about this container
+  // expose all the data to the world
+  container.info = function(){
+    var margin = container.margin(),
+      box = container.box();
+    return {
+      'marginTop': margin.top,
+      'marginRight': margin.right,
+      'marginBottom': margin.bottom,
+      'marginLeft': margin.left,
+      'containerW': box.containerWidth,
+      'containerH': box.containerHeight,
+      'canvasW': canvasW(),
+      'canvasH': canvasH(),
+      'id': '#'+id,
+      'cid': '#'+cid,
+      'parentNode': selector
+    };
+  };
 
-			var windowWidth = d3ma.windowSize().width;
+  // Set the canvas element transform attribute, call it when needed
+  function _gTransform (_marginLeft, _marginTop) {
+    g.attr('transform', 'translate(' + _marginLeft + ',' + _marginTop + ')');
+  }
 
-			if ( windowWidth < containerW ) {
-				container.attr({
-					'width': windowWidth,
-					'height':  Math.round( windowWidth / scaleRatio )
-				});
-			} else {
-				// reset the graph value to its original width and height
-				// if it is the same value, do not need to set any more
-				var _w = +(container.attr('width'));
-				if( containerW !== _w) {
-					container.attr({
-						'width': containerW,
-						'height':  containerH
-					});
-				}
-			}
-		});
-		return container;
-	};
+  // setup the defs>clip>rect element width and height, x and y attrs
+  // width and height should equal to the containerW and containerH
+  // x equal to the -marginLeft, so it starts where the origin of the canvas before the transform
+  // y equal to the 0 value of the origin, remain static, here use -1 because to show the y-axis tick top
+  function _initClipPath(_width, _height, _marginLeft) {
+    rect.attr({
+      width: _width,
+      height: _height,
+      x: -(_marginLeft),
+      y: -1  // Static, -1 to show the y-axis top tick
+    });
 
-	// How to use container.fluid()
-	// it takes no args. return container for chaining.
-	// Purpose: to set the current chart as responsive design svg element, like set svg width 100%
-	//
-	// How?
-	// step 1: set svg's parent element ( container ) css box style   ex: +box(100%, 360)
-	// step 2: when/where initialize the container, calling fluid function.
-	// Ex:
-	// 	var clientW = d3ma.$$('#summaryChart').clientWidth,
-	// 		clientH = d3ma.$$('#summaryChart').clientHeight;
-	// 	container.box( clientW, clientH ).fluid();
-	// step 3: at the finalChart rendering function, calling the resize function
-	// Ex: 	d3ma.resize(key1Line, axis);
-	//
-	// It will set parentNode data-fluid attribute on individual chart, then framework will check each chart on this custom value, if it match 'responsive' value, then it will do all the calculation to make a responsive chart. By default, it will expect data-fluid as an empty value, then it will do the fixed layout resizing
-	container.fluid = function() {
-		var info = container.info(),
-			svgEl = d3ma.$$(info.parentNode);
+    g.attr('clip-path', 'url(#'+cid+')' );
+  }
 
-		svgEl.setAttribute('data-fluid', 'responsive');
-		return container;
-	};
+  // e.g container.resize().box(1400, 600);
+  // container.resize() fn could be called from container object, it is chainable
+  // d3ma.resize() should be used all the time. This resize() is the old implementation
+  container.resize = function() {
+    //The Graph will auto scale itself when resize
+    d3ma.onResize( function() {
 
-	// Set the svg container width and height
-	// Set the container width and height, and its transform values
-	container.box(containerW, containerH);
+      var windowWidth = d3ma.windowSize().width;
 
-	return container;
+      if ( windowWidth < containerW ) {
+        container.attr({
+          'width': windowWidth,
+          'height':  Math.round( windowWidth / scaleRatio )
+        });
+      } else {
+        // reset the graph value to its original width and height
+        // if it is the same value, do not need to set any more
+        var _w = +(container.attr('width'));
+        if( containerW !== _w) {
+          container.attr({
+            'width': containerW,
+            'height':  containerH
+          });
+        }
+      }
+    });
+    return container;
+  };
+
+  // How to use container.fluid()
+  // it takes no args. return container for chaining.
+  // Purpose: to set the current chart as responsive design svg element, like set svg width 100%
+  //
+  // How?
+  // step 1: set svg's parent element ( container ) css box style   ex: +box(100%, 360)
+  // step 2: when/where initialize the container, calling fluid function.
+  // Ex:
+  //  var clientW = d3ma.$$('#summaryChart').clientWidth,
+  //    clientH = d3ma.$$('#summaryChart').clientHeight;
+  //  container.box( clientW, clientH ).fluid();
+  // step 3: at the finalChart rendering function, calling the resize function
+  // Ex:  d3ma.resize(key1Line, axis);
+  //
+  // It will set parentNode data-fluid attribute on individual chart, then framework will check each chart on this custom value, if it match 'responsive' value, then it will do all the calculation to make a responsive chart. By default, it will expect data-fluid as an empty value, then it will do the fixed layout resizing
+  container.fluid = function() {
+    var info = container.info(),
+      svgEl = d3ma.$$(info.parentNode);
+
+    svgEl.setAttribute('data-fluid', 'responsive');
+    return container;
+  };
+
+  // Set the svg container width and height
+  // Set the container width and height, and its transform values
+  container.box(containerW, containerH);
+
+  return container;
 };
 
 /*
